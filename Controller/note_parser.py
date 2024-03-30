@@ -31,7 +31,7 @@ def from_html(staged_content: str, staged_folder: str) -> tuple[str, datetime, L
     # Get the type of each attachment
     image_index = 0
     for attachment in attachments:
-        image_ext = ['.png', '.jpg', '.jpeg', '.gif']
+        image_ext = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.apng', '.avif', '.bmp', '.ico', '.tiff', '.svg']
         att_name, att_ext = os.path.splitext(attachment['filename'])
         if att_ext in image_ext:
             # This is an image attachment
@@ -105,7 +105,10 @@ def html_to_markdown(body: List[str], attachments: List[dict], body_offset: int)
     for idx in range(body_offset + 1, len(body)):
         line = body[idx]
         if line.startswith("<div><img "):
-            line = "![{filename}](.attachments/{filename})".format(filename=image_list[image_index]['random'])
+            try:
+                line = "![{filename}](.attachments/{filename})".format(filename=image_list[image_index]['random'])
+            except IndexError:
+                print('Error parsing images of note.')
             image_index += 1
         result += line
     return Util.html_to_markdown(result)

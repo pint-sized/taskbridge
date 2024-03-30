@@ -12,6 +12,7 @@ from Model.Reminder import Reminder
 from Model.Util import Util
 
 
+SCRIPT_PATH = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
 
 
@@ -311,7 +312,8 @@ def sync_list_deletions(principal: Principal) -> None:
 
 
 def sync(caldav_url: str, username: str, password: str, headers: dict) -> bool:
-    logging.basicConfig(filename='../log/reminder_sync.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    log_location = os.path.normpath(os.path.join(SCRIPT_PATH, '../log/reminder_sync.log'))
+    logging.basicConfig(filename=log_location, level=logging.INFO, format='%(asctime)s %(message)s')
 
     logger.info('--- STARTING REMINDER SYNC ---')
     with caldav.DAVClient(

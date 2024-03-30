@@ -10,6 +10,7 @@ from Controller import notes_as, note_parser
 from Model import NoteFolder, LinkedFolder, Util
 
 
+SCRIPT_PATH = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
 
 NC_NOTES_FOLDER = ''
@@ -327,7 +328,8 @@ def sync(nc_folder: str, bidirectional: List[str], local_to_remote: List[str], r
     FOLDERS_LOCAL_TO_REMOTE = local_to_remote
     FOLDERS_REMOTE_TO_LOCAL = remote_to_local
 
-    logging.basicConfig(filename='../log/note_sync.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    log_location = os.path.normpath(os.path.join(SCRIPT_PATH, '../log/note_sync.log'))
+    logging.basicConfig(filename=log_location, level=logging.INFO, format='%(asctime)s %(message)s')
     logger.info('--- STARTING NOTE SYNC ---')
     local_folders = get_local_notes_folders()
     remote_folders = get_remote_notes_folders()

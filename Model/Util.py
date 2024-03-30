@@ -18,6 +18,8 @@ from Model.LinkedCalendar import LinkedCalendar
 
 
 class Util:
+    ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
+
     @staticmethod
     def get_apple_datetime(date_string: str) -> datetime | bool:
         try:
@@ -77,15 +79,16 @@ class Util:
 
     @staticmethod
     def export_uuids(folder: str, filename: str, uuids: List[str]) -> bool:
-        if not os.path.exists('../uuid_db/' + folder):
-            Path('../uuid_db/' + folder).mkdir(parents=True, exist_ok=True)
-        with open('../uuid_db/' + folder + '/' + filename + '.dat', 'wb') as fp:
+        folder_db_path = os.path.normpath(os.path.join(Util.ROOT_PATH, 'uuid_db/', folder))
+        if not os.path.exists(folder_db_path):
+            Path(folder_db_path).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(folder_db_path, filename + '.dat'), 'wb') as fp:
             pickle.dump(uuids, fp)
         return True
 
     @staticmethod
     def import_uuids(folder: str, filename: str) -> List | bool:
-        file_path = '../uuid_db/' + folder + '/' + filename + '.dat'
+        file_path = os.path.normpath(os.path.join(Util.ROOT_PATH, 'uuid_db/', folder, filename + '.dat'))
         if not os.path.exists(file_path):
             return False
 
@@ -95,18 +98,21 @@ class Util:
 
     @staticmethod
     def reset_uuid_dbs() -> None:
-        files = glob.glob('../uuid_db/caldav/*')
+        uuid_db = os.path.normpath(os.path.join(Util.ROOT_PATH, 'uuid_db/'))
+
+        files = glob.glob(os.path.join(uuid_db, 'caldav/') + '*')
         for f in files:
             os.remove(f)
-        files = glob.glob('../uuid_db/local/*')
+        files = glob.glob(os.path.join(uuid_db, 'local/') + '*')
         for f in files:
             os.remove(f)
 
     @staticmethod
     def delete_uuid_db(filename: str) -> int:
+        uuid_db = os.path.normpath(os.path.join(Util.ROOT_PATH, 'uuid_db/'))
         deletions = 0
-        local_file_name = '../uuid_db/local/' + filename + '.dat'
-        caldav_file_name = '../uuid_db/caldav/' + filename + '.dat'
+        local_file_name = os.path.join(uuid_db, 'local/', filename + '.dat')
+        caldav_file_name = os.path.join(uuid_db, 'caldav/', filename + '.dat')
         if os.path.exists(local_file_name):
             os.remove(local_file_name)
             deletions += 1
@@ -118,67 +124,71 @@ class Util:
 
     @staticmethod
     def delete_folder_db_item(folder_name: str) -> bool:
-        with open('../folder_db/folders.dat', 'rb') as fp:
+        folder_db_path = os.path.join(Util.ROOT_PATH, 'folder_db/', 'folders.dat')
+        with open(folder_db_path, 'rb') as fp:
             folder_db: List[LinkedFolder] = pickle.load(fp)
             fp.close()
         prev_len = len(folder_db)
         new_db = [f for f in folder_db if f.local_folder.name != folder_name]
-        with open('../folder_db/folders.dat', 'wb') as fp:
+        with open(folder_db_path, 'wb') as fp:
             pickle.dump(new_db, fp)
             fp.close()
         return len(new_db) < prev_len
 
     @staticmethod
     def export_list_db(lists: List[LinkedCalendar]) -> bool:
-        if not os.path.exists('../list_db'):
-            Path('../list_db/').mkdir(parents=True, exist_ok=True)
-        with open('../list_db/lists.dat', 'wb') as fp:
+        list_db_path = os.path.join(Util.ROOT_PATH, 'list_db/')
+        if not os.path.exists(list_db_path):
+            Path(list_db_path).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(list_db_path, 'lists.dat'), 'wb') as fp:
             pickle.dump(lists, fp)
         return True
 
     @staticmethod
     def import_list_db() -> List[LinkedCalendar] | bool:
-        file_path = '../list_db/lists.dat'
-        if not os.path.exists(file_path):
+        list_db_path = os.path.join(Util.ROOT_PATH, 'list_db/', 'lists.dat')
+        if not os.path.exists(list_db_path):
             return False
 
-        with open(file_path, 'rb') as fp:
+        with open(list_db_path, 'rb') as fp:
             lists = pickle.load(fp)
         return lists
 
     @staticmethod
     def export_folder_db(folders: List[LinkedFolder]) -> bool:
-        if not os.path.exists('../folder_db'):
-            Path('../folder_db/').mkdir(parents=True, exist_ok=True)
-        with open('../folder_db/folders.dat', 'wb') as fp:
+        folder_db_path = os.path.join(Util.ROOT_PATH, 'folder_db/')
+        if not os.path.exists(folder_db_path):
+            Path(folder_db_path).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(folder_db_path, 'folders.dat'), 'wb') as fp:
             pickle.dump(folders, fp)
         return True
 
     @staticmethod
     def import_folder_db() -> List[LinkedFolder] | bool:
-        file_path = '../folder_db/folders.dat'
-        if not os.path.exists(file_path):
+        folder_db_path = os.path.join(Util.ROOT_PATH, 'folder_db/', 'folders.dat')
+        if not os.path.exists(folder_db_path):
             return False
 
-        with open(file_path, 'rb') as fp:
+        with open(folder_db_path, 'rb') as fp:
             folders = pickle.load(fp)
         return folders
 
     @staticmethod
     def export_note_list(container: str, folder: str, notes: List[str]) -> bool:
-        if not os.path.exists('../note_db/' + container):
-            Path('../note_db/' + container).mkdir(parents=True, exist_ok=True)
-        with open('../note_db/' + container + '/' + folder + '.dat', 'wb') as fp:
+        note_db_path = os.path.join(Util.ROOT_PATH, 'note_db/', container)
+        if not os.path.exists(note_db_path):
+            Path(note_db_path).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(note_db_path, folder + '.dat'), 'wb') as fp:
             pickle.dump(notes, fp)
         return True
 
     @staticmethod
     def import_note_list(container: str, folder: str) -> List[str] | bool:
-        file_path = '../note_db/' + container + '/' + folder + '.dat'
-        if not os.path.exists(file_path):
+        note_db_path = os.path.join(Util.ROOT_PATH, 'note_db/', container, folder + '.dat')
+        if not os.path.exists(note_db_path):
             return False
 
-        with open(file_path, 'rb') as fp:
+        with open(note_db_path, 'rb') as fp:
             notes = pickle.load(fp)
         return notes
 
