@@ -1,6 +1,4 @@
-from subprocess import Popen, PIPE
-
-GET_REMINDER_LISTS = '''tell application "Reminders"
+get_reminder_lists_script = '''tell application "Reminders"
     set output to ""
     set r_lists to get every list
     repeat with r_list in r_lists
@@ -16,7 +14,7 @@ GET_REMINDER_LISTS = '''tell application "Reminders"
     return output
 end tell'''
 
-CREATE_REMINDER_LIST = '''on run argv
+create_reminder_list_script = '''on run argv
 set list_name to item 1 of argv
 tell application "Reminders"
     set theList to make new list
@@ -25,7 +23,7 @@ tell application "Reminders"
 end tell
 end run'''
 
-GET_LIST_REMINDERS = '''on run argv
+get_reminders_in_list_script = '''on run argv
 set list_name to item 1 of argv
 tell application "Reminders"
     set upcomingReminders to every reminder of list list_name whose completed is false
@@ -58,7 +56,7 @@ set accessRef to (open for access file ((path to temporary items folder as text)
     end try
 end run'''
 
-ADD_REMINDER = '''on run argv
+add_reminder_script = '''on run argv
 set {r_id, r_name, r_body, r_completed, r_completed_date, r_due_date, r_allday_due, r_remind_date, r_list } to {item 1, item 2, item 3, item 4, item 5, item 6, item 7, item 8, item 9} of argv
 tell application "Reminders"
     set mylist to list r_list
@@ -97,28 +95,16 @@ on stringToDate(theDateStr)
 end stringToDate
 '''
 
-DELETE_REMINDER = '''on run argv
+delete_reminder_script = '''on run argv
 set r_id to item 1 of argv
 tell application "Reminders"
     delete reminder id r_id
 end tell
 end run'''
 
-DELETE_LIST = '''on run argv
+delete_list_script = '''on run argv
 set r_list to item 1 of argv
 tell application "Reminders"
     delete list r_list
 end tell
 end run'''
-
-
-def run(script: str, args=None):
-    if args is None:
-        args = []
-    p = Popen(['osascript', '-'] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    stdout, stderr = p.communicate(script)
-    return {
-        'return_code': p.returncode,
-        'stdout': stdout,
-        'stderr': stderr
-    }
