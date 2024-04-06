@@ -5,10 +5,10 @@ from typing import List
 
 import caldav
 
-import helpers
-import reminders.model.remindercontainer as model
-from helpers import DateUtil
-from reminders.model import reminderscript
+import taskbridge.reminders.model.remindercontainer as model
+from taskbridge import helpers
+from taskbridge.helpers import DateUtil
+from taskbridge.reminders.model import reminderscript
 
 
 class Reminder:

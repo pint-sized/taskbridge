@@ -3,7 +3,7 @@ import logging
 import sys
 from pathlib import Path
 
-import helpers
+from taskbridge import helpers
 from taskbridge.notes import controller as notes_controller
 from taskbridge.reminders import controller as reminder_controller
 

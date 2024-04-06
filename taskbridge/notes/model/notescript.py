@@ -1,3 +1,4 @@
+#: Get the list of notes from a folder and export as a staged file
 get_notes_script = """on run argv
 set folder_name to item 1 of argv
 tell application "Finder"

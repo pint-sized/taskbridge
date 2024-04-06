@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>taskbridge.notes.model.note.Note &mdash; TaskBridge 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/general.css?v=c0a7eb24" />
+      <link rel="stylesheet" type="text/css" href="../_static/dark_mode_css/dark.css?v=70edf1c7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/dark_mode_js/default_light.js?v=c2e647ce"></script>
+        <script src="../_static/dark_mode_js/theme_switcher.js?v=358d3910"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="taskbridge.notes.model.notefolder" href="taskbridge.notes.model.notefolder.html" />
+    <link rel="prev" title="taskbridge.notes.model.note.Attachment" href="taskbridge.notes.model.note.Attachment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TaskBridge
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="taskbridge.html">taskbridge</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="taskbridge.helpers.html">taskbridge.helpers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="taskbridge.notes.html">taskbridge.notes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="taskbridge.notes.controller.html">taskbridge.notes.controller</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="taskbridge.notes.model.html">taskbridge.notes.model</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="taskbridge.notes.model.note.html">taskbridge.notes.model.note</a></li>
+<li class="toctree-l4"><a class="reference internal" href="taskbridge.notes.model.notefolder.html">taskbridge.notes.model.notefolder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="taskbridge.notes.model.notescript.html">taskbridge.notes.model.notescript</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="taskbridge.reminders.html">taskbridge.reminders</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TaskBridge</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="taskbridge.html">taskbridge</a></li>
+          <li class="breadcrumb-item"><a href="taskbridge.notes.html">taskbridge.notes</a></li>
+          <li class="breadcrumb-item"><a href="taskbridge.notes.model.html">taskbridge.notes.model</a></li>
+          <li class="breadcrumb-item"><a href="taskbridge.notes.model.note.html">taskbridge.notes.model.note</a></li>
+      <li class="breadcrumb-item active">taskbridge.notes.model.note.Note</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/taskbridge.notes.model.note.Note.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="taskbridge-notes-model-note-note">
+<h1>taskbridge.notes.model.note.Note<a class="headerlink" href="#taskbridge-notes-model-note-note" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">taskbridge.notes.model.note.</span></span><span class="sig-name descname"><span class="pre">Note</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modified_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_markdown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_html</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a note. Used to create notes from the local machine via a staged via or from the remote server from
+a Markdown file.
+Can also convert one type to the other.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.create_from_local" title="taskbridge.notes.model.note.Note.create_from_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_from_local</span></code></a></p></td>
+<td><p>Creates a Note instance from a staged file exported locally.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.create_from_remote" title="taskbridge.notes.model.note.Note.create_from_remote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_from_remote</span></code></a></p></td>
+<td><p>Creates a note instance from an exported Markdown file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.create_local" title="taskbridge.notes.model.note.Note.create_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_local</span></code></a></p></td>
+<td><p>Creates this note locally.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.markdown_to_html" title="taskbridge.notes.model.note.Note.markdown_to_html"><code class="xref py py-obj docutils literal notranslate"><span class="pre">markdown_to_html</span></code></a></p></td>
+<td><p>Converts a Note's body from Markdown to HTML.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.staged_to_markdown" title="taskbridge.notes.model.note.Note.staged_to_markdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staged_to_markdown</span></code></a></p></td>
+<td><p>Converts a Note's body from the HTML in a staged file to Markdown.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.update_local" title="taskbridge.notes.model.note.Note.update_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_local</span></code></a></p></td>
+<td><p>Updates this note locally.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.notes.model.note.Note.upsert_remote" title="taskbridge.notes.model.note.Note.upsert_remote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upsert_remote</span></code></a></p></td>
+<td><p>Upserts the remote note.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modified_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_markdown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_html</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.__init__" title="Link to this definition"></a></dt>
+<dd><p>Create a new note.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the name of the note. Added to first line of note when rendered</p></li>
+<li><p><strong>created_date</strong> (<span class="sphinx_autodoc_typehints-type">&lt;method ‘date’ of ‘datetime.datetime’ objects&gt;</span>) – creation date of the note</p></li>
+<li><p><strong>modified_date</strong> (<span class="sphinx_autodoc_typehints-type">&lt;method ‘date’ of ‘datetime.datetime’ objects&gt;</span>) – modification date of the note (same as creation date in local)</p></li>
+<li><p><strong>body_markdown</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the body of the note as markdown</p></li>
+<li><p><strong>body_html</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the body of the note as html</p></li>
+<li><p><strong>attachments</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.notes.model.note.Attachment.html#taskbridge.notes.model.note.Attachment" title="taskbridge.notes.model.note.Attachment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Attachment</span></code></a>]</span>) – a list of attachments for this note</p></li>
+<li><p><strong>uuid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – the UUID for this note</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.create_from_local">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_from_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">staged_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">staged_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.create_from_local" title="Link to this definition"></a></dt>
+<dd><p>Creates a Note instance from a staged file exported locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>staged_content</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the content of the staged file.</p></li>
+<li><p><strong>staged_location</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – the location of the staged file, used for adding attachments to a <code class="docutils literal notranslate"><span class="pre">/.attachments</span></code> directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#taskbridge.notes.model.note.Note" title="taskbridge.notes.model.note.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a Note instance representing the content of the staged file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.create_from_remote">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_from_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.create_from_remote" title="Link to this definition"></a></dt>
+<dd><p>Creates a note instance from an exported Markdown file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote_content</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – a list of strings from the remote Markdown content.</p></li>
+<li><p><strong>remote_location</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – the location of the remote note <em>excluding file name</em>.</p></li>
+<li><p><strong>remote_file_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the file name of the remote note <em>excluding path</em>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#taskbridge.notes.model.note.Note" title="taskbridge.notes.model.note.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">Note</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A Note instance representing the content of the Markdown document.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.create_local">
+<span class="sig-name descname"><span class="pre">create_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.create_local" title="Link to this definition"></a></dt>
+<dd><p>Creates this note locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the name of the folder where this note should be created.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the note is successfully created.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - success message, or error message on failure.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.markdown_to_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">markdown_to_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.markdown_to_html" title="Link to this definition"></a></dt>
+<dd><p>Converts a Note’s body from Markdown to HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote_lines</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – a list of Markdown lines.</p></li>
+<li><p><strong>attachments</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.notes.model.note.Attachment.html#taskbridge.notes.model.note.Attachment" title="taskbridge.notes.model.note.Attachment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Attachment</span></code></a>]</span>) – A list of Attachment associated with this note.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>an HTML representation of this note’s content.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.staged_to_markdown">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">staged_to_markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">staged_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.staged_to_markdown" title="Link to this definition"></a></dt>
+<dd><p>Converts a Note’s body from the HTML in a staged file to Markdown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>staged_lines</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – a list of lines from the staged file.</p></li>
+<li><p><strong>attachments</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.notes.model.note.Attachment.html#taskbridge.notes.model.note.Attachment" title="taskbridge.notes.model.note.Attachment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Attachment</span></code></a>]</span>) – a list of Attachment associated with this note.</p></li>
+<li><p><strong>attachment_end</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – the index of the line containing <code class="docutils literal notranslate"><span class="pre">~~END</span> <span class="pre">ATTACHMENTS~~</span></code> in the staged content.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a Markdown representation of the note’s content.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.update_local">
+<span class="sig-name descname"><span class="pre">update_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.update_local" title="Link to this definition"></a></dt>
+<dd><p>Updates this note locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the name of the folder where this note resides.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the note is successfully updated.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - success message, or error message on failure.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.notes.model.note.Note.upsert_remote">
+<span class="sig-name descname"><span class="pre">upsert_remote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.notes.model.note.Note.upsert_remote" title="Link to this definition"></a></dt>
+<dd><p>Upserts the remote note.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>remote_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – the path where the remote note resides, <em>excluding the file name</em>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the note is successfully upserted.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - success message, or error message on failure.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="taskbridge.notes.model.note.Attachment.html" class="btn btn-neutral float-left" title="taskbridge.notes.model.note.Attachment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="taskbridge.notes.model.notefolder.html" class="btn btn-neutral float-right" title="taskbridge.notes.model.notefolder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Keith Vassallo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

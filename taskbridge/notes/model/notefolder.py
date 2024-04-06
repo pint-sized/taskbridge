@@ -9,12 +9,15 @@ from contextlib import closing
 from pathlib import Path
 from typing import List
 
-import helpers
-from notes.model import notescript
-from notes.model.note import Note
+from taskbridge import helpers
+from taskbridge.notes.model import notescript
+from taskbridge.notes.model.note import Note
 
 
 class NoteFolder:
+    """
+    Represents a folder in stuff and things
+    """
     FOLDER_LIST: List[NoteFolder] = []
 
     SYNC_NONE: int = 0

@@ -1,3 +1,8 @@
+"""
+Contains the ``Note`` class, which represents a note (whether local or remote), and the ``Attachment`` class, which
+represents an attachment within a note.
+"""
+
 from __future__ import annotations
 
 import base64
@@ -9,12 +14,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import helpers
-from helpers import DateUtil
-from notes.model import notescript
+from taskbridge import helpers
+from taskbridge.helpers import DateUtil
+from taskbridge.notes.model import notescript
 
 
 class Note:
+    """
+    Represents a note. Used to create notes from the local machine via a staged via or from the remote server from
+    a Markdown file.
+    Can also convert one type to the other.
+    """
+
     def __init__(self,
                  name: str,
                  created_date: datetime.date,
@@ -23,6 +34,17 @@ class Note:
                  body_html: str = '',
                  attachments: List[Attachment] = None,
                  uuid: str | None = None):
+        """
+        Create a new note.
+
+        :param name: the name of the note. Added to first line of note when rendered
+        :param created_date: creation date of the note
+        :param modified_date: modification date of the note (same as creation date in local)
+        :param body_markdown: the body of the note as markdown
+        :param body_html: the body of the note as html
+        :param attachments: a list of attachments for this note
+        :param uuid: the UUID for this note
+        """
         if attachments is None:
             attachments = []
         self.uuid: str = uuid
@@ -35,6 +57,13 @@ class Note:
 
     @staticmethod
     def create_from_local(staged_content: str, staged_location: Path) -> Note:
+        """
+        Creates a Note instance from a staged file exported locally.
+
+        :param staged_content: the content of the staged file.
+        :param staged_location: the location of the staged file, used for adding attachments to a ``/.attachments`` directory.
+        :return: a Note instance representing the content of the staged file.
+        """
         staged_lines = staged_content.splitlines()
 
         # Meta Data
@@ -69,6 +98,14 @@ class Note:
 
     @staticmethod
     def create_from_remote(remote_content: str, remote_location: Path, remote_file_name: str) -> Note:
+        """
+        Creates a note instance from an exported Markdown file.
+
+        :param remote_content: a list of strings from the remote Markdown content.
+        :param remote_location: the location of the remote note *excluding file name*.
+        :param remote_file_name: the file name of the remote note *excluding path*.
+        :return: A Note instance representing the content of the Markdown document.
+        """
         remote_lines = remote_content.splitlines()
 
         # Meta Data
@@ -109,6 +146,14 @@ class Note:
 
     @staticmethod
     def staged_to_markdown(staged_lines: List[str], attachments: List[Attachment], attachment_end: int) -> str:
+        """
+        Converts a Note's body from the HTML in a staged file to Markdown.
+
+        :param staged_lines: a list of lines from the staged file.
+        :param attachments: a list of Attachment associated with this note.
+        :param attachment_end: the index of the line containing ``~~END ATTACHMENTS~~`` in the staged content.
+        :return: a Markdown representation of the note's content.
+        """
         md = ""
         image_list = [attachment for attachment in attachments if attachment.file_type == Attachment.TYPE_IMAGE]
         image_index = 0
@@ -125,6 +170,13 @@ class Note:
 
     @staticmethod
     def markdown_to_html(remote_lines: List[str], attachments: List[Attachment]) -> str:
+        """
+        Converts a Note's body from Markdown to HTML.
+
+        :param remote_lines: a list of Markdown lines.
+        :param attachments: A list of Attachment associated with this note.
+        :return: an HTML representation of this note's content.
+        """
         html = ""
         remote_lines.pop(0)  # First line is note name
         image_list = [attachment for attachment in attachments if attachment.file_type == Attachment.TYPE_IMAGE]
@@ -144,6 +196,17 @@ class Note:
         return helpers.markdown_to_html(html)
 
     def create_local(self, folder_name: str) -> tuple[bool, str]:
+        """
+        Creates this note locally.
+
+        :param folder_name: the name of the folder where this note should be created.
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully created.
+
+            -data (:py:class:`str`) - success message, or error message on failure.
+
+        """
         temp_file_name = helpers.temp_folder() / (self.name + '.html')
         try:
             with open(temp_file_name, 'w') as fp:
@@ -160,8 +223,18 @@ class Note:
             return True, 'Created local note {}'.format(self.name)
         return False, 'Error creating local note {0}: {1}'.format(self.name, stderr)
 
-    def update_local(self, folder_name: str):
+    def update_local(self, folder_name: str) -> tuple[bool, str]:
+        """
+        Updates this note locally.
 
+        :param folder_name: the name of the folder where this note resides.
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully updated.
+
+            -data (:py:class:`str`) - success message, or error message on failure.
+
+        """
         temp_file_name = helpers.temp_folder() / (self.name + '.html')
         try:
             with open(temp_file_name, 'w') as fp:
@@ -179,6 +252,17 @@ class Note:
         return False, 'Error updating local note {0}: {1}'.format(self.name, stderr)
 
     def upsert_remote(self, remote_path: Path) -> tuple[bool, str]:
+        """
+        Upserts the remote note.
+
+        :param remote_path: the path where the remote note resides, *excluding the file name*.
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully upserted.
+
+            -data (:py:class:`str`) - success message, or error message on failure.
+
+        """
         filename = self.name + '.md'
         try:
             with open(remote_path / filename, 'w') as fp:
@@ -205,14 +289,30 @@ class Note:
 
 
 class Attachment:
+    """
+    Represents an attachment in a note.
+    """
+
+    #: used to denote that this attachment is an image.
     TYPE_IMAGE: int = 0
+    #: used to denote that this attachment is a hyperlink.
     TYPE_LINK: int = 1
+    #: used to denote that this attachment is of an unsupported type.
     TYPE_UNSUPPORTED: int = 10
 
     _SUPPORTED_IMAGE_TYPES = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.apng',
                               '.avif', '.bmp', '.ico', '.tiff', '.svg']
 
     def __init__(self, file_type: int = '', file_name: str = '', url: str = '', b64_data: str = '', uuid: str = ''):
+        """
+        Creates a new instance of Attachment.
+
+        :param file_type: the type of attachment. Accepts ``Attachment.TYPE_IMAGE``, ``Attachment.TYPE_LINK`` or ``Attachment.TYPE_UNSUPPORTED``.
+        :param file_name: the file name of the attachment (for images).
+        :param url: the url of the attachment (location for images, address for links).
+        :param b64_data: the Base64 encoded data of an image.
+        :param uuid: the UUID for this attachment.
+        """
         self.file_type: int = file_type
         self.file_name: str = file_name
         self.url: str = url
@@ -222,6 +322,17 @@ class Attachment:
         self.remote_location: Path | None = None
 
     def save_image_to_file(self, file_path: Path) -> tuple[bool, Path] | tuple[bool, str]:
+        """
+        Saves a Base64 image attachment to a file.
+
+        :param file_path: the path where to save the image *excluding file name*.
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully created.
+
+            -data (:py:class:`str` | :py:class:`Path`) - error message on failure, or path to created image.
+
+        """
         img_data_b64 = self.b64_data.split('base64,')[1].encode()
         file_path.mkdir(parents=True, exist_ok=True)
         staged_path = file_path / self.uuid
@@ -234,6 +345,16 @@ class Attachment:
             return False, 'Could not save remote attachment to {}'.format(staged_path)
 
     def delete_remote(self) -> tuple[bool, str]:
+        """
+        Deletes the remote file linked to this attachment.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully deleted.
+
+            -data (:py:class:`str`) - success message, or error message on failure.
+
+        """
         try:
             Path(self.url).unlink()
         except FileNotFoundError:
@@ -243,6 +364,20 @@ class Attachment:
     @staticmethod
     def parse_local(attachments: List[Attachment], staged_lines: List[str], dest_folder: Path) \
             -> List[Attachment] | tuple[bool, str]:
+        """
+        Parses attachments from a staged file content into a list of Attachment.
+
+        :param attachments: the list of attachment. Each object should contain the file name
+        :param staged_lines: a list of lines from the staged file
+        :param dest_folder: the directory where parsed attachments are to be saved (for images)
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully parsed.
+
+            -data (:py:class:`str` | :py:class:`List[Attachment`) - error message on failure or List[Attachment].
+
+        """
         result = []
         image_index = 0
         for attachment in attachments:
@@ -264,6 +399,17 @@ class Attachment:
 
     @staticmethod
     def parse_remote(attachments: List[Attachment]) -> List[Attachment] | tuple[bool, str]:
+        """
+        Parses attachments from a remote note and updates Attachment fields
+
+        :param attachments: the list of attachments from the file
+        :returns:
+
+            -success (:py:class:`bool`) - true if the note is successfully parsed.
+
+            -data (:py:class:`str` | List[Attachment]) - error message on failure or List[Attachment].
+
+        """
         result = []
         for attachment in attachments:
             f_name, f_ext = os.path.splitext(attachment.file_name)
@@ -277,6 +423,18 @@ class Attachment:
 
     @staticmethod
     def _get_local_image(staged_lines: List[str], image_index: int) -> str | None:
+        """
+        Given the lines of a staged file and an index, retrieves the associated image ``src`` attribute.
+
+        :param staged_lines: the lines from a staged file.
+        :param image_index: the index of the image attachment to retrieve.
+        :returns:
+
+            -success (:py:class:`bool`) - true if image source is retrieved successfully.
+
+            -data (None | :py:class:`str`) - nothing on failure, or the ``src`` attribute.
+
+        """
         current_image = 0
         for line in staged_lines:
             if line.startswith("<div><img "):
@@ -287,6 +445,17 @@ class Attachment:
 
     @staticmethod
     def _get_remote_image(url: str) -> str | None:
+        """
+        Given the path to an image, returns a Base64 representation of the image.
+
+        :param url: the path to the image.
+        :returns:
+
+            -success (:py:class:`bool`) - true if image is parsed successfully.
+
+            -data (None | :py:class:`str`) - nothing on failure, or the Base64 image data.
+
+        """
         try:
             with open(url, "rb") as fp:
                 encoded_string = base64.b64encode(fp.read()).decode('utf-8')
@@ -296,8 +465,18 @@ class Attachment:
 
     @staticmethod
     def get_supported_image_types() -> List[str]:
+        """
+        Get a list of supported image types.
+
+        :return: a list of supported image types.
+        """
         return Attachment._SUPPORTED_IMAGE_TYPES
 
     @staticmethod
     def get_supported_image_types_string() -> str:
+        """
+        Get a list of supported image types as a pipe-separated string.
+
+        :return: a list of supported image types as a pipe-separated string.
+        """
         return '|'.join(att[1:] for att in Attachment._SUPPORTED_IMAGE_TYPES)

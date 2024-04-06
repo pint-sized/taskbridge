@@ -1,9 +1,13 @@
+"""
+Controller docs
+"""
+
 import datetime
 import logging
 import sys
 from pathlib import Path
 
-from notes.model.notefolder import NoteFolder
+from taskbridge.notes.model.notefolder import NoteFolder
 
 
 def sync(nc_notes_folder: Path, associations: dict):

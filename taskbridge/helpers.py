@@ -1,3 +1,9 @@
+"""
+This is a helper file
+"""
+
+from __future__ import annotations
+
 import re
 import sys
 import uuid
@@ -5,13 +11,13 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import Popen, PIPE
 
-import caldav
+from caldav import Principal
 import markdown2
 from markdownify import markdownify as md
 
 DATA_LOCATION: Path = Path.home() / "Library" / "Application Support" / "TaskBridge"
 DRY_RUN: bool = True
-CALDAV_PRINCIPAL: caldav.Principal | None = None
+CALDAV_PRINCIPAL: Principal | None = None
 
 
 def confirm(prompt: str) -> bool:

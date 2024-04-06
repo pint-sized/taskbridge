@@ -1,13 +1,15 @@
-import datetime
+"""
+Reminder controller docs
+"""
+
 import logging
 import sys
-from pathlib import Path
 from typing import List
 
 import caldav
 
-import helpers
-from reminders.model.remindercontainer import ReminderContainer
+from taskbridge import helpers
+from taskbridge.reminders.model.remindercontainer import ReminderContainer
 
 
 def sync(caldav_url: str, username: str, password: str, headers: dict, to_sync: List[str]):
