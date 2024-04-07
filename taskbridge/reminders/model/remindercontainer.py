@@ -1,3 +1,9 @@
+"""
+Contains the ``ReminderContainer`` class, which represents a container for reminders. This is analogous to a *list* of
+local reminders, or a *calendar* of remote *VTODO* tasks.
+Many of the synchronisation methods are here.
+"""
+
 from __future__ import annotations
 
 import copy
@@ -18,9 +24,23 @@ from taskbridge.reminders.model import reminderscript
 
 
 class ReminderContainer:
+    """
+    Represents a folder or calendar containing reminders. A link is established here between the local list and the remote
+    calendar.
+    Also contains a list of the reminders in this container, both local and remote.
+    """
+
+    #: List of all found reminder containers
     CONTAINER_LIST: List[ReminderContainer] = []
 
     def __init__(self, local_list: LocalList, remote_calendar: RemoteCalendar, sync: bool):
+        """
+        Create a new reminder container.
+
+        :param local_list: the local list containing the local reminders.
+        :param remote_calendar: the remote calendar containing the remote tasks.
+        :param sync: True if the local list and remote calendar should be synchronised.
+        """
         self.local_list: LocalList = local_list
         self.remote_calendar: RemoteCalendar = remote_calendar
         self.sync: bool = sync
@@ -30,6 +50,16 @@ class ReminderContainer:
 
     @staticmethod
     def load_caldav_calendars() -> tuple[bool, str] | tuple[bool, List[RemoteCalendar]]:
+        """
+        Loads the list of CalDav calendars which support *VTODO* components (i.e. task calendars).
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the list of remote calendars is successfully loaded.
+
+            -data (:py:class:`str` | :py:class`List[RemoteCalendar]`) - error message on failure or list of remote calendars.
+
+        """
         remote_calendars = []
         calendars = helpers.CALDAV_PRINCIPAL.calendars()
         for c in calendars:
@@ -45,6 +75,16 @@ class ReminderContainer:
 
     @staticmethod
     def load_local_lists() -> tuple[bool, str] | tuple[bool, List[LocalList]]:
+        """
+        Load the list of local reminder lists.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the list of local reminder lists is successfully loaded.
+
+            -data (:py:class:`str` | :py:class`List[LocalList]`) - error message on failure or list of local reminder lists.
+
+        """
         get_reminder_lists_script = reminderscript.get_reminder_lists_script
         return_code, stdout, stderr = helpers.run_applescript(get_reminder_lists_script)
 
@@ -61,7 +101,26 @@ class ReminderContainer:
     @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
                                  to_sync: List[str]) -> tuple[bool, str] | tuple[bool, List[ReminderContainer]]:
-        # The local list "Reminders" is always associated with the CalDav "Tasks" calendar
+        """
+        Creates an association between local reminder lists and remote task calendars. Missing containers are created;
+        for example, if the list *foo* is present locally, and ``sync`` is set to True, this method will check if the
+        remote calendar *foo* exists and, if not, creates it.
+
+        The list of containers is saved to an SQLite database.
+
+        **Important: The local list 'Reminders' is ALWAYS associated with the remote calendar 'Tasks'.**
+
+        :param local_lists: list of local reminder lists.
+        :param remote_calendars: list of remote task calendars.
+        :param to_sync: list of reminder/task lists/calendars to synchronise. Sync is always bidirectional.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the containers are successfully linked.
+
+            -data (:py:class:`str` | :py:class`List[ReminderContainer]`) - error message on list of containers.
+
+        """
 
         # Associate local lists with remote calendars
         for local_list in local_lists:
@@ -102,6 +161,16 @@ class ReminderContainer:
 
     @staticmethod
     def seed_container_table() -> tuple[bool, str]:
+        """
+        Creates the initial structure for the table storing containers in SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the table is successfully seeded.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         try:
             con = sqlite3.connect(helpers.db_folder())
             cur = con.cursor()
@@ -118,6 +187,16 @@ class ReminderContainer:
 
     @staticmethod
     def persist_containers() -> tuple[bool, str]:
+        """
+        Save the list of containers to SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the containers are successfully saved.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         containers = []
         for container in ReminderContainer.CONTAINER_LIST:
             containers.append((
@@ -141,6 +220,16 @@ class ReminderContainer:
 
     @staticmethod
     def seed_reminder_table() -> tuple[bool, str]:
+        """
+        Creates the initial structure for the table storing reminders in SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the table is successfully seeded.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         try:
             con = sqlite3.connect(helpers.db_folder())
             cur = con.cursor()
@@ -160,6 +249,19 @@ class ReminderContainer:
 
     @staticmethod
     def persist_reminders() -> tuple[bool, str]:
+        """
+        Save the list of reminders to SQLite.
+        Due to the fact that local reminder UUIDs are read-only, this list may contain reminders without an associated
+        remote UID. For this reason, the reminder's summary (which is typically the only text content) has to be saved to
+        the database. Without this, many reminders couldn't be matched. The database is stored locally.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders as successfully saved.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         reminders = []
         for container in ReminderContainer.CONTAINER_LIST:
             for reminder in container.local_reminders:
@@ -200,6 +302,31 @@ class ReminderContainer:
     @staticmethod
     def sync_container_deletions(discovered_local: List[LocalList], discovered_remote: List[RemoteCalendar],
                                  to_sync: List[str]) -> tuple[bool, str] | tuple[bool, dict]:
+        """
+        Synchronises deletions to reminder containers.
+
+        The list of containers found during the last sync is loaded from SQLite and compared to the local and remote
+        lists found now. Any lists in the database which are no longer present will have their counterpart deleted. For
+        example, if the local list *foo* is deleted, the remote calendar *foo* will be deleted during sync.
+
+        Note that container deletions only apply if the list/calendar is found in the ``to_sync`` argument.
+
+        On success, this method returns a dictionary with changes, containing the following keys:
+
+        - ``updated_local_list`` - the list of local reminder lists, taking into account deleted lists.
+        - ``updated_remote_list`` - the list of remote task calendars, taking into account deleted calendars.
+
+        :param discovered_local: the list of local reminder lists.
+        :param discovered_remote: the list of remote task calendars.
+        :param to_sync: the list of lists/calendars which should be synchronised.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if container deletions are successfully synchronised.
+
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure or result as above on success.
+
+        """
         success, message = ReminderContainer.seed_container_table()
         if not success:
             return False, message
@@ -262,7 +389,31 @@ class ReminderContainer:
         return True, result
 
     @staticmethod
-    def sync_reminder_deletions():
+    def sync_reminder_deletions() -> tuple[bool, str] | tuple[bool, dict]:
+        """
+        Synchronises deletions to reminders.
+
+        The list of reminders found during the last sync is loaded from SQLite and compared to the local and remote reminders
+        found now. Any reminders in the database which are no longer present will have their counterpart deleted. For
+        example, if the local reminder *foo* is deleted, the remote reminder *foo* will be deleted during sync.
+
+        Note that reminder deletion only applies to those containers with ``sync`` set to True.
+
+        On success, this method returns a dictionary with changes, containing the following keys:
+
+        - ``deleted_local_reminders`` - a list of local reminders deleted as :py:class:`List[Reminder]`.
+        - ``deleted_remote_reminders`` - a list of remote tasks deleted as :py:class:`List[Reminder]`.
+
+        A reminder not being found is not considered an error, as the user may have deleted the reminder manually prior
+        to the sync running.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if reminder deletions are successfully synchronised.
+
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure or result as above on success.
+
+        """
         success, message = ReminderContainer.seed_reminder_table()
         if not success:
             return False, message
@@ -340,6 +491,17 @@ class ReminderContainer:
         return True, result
 
     def load_local_reminders(self) -> tuple[bool, str] | tuple[bool, int]:
+        """
+        Load the list of local reminders in this local container (list) via an AppleScript script.
+        The reminders are saved in a pipe-separated *.psv* file in a temporary folder, and then parsed from there.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`int`) - error message on failure or number of loaded reminders on success.
+
+        """
         get_reminders_in_list_script = reminderscript.get_reminders_in_list_script
         return_code, stdout, stderr = helpers.run_applescript(get_reminders_in_list_script, self.local_list.name)
 
@@ -365,6 +527,16 @@ class ReminderContainer:
         return True, len(self.local_reminders)
 
     def load_remote_reminders(self) -> tuple[bool, str] | tuple[bool, int]:
+        """
+        Load the list of remote reminders (tasks) in this remote container (calendar) via CalDav.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`int`) - error message on failure or number of loaded reminders on success.
+
+        """
         caldav_tasks = self.remote_calendar.cal_obj.todos()
         for task in caldav_tasks:
             self.remote_reminders.append(model.Reminder.create_from_remote(task))
@@ -372,6 +544,25 @@ class ReminderContainer:
         return True, len(self.remote_reminders)
 
     def sync_reminders(self) -> tuple[bool, str] | tuple[bool, dict]:
+        """
+        Synchronises reminders. This method only synchronises reminders for containers with ``sync`` set to True.
+        On success, the method returns a dictionary with the following keys:
+
+        - ``remote_added`` - name of reminders added to the remote calendar as :py:class:`List[str]`.
+        - ``remote_updated`` - name of reminders updated in the remote calendar as :py:class:`List[str]`.
+        - ``local_added`` - name of reminders added to the local list as :py:class:`List[str]`.
+        - ``local_updated`` - name of reminders updated in the local list as :py:class:`List[str]`.
+
+        Any of the above may be empty if no changes were made.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders are successfully synchronised.
+
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure or :py:class:`dict` with results as above.
+
+        """
+
         if not self.sync:
             return True, 'Container {} is set to NO SYNC so skipped'.format(self.local_list.name)
 
@@ -444,7 +635,18 @@ class ReminderContainer:
 
 
 class RemoteCalendar:
+    """
+    Represents a remote CalDav calendar supporting *VTODO* components.
+    """
+
     def __init__(self, cal_obj: Calendar | None = None, calendar_name: str | None = None):
+        """
+        Create a new remote calendar instance. The calendar is not actually created until the ``create()`` method is called.
+
+        :param cal_obj: for existing remote calendars, the calendar object.
+        :param calendar_name: for new calendars, the name of the calendar to create.
+        """
+
         if cal_obj is not None:
             self.id: str | None = cal_obj.id
             self.name: str | None = cal_obj.name
@@ -453,6 +655,16 @@ class RemoteCalendar:
             self.name: str = calendar_name
 
     def create(self) -> tuple[bool, str]:
+        """
+        Creates this calendar using CalDav.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the calendar is successfully created.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         cal_obj = helpers.CALDAV_PRINCIPAL.make_calendar(self.name)
         if isinstance(cal_obj, caldav.Calendar):
             self.id = cal_obj.id
@@ -461,6 +673,16 @@ class RemoteCalendar:
         return False, "Failed to create remote calendar {}".format(self.name)
 
     def delete(self) -> tuple[bool, str]:
+        """
+        Delete the remote calendar with this object's name using CalDav.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the calendar is successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         cal = helpers.CALDAV_PRINCIPAL.calendar(name=self.name)
         try:
             cal.delete()
@@ -476,11 +698,30 @@ class RemoteCalendar:
 
 
 class LocalList:
+    """
+    Represents a local folder storing reminders.
+    """
     def __init__(self, list_name: str, list_id: str | None = None):
+        """
+        Create a new local list instance. The list is not actually created until the ``create()`` method is called.
+
+        :param list_name: the name of the list to create.
+        :param list_id: for existing lists, their UUID.
+        """
         self.id: str = list_id
         self.name: str = list_name
 
     def create(self) -> tuple[bool, str]:
+        """
+        Creates the local list using AppleScript.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder list is successfully created.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         create_reminder_list_script = reminderscript.create_reminder_list_script
         return_code, stdout, stderr = helpers.run_applescript(create_reminder_list_script, self.name)
         if return_code == 0:
@@ -489,6 +730,16 @@ class LocalList:
         return False, "Failed to create local list {}".format(self.name)
 
     def delete(self) -> tuple[bool, str]:
+        """
+        Delete the local list with this object's name.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder list is successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         delete_list_script = reminderscript.delete_list_script
         return_code, stdout, stderr = helpers.run_applescript(delete_list_script, self.name)
         if return_code == 0:

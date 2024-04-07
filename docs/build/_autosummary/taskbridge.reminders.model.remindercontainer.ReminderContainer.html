@@ -100,114 +100,320 @@
 <dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">taskbridge.reminders.model.remindercontainer.</span></span><span class="sig-name descname"><span class="pre">ReminderContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_calendar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a folder or calendar containing reminders. A link is established here between the local list and the remote
+calendar.
+Also contains a list of the reminders in this container, both local and remote.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_linked_containers</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer" title="taskbridge.reminders.model.remindercontainer.ReminderContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReminderContainer</span></code></a>]]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.create_linked_containers" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.create_linked_containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_linked_containers</span></code></a></p></td>
+<td><p>Creates an association between local reminder lists and remote task calendars.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_caldav_calendars</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.RemoteCalendar.html#taskbridge.reminders.model.remindercontainer.RemoteCalendar" title="taskbridge.reminders.model.remindercontainer.RemoteCalendar"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteCalendar</span></code></a>]]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_caldav_calendars" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_caldav_calendars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_caldav_calendars</span></code></a></p></td>
+<td><p>Loads the list of CalDav calendars which support <em>VTODO</em> components (i.e. task calendars).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_local_lists</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.LocalList.html#taskbridge.reminders.model.remindercontainer.LocalList" title="taskbridge.reminders.model.remindercontainer.LocalList"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalList</span></code></a>]]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_lists" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_local_lists</span></code></a></p></td>
+<td><p>Load the list of local reminder lists.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_local_reminders</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_reminders" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_reminders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_local_reminders</span></code></a></p></td>
+<td><p>Load the list of local reminders in this local container (list) via an AppleScript script.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_remote_reminders</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_remote_reminders" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_remote_reminders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_remote_reminders</span></code></a></p></td>
+<td><p>Load the list of remote reminders (tasks) in this remote container (calendar) via CalDav.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">persist_containers</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_containers" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">persist_containers</span></code></a></p></td>
+<td><p>Save the list of containers to SQLite.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">persist_reminders</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_reminders" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_reminders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">persist_reminders</span></code></a></p></td>
+<td><p>Save the list of reminders to SQLite.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed_container_table</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_container_table" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_container_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed_container_table</span></code></a></p></td>
+<td><p>Creates the initial structure for the table storing containers in SQLite.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed_reminder_table</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_reminder_table" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_reminder_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed_reminder_table</span></code></a></p></td>
+<td><p>Creates the initial structure for the table storing reminders in SQLite.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_container_deletions</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_container_deletions" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_container_deletions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_container_deletions</span></code></a></p></td>
+<td><p>Synchronises deletions to reminder containers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_reminder_deletions</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminder_deletions" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminder_deletions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_reminder_deletions</span></code></a></p></td>
+<td><p>Synchronises deletions to reminders.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_reminders</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminders" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_reminders</span></code></a></p></td>
+<td><p>Synchronises reminders.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTAINER_LIST</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.CONTAINER_LIST" title="taskbridge.reminders.model.remindercontainer.ReminderContainer.CONTAINER_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTAINER_LIST</span></code></a></p></td>
+<td><p>List of all found reminder containers</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.CONTAINER_LIST">
+<span class="sig-name descname"><span class="pre">CONTAINER_LIST</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer" title="taskbridge.reminders.model.remindercontainer.ReminderContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReminderContainer</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.CONTAINER_LIST" title="Link to this definition"></a></dt>
+<dd><p>List of all found reminder containers</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_calendar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Create a new reminder container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_list</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="taskbridge.reminders.model.remindercontainer.LocalList.html#taskbridge.reminders.model.remindercontainer.LocalList" title="taskbridge.reminders.model.remindercontainer.LocalList"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalList</span></code></a></span>) – the local list containing the local reminders.</p></li>
+<li><p><strong>remote_calendar</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="taskbridge.reminders.model.remindercontainer.RemoteCalendar.html#taskbridge.reminders.model.remindercontainer.RemoteCalendar" title="taskbridge.reminders.model.remindercontainer.RemoteCalendar"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteCalendar</span></code></a></span>) – the remote calendar containing the remote tasks.</p></li>
+<li><p><strong>sync</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – True if the local list and remote calendar should be synchronised.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.create_linked_containers">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_linked_containers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_calendars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.create_linked_containers" title="Link to this definition"></a></dt>
+<dd><p>Creates an association between local reminder lists and remote task calendars. Missing containers are created;
+for example, if the list <em>foo</em> is present locally, and <code class="docutils literal notranslate"><span class="pre">sync</span></code> is set to True, this method will check if the
+remote calendar <em>foo</em> exists and, if not, creates it.</p>
+<p>The list of containers is saved to an SQLite database.</p>
+<p><strong>Important: The local list ‘Reminders’ is ALWAYS associated with the remote calendar ‘Tasks’.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_lists</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.LocalList.html#taskbridge.reminders.model.remindercontainer.LocalList" title="taskbridge.reminders.model.remindercontainer.LocalList"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalList</span></code></a>]</span>) – list of local reminder lists.</p></li>
+<li><p><strong>remote_calendars</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.RemoteCalendar.html#taskbridge.reminders.model.remindercontainer.RemoteCalendar" title="taskbridge.reminders.model.remindercontainer.RemoteCalendar"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteCalendar</span></code></a>]</span>) – list of remote task calendars.</p></li>
+<li><p><strong>to_sync</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – list of reminder/task lists/calendars to synchronise. Sync is always bidirectional.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer" title="taskbridge.reminders.model.remindercontainer.ReminderContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReminderContainer</span></code></a>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the containers are successfully linked.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | :py:class`List[ReminderContainer]`) - error message on list of containers.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_caldav_calendars">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_caldav_calendars</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_caldav_calendars" title="Link to this definition"></a></dt>
+<dd><p>Loads the list of CalDav calendars which support <em>VTODO</em> components (i.e. task calendars).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.RemoteCalendar.html#taskbridge.reminders.model.remindercontainer.RemoteCalendar" title="taskbridge.reminders.model.remindercontainer.RemoteCalendar"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteCalendar</span></code></a>]]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the list of remote calendars is successfully loaded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | :py:class`List[RemoteCalendar]`) - error message on failure or list of remote calendars.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_lists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_local_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_lists" title="Link to this definition"></a></dt>
+<dd><p>Load the list of local reminder lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.LocalList.html#taskbridge.reminders.model.remindercontainer.LocalList" title="taskbridge.reminders.model.remindercontainer.LocalList"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalList</span></code></a>]]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the list of local reminder lists is successfully loaded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | :py:class`List[LocalList]`) - error message on failure or list of local reminder lists.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_reminders">
+<span class="sig-name descname"><span class="pre">load_local_reminders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_local_reminders" title="Link to this definition"></a></dt>
+<dd><p>Load the list of local reminders in this local container (list) via an AppleScript script.
+The reminders are saved in a pipe-separated <em>.psv</em> file in a temporary folder, and then parsed from there.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the reminders are successfully loaded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) - error message on failure or number of loaded reminders on success.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.load_remote_reminders">
+<span class="sig-name descname"><span class="pre">load_remote_reminders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.load_remote_reminders" title="Link to this definition"></a></dt>
+<dd><p>Load the list of remote reminders (tasks) in this remote container (calendar) via CalDav.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the reminders are successfully loaded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) - error message on failure or number of loaded reminders on success.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_containers">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">persist_containers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_containers" title="Link to this definition"></a></dt>
+<dd><p>Save the list of containers to SQLite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the containers are successfully saved.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - error message on failure or success message.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_reminders">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">persist_reminders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.persist_reminders" title="Link to this definition"></a></dt>
+<dd><p>Save the list of reminders to SQLite.
+Due to the fact that local reminder UUIDs are read-only, this list may contain reminders without an associated
+remote UID. For this reason, the reminder’s summary (which is typically the only text content) has to be saved to
+the database. Without this, many reminders couldn’t be matched. The database is stored locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the reminders as successfully saved.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - error message on failure or success message.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_container_table">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seed_container_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_container_table" title="Link to this definition"></a></dt>
+<dd><p>Creates the initial structure for the table storing containers in SQLite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the table is successfully seeded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - error message on failure or success message.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_reminder_table">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seed_reminder_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.seed_reminder_table" title="Link to this definition"></a></dt>
+<dd><p>Creates the initial structure for the table storing reminders in SQLite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the table is successfully seeded.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) - error message on failure or success message.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_container_deletions">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sync_container_deletions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discovered_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discovered_remote</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_container_deletions" title="Link to this definition"></a></dt>
+<dd><p>Synchronises deletions to reminder containers.</p>
+<p>The list of containers found during the last sync is loaded from SQLite and compared to the local and remote
+lists found now. Any lists in the database which are no longer present will have their counterpart deleted. For
+example, if the local list <em>foo</em> is deleted, the remote calendar <em>foo</em> will be deleted during sync.</p>
+<p>Note that container deletions only apply if the list/calendar is found in the <code class="docutils literal notranslate"><span class="pre">to_sync</span></code> argument.</p>
+<p>On success, this method returns a dictionary with changes, containing the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">updated_local_list</span></code> - the list of local reminder lists, taking into account deleted lists.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">updated_remote_list</span></code> - the list of remote task calendars, taking into account deleted calendars.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discovered_local</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.LocalList.html#taskbridge.reminders.model.remindercontainer.LocalList" title="taskbridge.reminders.model.remindercontainer.LocalList"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalList</span></code></a>]</span>) – the list of local reminder lists.</p></li>
+<li><p><strong>discovered_remote</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="taskbridge.reminders.model.remindercontainer.RemoteCalendar.html#taskbridge.reminders.model.remindercontainer.RemoteCalendar" title="taskbridge.reminders.model.remindercontainer.RemoteCalendar"><code class="xref py py-class docutils literal notranslate"><span class="pre">RemoteCalendar</span></code></a>]</span>) – the list of remote task calendars.</p></li>
+<li><p><strong>to_sync</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – the list of lists/calendars which should be synchronised.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if container deletions are successfully synchronised.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) - error message on failure or result as above on success.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminder_deletions">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sync_reminder_deletions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminder_deletions" title="Link to this definition"></a></dt>
+<dd><p>Synchronises deletions to reminders.</p>
+<p>The list of reminders found during the last sync is loaded from SQLite and compared to the local and remote reminders
+found now. Any reminders in the database which are no longer present will have their counterpart deleted. For
+example, if the local reminder <em>foo</em> is deleted, the remote reminder <em>foo</em> will be deleted during sync.</p>
+<p>Note that reminder deletion only applies to those containers with <code class="docutils literal notranslate"><span class="pre">sync</span></code> set to True.</p>
+<p>On success, this method returns a dictionary with changes, containing the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deleted_local_reminders</span></code> - a list of local reminders deleted as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[Reminder]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deleted_remote_reminders</span></code> - a list of remote tasks deleted as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[Reminder]</span></code>.</p></li>
+</ul>
+<p>A reminder not being found is not considered an error, as the user may have deleted the reminder manually prior
+to the sync running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if reminder deletions are successfully synchronised.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) - error message on failure or result as above on success.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminders">
+<span class="sig-name descname"><span class="pre">sync_reminders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.reminders.model.remindercontainer.ReminderContainer.sync_reminders" title="Link to this definition"></a></dt>
+<dd><p>Synchronises reminders. This method only synchronises reminders for containers with <code class="docutils literal notranslate"><span class="pre">sync</span></code> set to True.
+On success, the method returns a dictionary with the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">remote_added</span></code> - name of reminders added to the remote calendar as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[str]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remote_updated</span></code> - name of reminders updated in the remote calendar as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[str]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">local_added</span></code> - name of reminders added to the local list as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[str]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">local_updated</span></code> - name of reminders updated in the local list as <code class="xref py py-class docutils literal notranslate"><span class="pre">List[str]</span></code>.</p></li>
+</ul>
+<p>Any of the above may be empty if no changes were made.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>-success (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) - true if the reminders are successfully synchronised.</p>
+<p>-data (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) - error message on failure or <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> with results as above.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

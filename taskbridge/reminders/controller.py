@@ -1,5 +1,5 @@
 """
-Reminder controller docs
+This is the reminder synchronisation controller. It takes care of the reminder synchronisation process.
 """
 
 import logging
@@ -13,6 +13,16 @@ from taskbridge.reminders.model.remindercontainer import ReminderContainer
 
 
 def sync(caldav_url: str, username: str, password: str, headers: dict, to_sync: List[str]):
+    """
+    Carries out the reminder synchronisation process.
+
+    :param caldav_url: URL to the CalDav endpoint for this user.
+    :param username: username for CalDav.
+    :param password: password for CalDav.
+    :param headers: any headers to send to the CalDav server.
+    :param to_sync: list of reminder lists or task calendars which should be synchronised.
+
+    """
     logging.info('-- STARTING REMINDER SYNC --')
 
     with caldav.DAVClient(

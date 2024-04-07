@@ -1,5 +1,5 @@
 """
-Controller docs
+This is the note synchronisation controller. It takes care of the note synchronisation process.
 """
 
 import datetime
@@ -11,6 +11,19 @@ from taskbridge.notes.model.notefolder import NoteFolder
 
 
 def sync(nc_notes_folder: Path, associations: dict):
+    """
+    Carries out the note synchronisation process.
+
+    :param nc_notes_folder: path to the folder on the filesystem which synchronises remotely.
+    :param associations: list of folder associations as shown below.
+
+    The associations dictionary must contain the following keys:
+
+        - ``local_to_remote`` - notes to push from local to remote as :py:class`List[str]`.
+        - ``remote_to_local`` - notes to pull from remote to local as :py:class`List[str]`.
+        - ``bi_directional`` - notes to synchronise in both folders as :py:class`List[str]`.
+
+    """
     logging.info('-- STARTING NOTE SYNC --')
 
     # Fetch local notes folders

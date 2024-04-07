@@ -1,4 +1,4 @@
-#: Get the list of notes from a folder and export as a staged file
+#:  Get the list of notes from a folder and export as a staged file.
 get_notes_script = """on run argv
 set folder_name to item 1 of argv
 tell application "Finder"
@@ -37,6 +37,7 @@ end tell
 return save_location
 end run"""
 
+#: Create a new local note.
 create_note_script = r"""on run argv
 set {note_folder, note_name, export_file} to {item 1, item 2, item 3} of argv
 set note_folder to note_folder
@@ -71,6 +72,7 @@ end tell
 return modification date of theNote
 end run"""
 
+#: Update a local note.
 update_note_script = r"""on run argv
 set {note_folder, note_name, export_file} to {item 1, item 2, item 3} of argv
 set note_folder to note_folder
@@ -105,6 +107,7 @@ end tell
 return modification date of theNote
 end run"""
 
+#: Delete a local note.
 delete_note_script = """on run argv
 set {note_folder, note_name} to {item 1, item 2} of argv
 tell application "Notes"
@@ -115,6 +118,7 @@ tell application "Notes"
 end tell
 end run"""
 
+#: Load the list of local folders from the default account.
 load_folders_script = """tell application "Notes"
     set output to ""
     set n_folders to get every folder
@@ -132,6 +136,7 @@ load_folders_script = """tell application "Notes"
 end tell
 """
 
+#: Create a new local folder in the default account.
 create_folder_script = """on run argv
 set folder_name to item 1 of argv
 tell application "Notes"
@@ -142,6 +147,7 @@ end tell
 end run
 """
 
+#: Delete a local folder.
 delete_folder_script = """on run argv
 set note_folder to item 1 of argv
 tell application "Notes"

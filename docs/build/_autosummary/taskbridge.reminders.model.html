@@ -94,7 +94,12 @@
              
   <section id="module-taskbridge.reminders.model">
 <span id="taskbridge-reminders-model"></span><h1>taskbridge.reminders.model<a class="headerlink" href="#module-taskbridge.reminders.model" title="Link to this heading"></a></h1>
-<p>Some model docs go here</p>
+<p>This is the model of the reminder-syncing part of TaskBridge. Here, you’ll find the following:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reminder.py</span></code> - Contains the <code class="docutils literal notranslate"><span class="pre">Reminder</span></code> class which represents a reminder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remindercontainer.py</span></code> - Contains the <code class="docutils literal notranslate"><span class="pre">ReminderContainer</span></code> class which represents a container (either local or remote) which contains reminders. Many sync operations are performed here. Also contains the <code class="docutils literal notranslate"><span class="pre">LocalList</span></code> class which represents a local reminder list, and <code class="docutils literal notranslate"><span class="pre">RemoteCalendar</span></code> class, which represents a remote CalDav <em>VTODO</em> calendar.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reminderscript.py</span></code> - Contains a list of AppleScript scripts for managing local reminders.</p></li>
+</ul>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.reminders.model.reminder.html#module-taskbridge.reminders.model.reminder" title="taskbridge.reminders.model.reminder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taskbridge.reminders.model.reminder</span></code></a></p></td>

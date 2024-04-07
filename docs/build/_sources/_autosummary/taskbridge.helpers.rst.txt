@@ -1,9 +1,17 @@
-taskbridge.helpers
+﻿taskbridge.helpers
 ==================
 
 .. automodule:: taskbridge.helpers
 
    
+   
+   .. rubric:: Module attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DATA_LOCATION
+      DRY_RUN
    
    
 

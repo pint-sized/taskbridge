@@ -1,3 +1,4 @@
+#: Get the list of local reminder lists.
 get_reminder_lists_script = '''tell application "Reminders"
     set output to ""
     set r_lists to get every list
@@ -14,6 +15,7 @@ get_reminder_lists_script = '''tell application "Reminders"
     return output
 end tell'''
 
+#: Create a new reminder list.
 create_reminder_list_script = '''on run argv
 set list_name to item 1 of argv
 tell application "Reminders"
@@ -23,6 +25,7 @@ tell application "Reminders"
 end tell
 end run'''
 
+#: Get the list of reminders in a reminder list.
 get_reminders_in_list_script = '''on run argv
 set list_name to item 1 of argv
 tell application "Reminders"
@@ -56,6 +59,7 @@ set accessRef to (open for access file ((path to temporary items folder as text)
     end try
 end run'''
 
+#: Add a new reminder to the given list in the default account.
 add_reminder_script = '''on run argv
 set {r_id, r_name, r_body, r_completed, r_completed_date, r_due_date, r_allday_due, r_remind_date, r_list } to {item 1, item 2, item 3, item 4, item 5, item 6, item 7, item 8, item 9} of argv
 tell application "Reminders"
@@ -95,6 +99,7 @@ on stringToDate(theDateStr)
 end stringToDate
 '''
 
+#: Delete the reminder with the given UUID.
 delete_reminder_script = '''on run argv
 set r_id to item 1 of argv
 tell application "Reminders"
@@ -102,6 +107,7 @@ tell application "Reminders"
 end tell
 end run'''
 
+#: Delete the list with the given name in the default account.
 delete_list_script = '''on run argv
 set r_list to item 1 of argv
 tell application "Reminders"

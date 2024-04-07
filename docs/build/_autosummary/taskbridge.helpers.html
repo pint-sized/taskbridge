@@ -25,7 +25,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="taskbridge.helpers.confirm" href="taskbridge.helpers.confirm.html" />
+    <link rel="next" title="taskbridge.helpers.DATA_LOCATION" href="taskbridge.helpers.DATA_LOCATION.html" />
     <link rel="prev" title="taskbridge" href="taskbridge.html" /> 
 </head>
 
@@ -51,6 +51,8 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="taskbridge.html">taskbridge</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">taskbridge.helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.DATA_LOCATION.html">taskbridge.helpers.DATA_LOCATION</a></li>
+<li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.DRY_RUN.html">taskbridge.helpers.DRY_RUN</a></li>
 <li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.confirm.html">taskbridge.helpers.confirm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.db_folder.html">taskbridge.helpers.db_folder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.get_uuid.html">taskbridge.helpers.get_uuid</a></li>
@@ -94,65 +96,41 @@
              
   <section id="module-taskbridge.helpers">
 <span id="taskbridge-helpers"></span><h1>taskbridge.helpers<a class="headerlink" href="#module-taskbridge.helpers" title="Link to this heading"></a></h1>
-<p>This is a helper file</p>
+<p>This is a helper file for both note and reminder synchronisation.</p>
+<p class="rubric">Module attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.DATA_LOCATION.html#taskbridge.helpers.DATA_LOCATION" title="taskbridge.helpers.DATA_LOCATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DATA_LOCATION</span></code></a></p></td>
+<td><p>Location where application data is stored.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="taskbridge.helpers.DRY_RUN.html#taskbridge.helpers.DRY_RUN" title="taskbridge.helpers.DRY_RUN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DRY_RUN</span></code></a></p></td>
+<td><p>If set to true, the user will have to confirm any change made by TaskBridge.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.confirm.html#taskbridge.helpers.confirm" title="taskbridge.helpers.confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confirm</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">DRY_RUN</span></code> is set to True, asks the user to confirm by displaying a prompt.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="taskbridge.helpers.db_folder.html#taskbridge.helpers.db_folder" title="taskbridge.helpers.db_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">db_folder</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Get the location of the SQLite database file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.get_uuid.html#taskbridge.helpers.get_uuid" title="taskbridge.helpers.get_uuid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_uuid</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Generates a UUID.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="taskbridge.helpers.html_to_markdown.html#taskbridge.helpers.html_to_markdown" title="taskbridge.helpers.html_to_markdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">html_to_markdown</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Converts HTML to Markdown using the <a class="reference external" href="https://pypi.org/project/markdownify/">Markdownify</a> library.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.markdown_to_html.html#taskbridge.helpers.markdown_to_html" title="taskbridge.helpers.markdown_to_html"><code class="xref py py-obj docutils literal notranslate"><span class="pre">markdown_to_html</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Converts Markdown to HTML using the <a class="reference external" href="https://pypi.org/project/markdown2/">markdown2</a> library.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="taskbridge.helpers.run_applescript.html#taskbridge.helpers.run_applescript" title="taskbridge.helpers.run_applescript"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_applescript</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Runs an AppleScript script.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.temp_folder.html#taskbridge.helpers.temp_folder" title="taskbridge.helpers.temp_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temp_folder</span></code></a></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
-</dd>
-</dl>
-</p></td>
+<td><p>Get the location of the <code class="docutils literal notranslate"><span class="pre">tmp</span></code> folder within TaskBridge's Application Data folder.</p></td>
 </tr>
 </tbody>
 </table>
@@ -160,7 +138,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="taskbridge.helpers.DateUtil.html#taskbridge.helpers.DateUtil" title="taskbridge.helpers.DateUtil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DateUtil</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Utility class for converting between several date and date/time formats.</p></td>
 </tr>
 </tbody>
 </table>
@@ -171,7 +149,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="taskbridge.html" class="btn btn-neutral float-left" title="taskbridge" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="taskbridge.helpers.confirm.html" class="btn btn-neutral float-right" title="taskbridge.helpers.confirm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="taskbridge.helpers.DATA_LOCATION.html" class="btn btn-neutral float-right" title="taskbridge.helpers.DATA_LOCATION" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

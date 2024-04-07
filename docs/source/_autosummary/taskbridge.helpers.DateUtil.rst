@@ -1,4 +1,4 @@
-﻿taskbridge.helpers.DateUtil
+taskbridge.helpers.DateUtil
 ===========================
 
 .. currentmodule:: taskbridge.helpers

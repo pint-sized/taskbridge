@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="taskbridge.helpers.db_folder" href="taskbridge.helpers.db_folder.html" />
-    <link rel="prev" title="taskbridge.helpers" href="taskbridge.helpers.html" /> 
+    <link rel="prev" title="taskbridge.helpers.DRY_RUN" href="taskbridge.helpers.DRY_RUN.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,6 +51,8 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="taskbridge.html">taskbridge</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="taskbridge.helpers.html">taskbridge.helpers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.DATA_LOCATION.html">taskbridge.helpers.DATA_LOCATION</a></li>
+<li class="toctree-l3"><a class="reference internal" href="taskbridge.helpers.DRY_RUN.html">taskbridge.helpers.DRY_RUN</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">taskbridge.helpers.confirm</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#taskbridge.helpers.confirm"><code class="docutils literal notranslate"><span class="pre">confirm()</span></code></a></li>
 </ul>
@@ -101,9 +103,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="taskbridge.helpers.confirm">
 <span class="sig-prename descclassname"><span class="pre">taskbridge.helpers.</span></span><span class="sig-name descname"><span class="pre">confirm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#taskbridge.helpers.confirm" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">DRY_RUN</span></code> is set to True, asks the user to confirm by displaying a prompt. Otherwise, will always return True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prompt</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the confirmation prompt to display.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the action should be carried out.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -114,7 +123,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="taskbridge.helpers.html" class="btn btn-neutral float-left" title="taskbridge.helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="taskbridge.helpers.DRY_RUN.html" class="btn btn-neutral float-left" title="taskbridge.helpers.DRY_RUN" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="taskbridge.helpers.db_folder.html" class="btn btn-neutral float-right" title="taskbridge.helpers.db_folder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

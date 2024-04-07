@@ -1,3 +1,8 @@
+"""
+Contains the ``NoteFolder`` class, which represents a folder containing notes, either locally or remotely.
+Many of the synchronisation methods are here.
+"""
+
 from __future__ import annotations
 
 import copy
@@ -16,19 +21,43 @@ from taskbridge.notes.model.note import Note
 
 class NoteFolder:
     """
-    Represents a folder in stuff and things
+    Represents a folder containing notes. A link is established here between the local folder and the remote one.
+    Also contains a list of notes in this folder.
     """
+
+    #: List of all found note folders
     FOLDER_LIST: List[NoteFolder] = []
 
+    #: Do not sync this folder
     SYNC_NONE: int = 0
+
+    #: Update the remote folder with the changes in the local one (One-way).
     SYNC_LOCAL_TO_REMOTE: int = 1
+
+    #: Update the local folder with the changes in the remote one (One-way).
     SYNC_REMOTE_TO_LOCAL: int = 2
+
+    #: Synchronise changes from both folders.
     SYNC_BOTH: int = 3
 
     def __init__(self,
                  local_folder: LocalNoteFolder | None = None,
                  remote_folder: RemoteNoteFolder | None = None,
                  sync_direction: int = SYNC_NONE):
+        """
+        Create a new note folder.
+
+        :param local_folder: the local folder containing the local notes.
+        :param remote_folder: the remote folder containing the remote notes.
+        :param sync_direction: how to sync the folders.
+
+        ``sync_direction``:
+
+        - ``NoteFolder.NO_SYNC`` - these folders will not be synchronised.
+        - ``NoteFolder.SYNC_LOCAL_TO_REMOTE`` - local notes will be pushed to remote.
+        - ``NoteFolder.SYNC_REMOTE_TO_LOCAL`` - remote notes will be pulled to local.
+        - ``NoteFolder.SYNC_BOTH`` - bidirectional sync based on the note's modification date/time.
+        """
         self.local_folder: LocalNoteFolder = local_folder
         self.remote_folder: RemoteNoteFolder = remote_folder
         self.sync_direction: int = sync_direction
@@ -37,6 +66,18 @@ class NoteFolder:
         NoteFolder.FOLDER_LIST.append(self)
 
     def load_local_notes(self) -> tuple[bool, str] | tuple[bool, int]:
+        """
+        Calls an AppleScript script to fetch the notes in the local folder. The script saves each note with a ``.staged``
+        file name in a temporary folder. Each file is then read, parsed and added as a ``Note`` instance in the
+        in ``local_notes``.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`int`) - error message on failure, or number of notes loaded on success.
+
+        """
         get_notes_script = notescript.get_notes_script
         return_code, stdout, stderr = helpers.run_applescript(get_notes_script, self.local_folder.name)
 
@@ -60,6 +101,17 @@ class NoteFolder:
         return True, len(self.local_notes)
 
     def load_remote_notes(self) -> tuple[bool, str] | tuple[bool, int]:
+        """
+        Loads the Markdown notes from the remote notes folder. Each note is then parsed and added as a ``Note`` instance
+        in ``remote_notes``.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`int`) - error message on failure, or number of notes loaded on success.
+
+        """
         for root, dirs, files in os.walk(self.remote_folder.path):
             for remote_file in files:
                 f_name, f_ext = os.path.splitext(remote_file)
@@ -73,6 +125,24 @@ class NoteFolder:
         return True, len(self.remote_notes)
 
     def sync_notes(self) -> tuple[bool, dict] | tuple[bool, str]:
+        """
+        Synchronises notes. This method checks the ``sync_direction`` of this folder to determine what to do. On
+        success, it returns a dictionary with the following keys:
+
+        - ``remote_added`` - name of notes added to the remote folder as :py:class:`List[str]`.
+        - ``remote_updated`` - name of notes updated in the remote folder as :py:class:`List[str]`.
+        - ``local_added`` - name of notes added to the local folder as :py:class:`List[str]`.
+        - ``local_updated`` - name of notes updated in the local folder as :py:class:`List[str]`.
+
+        Anh of the above may be empty if no such changes were made.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully synchronised.
+
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure, or :py:class:`dict` with results as above.
+
+        """
         if self.sync_direction == NoteFolder.SYNC_NONE:
             return True, 'Folder {} is set to NO SYNC so skipped'.format(self.local_folder.name)
 
@@ -172,6 +242,16 @@ class NoteFolder:
 
     @staticmethod
     def load_local_folders() -> tuple[bool, str] | tuple[bool, List[LocalNoteFolder]]:
+        """
+        Loads the list of local folders by calling an AppleScript script.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folders are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`List[LocalNoteFolder]`) - error message on failure, list of folders on success.
+
+        """
         load_folders_script = notescript.load_folders_script
         return_code, stdout, stderr = helpers.run_applescript(load_folders_script)
 
@@ -188,6 +268,16 @@ class NoteFolder:
 
     @staticmethod
     def load_remote_folders(remote_notes_path: Path) -> tuple[bool, List[RemoteNoteFolder]]:
+        """
+        Loads the list of remote folders by checking the filesystem.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folders are successfully loaded.
+
+            -data (:py:class:`str` | :py:class:`List[RemoteNoteFolder]`) - error message on failure, list of folders on success.
+
+        """
         remote_note_folders = []
         for root, dirs, files in os.walk(remote_notes_path):
             for remote_dir in dirs:
@@ -201,6 +291,33 @@ class NoteFolder:
                               remote_folders: List[RemoteNoteFolder],
                               remote_notes_path: Path,
                               associations: dict) -> tuple[bool, str]:
+        """
+        Creates an association between local and remote folders. Missing folders are created; for example, if the folder
+        *foo* is present locally, and set to ``SYNC_LOCAL_TO_REMOTE`` or ``SYNC_BOTH`` this method will check whether the
+        remote folder *foo* exists and, if not, creates it.
+
+        The list of folders is saved to an SQLite database.
+
+        :param local_folders: the list of local note folders.
+        :param remote_folders: the list of remote note folders.
+        :param remote_notes_path: path to the remote folders, i.e. where on the local filesystem the remote notes are stored.
+        :param associations: list of folder associations.
+
+        The associations dictionary must contain the following keys:
+
+        - ``local_to_remote`` - notes to push from local to remote as :py:class`List[str]`.
+        - ``remote_to_local`` - notes to pull from remote to local as :py:class`List[str]`.
+        - ``bi_directional`` - notes to synchronise in both folders as :py:class`List[str]`.
+
+        Any other folders found which are not listed above are not synchronised.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the folders are successfully linked.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
 
         # Create Local --> Remote Associations
         for local_folder in local_folders:
@@ -254,6 +371,16 @@ class NoteFolder:
 
     @staticmethod
     def seed_folder_table() -> tuple[bool, str]:
+        """
+        Creates the initial structure for the table storing folders in SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if table is successfully seeded.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         try:
             con = sqlite3.connect(helpers.db_folder())
             cur = con.cursor()
@@ -272,6 +399,16 @@ class NoteFolder:
 
     @staticmethod
     def persist_folders() -> tuple[bool, str]:
+        """
+        Save the list of linked note folders to SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folders are successfully saved.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         folders = []
         for folder in NoteFolder.FOLDER_LIST:
             folders.append((
@@ -297,7 +434,27 @@ class NoteFolder:
         return True, 'Folders stored in tb_folder'
 
     @staticmethod
-    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]):
+    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> tuple[bool, str]:
+        """
+        Synchronises deletions to folders.
+
+        The list of folders found during the last sync is loaded from SQLite and compared to the local and remote folders
+        found now. Any folders in the database which are no longer present will then have their counterpart deleted. For
+        example, if the local folder *foo* is deleted, the remote folder *foo* will be deleted during sync.
+
+        Note that folder deletions only apply in the sync direction. In the example above, *foo* will only be deleted if
+        ``sync_direction`` is set to ``SYNC_LOCAL_TO_REMOTE`` or ``SYNC_BOTH``.
+
+        :param discovered_local: List of currently discovered local note folders.
+        :param discovered_remote: List of currently discovered remote note folders.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folder deletions are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         success, message = NoteFolder.seed_folder_table()
         if not success:
             return False, message
@@ -353,6 +510,16 @@ class NoteFolder:
 
     @staticmethod
     def seed_note_table() -> tuple[bool, str]:
+        """
+        Creates the initial structure for the table storing notes in SQLite.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if table is successfully created.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         try:
             con = sqlite3.connect(helpers.db_folder())
             cur = con.cursor()
@@ -372,6 +539,17 @@ class NoteFolder:
 
     @staticmethod
     def persist_notes() -> tuple[bool, str]:
+        """
+        Stores a list of notes in SQLite. Note that the only 'sensitive' part of the note which is stored is the note's name.
+        The database is stored locally.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if table notes are successfully saved to the database.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         notes = []
         for folder in NoteFolder.FOLDER_LIST:
             if folder.sync_direction == NoteFolder.SYNC_NONE:
@@ -417,6 +595,34 @@ class NoteFolder:
 
     @staticmethod
     def sync_note_deletions(remote_folder: Path) -> tuple[bool, str] | tuple[bool, dict]:
+        """
+        Synchronises deletions to notes.
+
+        The list of notes found during the last sync is loaded from SQLite and compared to the local and remote notes
+        found now. Any notes in the database which are no longer present will then have their counterpart deleted. For
+        example, if the local note *foo* is deleted, the remote note *foo* will be deleted during sync.
+
+        Note that note deletions only apply in the sync direction. In the example above, *foo* will only be deleted if
+        ``sync_direction`` is set to ``SYNC_LOCAL_TO_REMOTE`` or ``SYNC_BOTH``.
+
+        On success, this method returns a dictionary with changes, containing the following keys:
+
+        - ``remote_deleted`` - name of deleted remote notes as :py:class:`List[str]`.
+        - ``local_deleted`` - name of deleted local notes as :py:class:`List[str]`.
+        - ``remote_not_found`` - name of notes marked for remote deletion which were not found as :py:class:`List[str]`.
+        - ``local_not_found`` - name of notes marked for local deletion which were not found as :py:class:`List[str]`.
+
+        A note not being found is not considered an error, as the user may have deleted the note manually prior to the
+        sync running.
+
+        :param remote_folder: Path to the folder on the filesystem containing the remote notes.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if note deletions are successfully synchronised.
+
+            -data (:py:class:`str` | :py:class`dict`) - error message on failure, or result as above on success.
+        """
         success, message = NoteFolder.seed_note_table()
         if not success:
             return False, message
@@ -494,11 +700,31 @@ class NoteFolder:
 
 
 class LocalNoteFolder:
+    """
+    Represents a local folder storing notes.
+    """
+
     def __init__(self, name: str, uuid: str | None = None):
+        """
+        Create a new local folder instance. The folder is not actually created until the ``create()`` method is called.
+
+        :param name: the name of the local folder.
+        :param uuid: the UUID of the local folder.
+        """
         self.uuid: str = uuid
         self.name: str = name
 
     def create(self) -> tuple[bool, str]:
+        """
+        Creates this folder locally by calling an AppleScript script.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if local folder is successfully created.
+
+            -data (:py:class:`str`) - error message on failure, or UUID on success.
+
+        """
         create_folder_script = notescript.create_folder_script
         return_code, uuid, stderr = helpers.run_applescript(create_folder_script, self.name)
         self.uuid = uuid
@@ -506,6 +732,16 @@ class LocalNoteFolder:
             (False, 'Error creating local folder {0}: {1}'.format(self.name, stderr))
 
     def delete(self) -> tuple[bool, str]:
+        """
+        Delete the local folder with this object's name by calling an AppleScript script.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if local folder is successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         delete_folder_script = notescript.delete_folder_script
         return_code, stdout, stderr = helpers.run_applescript(delete_folder_script, self.name)
         return (True, 'Folder {} deleted.'.format(self.name)) if return_code == 0 else \
@@ -516,11 +752,31 @@ class LocalNoteFolder:
 
 
 class RemoteNoteFolder:
+    """
+    Represents a remote folder for storing notes.
+    """
+
     def __init__(self, path: Path, name: str):
+        """
+        Create a new remote folder instance. The folder is not actually created until the ``create()`` method is called.
+
+        :param path: path where to create remote folder. Must include folder name.
+        :param name: name of the local folder.
+        """
         self.path: Path = path
         self.name: str = name
 
     def create(self) -> tuple[bool, str]:
+        """
+        Creates the remote folder by adding a folder to the local filesystem which synchronises to remote.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if remote folder is successfully created.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         try:
             self.path.mkdir(parents=True, exist_ok=True)
         except OSError as e:
@@ -528,6 +784,16 @@ class RemoteNoteFolder:
         return True, 'Remote folder {} created.'.format(self.name)
 
     def delete(self) -> tuple[bool, str]:
+        """
+        Delete the remote folder with this object's name.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if remote folder is successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
         try:
             if os.path.exists(self.path):
                 shutil.rmtree(self.path)

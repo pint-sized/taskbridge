@@ -99,12 +99,12 @@ class Note:
     @staticmethod
     def create_from_remote(remote_content: str, remote_location: Path, remote_file_name: str) -> Note:
         """
-        Creates a note instance from an exported Markdown file.
+        Creates a Note instance from an exported Markdown file.
 
         :param remote_content: a list of strings from the remote Markdown content.
         :param remote_location: the location of the remote note *excluding file name*.
         :param remote_file_name: the file name of the remote note *excluding path*.
-        :return: A Note instance representing the content of the Markdown document.
+        :return: a Note instance representing the content of the Markdown document.
         """
         remote_lines = remote_content.splitlines()
 
@@ -375,7 +375,7 @@ class Attachment:
 
             -success (:py:class:`bool`) - true if the note is successfully parsed.
 
-            -data (:py:class:`str` | :py:class:`List[Attachment`) - error message on failure or List[Attachment].
+            -data (:py:class:`str` | :py:class:`List[Attachment]`) - error message on failure or List[Attachment].
 
         """
         result = []

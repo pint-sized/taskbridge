@@ -1,3 +1,7 @@
+"""
+Contains the ``Reminder`` class, which represents a reminder (whether local or remote).
+"""
+
 from __future__ import annotations
 
 import datetime
@@ -12,6 +16,11 @@ from taskbridge.reminders.model import reminderscript
 
 
 class Reminder:
+    """
+    Represents a reminder. Used to create reminders from the local machine via AppleScript or reminders from a remote
+    CalDav server.
+    """
+
     def __init__(self,
                  uuid: str | None,
                  name: str,
@@ -24,6 +33,20 @@ class Reminder:
                  all_day: bool = False,
                  completed: bool = False,
                  ):
+        """
+        Create a new reminder.
+
+        :param uuid: the UUID of this reminder.
+        :param name: the name (i.e. many text/summary) of this reminder.
+        :param created_date: the datetime when this reminder was created.
+        :param modified_date: the datetime when this reminder was last modified.
+        :param completed_date: if completed, the datetime when this reminder was completed.
+        :param body: the body of the reminder (i.e. the description).
+        :param remind_me_date: the datetime when the user should be alerted.
+        :param due_date: the datetime or date when the reminder is due.
+        :param all_day: if ``due_date`` is a date, rather than a datetime, this is set to True.
+        :param completed: True if this reminder has been completed.
+        """
         self.uuid: str | None = uuid
         self.name: str = name
         self.created_date: datetime.datetime | None = created_date
@@ -38,6 +61,26 @@ class Reminder:
 
     @staticmethod
     def create_from_local(values: List[str]) -> Reminder:
+        """
+        Creates a Reminder instance from the given values.
+
+        The ``values`` list must be as follows (all strings):
+
+        0. Reminder UUID.
+        1. Reminder name (i.e. summary).
+        2. Reminder creation date.
+        3. True if reminder is completed.
+        4. Reminder due date.
+        5. True if this is an all day reminder.
+        6. Reminder alarm date.
+        7. Reminder modified date.
+        8. Completion date of reminder (ignored)
+        9. Body (i.e. description) of the reminder.
+
+        :param values: the list of values as described above.
+
+        :return: a Reminder instance representing the content of the values given.
+        """
         return Reminder(
             uuid=values[0],
             name=values[1],
@@ -53,6 +96,13 @@ class Reminder:
 
     @staticmethod
     def create_from_remote(caldav_task: caldav.CalendarObjectResource) -> Reminder:
+        """
+        Creates a Reminder instance from a CalDav task.
+
+        :param caldav_task: a task fetched from the CalDav calendar.
+        :return: a Reminder instance representing the CalDav task.
+        """
+
         comp = caldav_task.icalendar_component
 
         return Reminder(
@@ -69,6 +119,18 @@ class Reminder:
         )
 
     def upsert_local(self, container: model.ReminderContainer) -> tuple[bool, str]:
+        """
+        Creates or updates a local reminder.
+
+        :param container: the container containing this reminder.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder is successfully upserted.
+
+            -data (:py:class:`str`) - error message on failure, or note's UUID.
+
+        """
         add_reminder_script = reminderscript.add_reminder_script
 
         return_code, stdout, stderr = (
@@ -91,6 +153,18 @@ class Reminder:
         return False, "Failed to upsert local reminder {0}: {1}".format(self.name, stderr)
 
     def upsert_remote(self, container: model.ReminderContainer) -> tuple[bool, str]:
+        """
+        Creates or updates a remote reminder.
+
+        :param container: the container containing this reminder.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder is successfully upserted.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         remote = None
         tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, uid=self.uuid)
         if len(tasks_in_caldav) == 0:
@@ -131,6 +205,20 @@ class Reminder:
             return True, 'Remote reminder updated: {}'.format(self.name)
 
     def update_uuid(self, container: model.ReminderContainer, new_uuid: str) -> tuple[bool, str]:
+        """
+        Updates the UUID of a reminder. This is used when a remote reminder is synchronised locally. The locally-assigned
+        UUID is used to set the UID of the remote reminder. This is done since the local UUID is read-only.
+
+        :param container: the container containing this reminder.
+        :param new_uuid: the UUID to assign to the reminder.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder's UUID is successfully upserted.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
         tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, uid=self.uuid)
         if len(tasks_in_caldav) > 0:
             remote = tasks_in_caldav[0]
@@ -141,6 +229,16 @@ class Reminder:
         return False, 'Could not find remote reminder to update UUID: {} ({})'.format(self.uuid, self.name)
 
     def get_ical_string(self) -> tuple[bool, str]:
+        """
+        Returns a representation of this reminder as an iCal string. Used for upserting remote reminders.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder is successfully parsed to an iCal string.
+
+            -data (:py:class:`str`) - error message on failure or the iCal string.
+
+        """
         due_date = None
         try:
             if self.due_date.strftime("%H:%M:%S") == "00:00:00":
