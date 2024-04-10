@@ -114,3 +114,19 @@ tell application "Reminders"
     delete list r_list
 end tell
 end run'''
+
+#: Get the number of completed reminders.
+count_completed_script = '''on run argv
+tell application "Reminders"
+    set completedReminders to every reminder whose completed is true
+    set output to count of completedReminders
+    return output
+end tell
+end run'''
+
+#: Delete completed reminders.
+delete_completed_script = '''on run argv
+tell application "Reminders"
+    delete every reminder whose completed is true
+end tell
+end run'''

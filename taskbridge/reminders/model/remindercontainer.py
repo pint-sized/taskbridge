@@ -99,6 +99,46 @@ class ReminderContainer:
         return False, "Unable to load local reminder lists."
 
     @staticmethod
+    def count_local_completed() -> tuple[bool, str] | tuple[bool, int]:
+        """
+        Counts the number of completed reminders.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the number of completed reminders is successfully retrieved
+
+            -data (:py:class:`str` | :py:class`int`) - error message or number of completed reminders.
+
+        """
+        count_completed_script = reminderscript.count_completed_script
+        return_code, stdout, stderr = helpers.run_applescript(count_completed_script)
+
+        if return_code == 0:
+            return True, int(stdout.strip())
+
+        return False, "Unable to count completed reminders {}".format(stderr)
+
+    @staticmethod
+    def delete_local_completed() -> tuple[bool, str]:
+        """
+        Deletes completed reminders. This is important, as too many reminders can cause synchronisation to be very slow.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if completed reminders are successfully deleted
+
+            -data (:py:class:`str`) - error message or fail, or success message.
+
+        """
+        delete_completed_script = reminderscript.delete_completed_script
+        return_code, stdout, stderr = helpers.run_applescript(delete_completed_script)
+
+        if return_code == 0:
+            return True, "Completed reminders deleted"
+
+        return False, "Unable to delete completed reminders: {}".format(stderr)
+
+    @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
                                  to_sync: List[str]) -> tuple[bool, str] | tuple[bool, List[ReminderContainer]]:
         """
@@ -172,15 +212,16 @@ class ReminderContainer:
 
         """
         try:
-            con = sqlite3.connect(helpers.db_folder())
-            cur = con.cursor()
-            sql_create_container_table = """CREATE TABLE IF NOT EXISTS tb_container (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                    local_name TEXT,
-                    remote_name TEXT,
-                    sync INT
-                    );"""
-            cur.execute(sql_create_container_table)
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_create_container_table = """CREATE TABLE IF NOT EXISTS tb_container (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                        local_name TEXT,
+                                        remote_name TEXT,
+                                        sync INT
+                                        );"""
+                    cursor.execute(sql_create_container_table)
         except sqlite3.OperationalError as e:
             return False, repr(e)
         return True, 'tb_container table created'

@@ -117,6 +117,17 @@ def temp_folder() -> Path:
     return tmp_folder
 
 
+def settings_folder() -> Path:
+    """
+    Get the location of the Application Data folder for TaskBridge
+
+    :return: path to the Application Data folder.
+    """
+    folder = DATA_LOCATION
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
+
+
 class DateUtil:
     """
     Utility class for converting between several date and date/time formats.

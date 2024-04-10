@@ -318,51 +318,59 @@ class NoteFolder:
             -data (:py:class:`str`) - error message on failure, or success message.
 
         """
-
         # Create Local --> Remote Associations
         for local_folder in local_folders:
             # Check which local folders need to be synced with remote folders
+            remote_folder = next((f for f in remote_folders if f.name == local_folder.name), None)
+            if local_folder.name in associations['bi_directional']:
+                sync_direction = NoteFolder.SYNC_BOTH
+            elif local_folder.name in associations['local_to_remote']:
+                sync_direction = NoteFolder.SYNC_LOCAL_TO_REMOTE
+            elif local_folder.name in associations['remote_to_local']:
+                sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
+            else:
+                sync_direction = NoteFolder.SYNC_NONE
+            NoteFolder(local_folder, remote_folder, sync_direction)
+
+            # Create missing remote folder
             if local_folder.name in associations['bi_directional'] or local_folder.name in associations['local_to_remote']:
-                remote_folder = next((f for f in remote_folders if f.name == local_folder.name), None)
-                # Create remote folder since it doesn't exist
                 if remote_folder is None:
                     remote_folder = RemoteNoteFolder(remote_notes_path / local_folder.name, local_folder.name)
                     if helpers.confirm('Create remote folder {}'.format(remote_folder.name)):
                         remote_folder.create()
-                if local_folder.name in associations['bi_directional']:
-                    sync_direction = NoteFolder.SYNC_BOTH
-                elif local_folder.name in associations['local_to_remote']:
-                    sync_direction = NoteFolder.SYNC_LOCAL_TO_REMOTE
-                elif local_folder.name in associations['remote_to_local']:
-                    sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
-                else:
-                    sync_direction = NoteFolder.SYNC_NONE
-                NoteFolder(local_folder, remote_folder, sync_direction)
 
         # Create Remote --> Local Associations
         for remote_folder in remote_folders:
+            # Check if the remote folder is already associated to a local folder
             existing_association = next(
                 (f for f in NoteFolder.FOLDER_LIST if f.remote_folder and f.remote_folder.name == remote_folder.name),
                 None)
+            # Check if the remote folder should not be synced and already has a counterpart
+            if existing_association is None:
+                existing_association = next(
+                    (f for f in NoteFolder.FOLDER_LIST if f.local_folder.name == remote_folder.name and f.sync_direction == NoteFolder.SYNC_NONE),
+                    None)
+
             if existing_association is not None:
-                # We've already associated this folder, so move to the next one
                 continue
+
+            local_folder = next((f for f in local_folders if f.name == remote_folder.name), None)
+            if remote_folder.name in associations['bi_directional']:
+                sync_direction = NoteFolder.SYNC_BOTH
+            elif remote_folder.name in associations['local_to_remote']:
+                sync_direction = NoteFolder.SYNC_LOCAL_TO_REMOTE
+            elif remote_folder.name in associations['remote_to_local']:
+                sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
+            else:
+                sync_direction = NoteFolder.SYNC_NONE
+            NoteFolder(local_folder, remote_folder, sync_direction)
+
+            # Create missing local folder
             if remote_folder.name in associations['bi_directional'] or remote_folder.name in associations['remote_to_local']:
-                local_folder = next((f for f in local_folders if f.name == remote_folder.name), None)
-                # Create local folder since it doesn't exist
                 if local_folder is None:
                     local_folder = LocalNoteFolder(remote_folder.name)
                     if helpers.confirm('Create local folder {}'.format(local_folder.name)):
                         local_folder.create()
-                if remote_folder.name in associations['bi_directional']:
-                    sync_direction = NoteFolder.SYNC_BOTH
-                elif remote_folder.name in associations['local_to_remote']:
-                    sync_direction = NoteFolder.SYNC_LOCAL_TO_REMOTE
-                elif remote_folder.name in associations['remote_to_local']:
-                    sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
-                else:
-                    sync_direction = NoteFolder.SYNC_NONE
-                NoteFolder(local_folder, remote_folder, sync_direction)
 
         success, data = NoteFolder.persist_folders()
         if not success:
@@ -382,17 +390,18 @@ class NoteFolder:
 
         """
         try:
-            con = sqlite3.connect(helpers.db_folder())
-            cur = con.cursor()
-            sql_create_folder_table = """CREATE TABLE IF NOT EXISTS tb_folder (
-                id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                local_uuid TEXT,
-                local_name TEXT,
-                remote_path TEXT,
-                remote_name TEXT,
-                sync_direction INT
-                );"""
-            cur.execute(sql_create_folder_table)
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_create_folder_table = """CREATE TABLE IF NOT EXISTS tb_folder (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    local_uuid TEXT,
+                                    local_name TEXT,
+                                    remote_path TEXT,
+                                    remote_name TEXT,
+                                    sync_direction INT
+                                    );"""
+                    cursor.execute(sql_create_folder_table)
         except sqlite3.OperationalError as e:
             return False, repr(e)
         return True, 'tb_folder table created'
@@ -419,16 +428,18 @@ class NoteFolder:
                 folder.sync_direction
             ))
 
+
         try:
-            con = sqlite3.connect(helpers.db_folder())
-            cur = con.cursor()
-            sql_delete_folders = "DELETE FROM tb_folder"
-            cur.execute(sql_delete_folders)
-            sql_insert_folders = """INSERT INTO tb_folder(local_uuid, local_name, remote_path, remote_name, sync_direction)
-            VALUES (?, ?, ?, ?, ?)
-            """
-            cur.executemany(sql_insert_folders, folders)
-            con.commit()
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_delete_folders = "DELETE FROM tb_folder"
+                    cursor.execute(sql_delete_folders)
+                    sql_insert_folders = """INSERT INTO tb_folder(local_uuid, local_name, remote_path, remote_name, sync_direction)
+                                VALUES (?, ?, ?, ?, ?)
+                                """
+                    cursor.executemany(sql_insert_folders, folders)
+                    connection.commit()
         except sqlite3.OperationalError as e:
             return False, repr(e)
         return True, 'Folders stored in tb_folder'
@@ -521,18 +532,19 @@ class NoteFolder:
 
         """
         try:
-            con = sqlite3.connect(helpers.db_folder())
-            cur = con.cursor()
-            sql_create_note_table = """CREATE TABLE IF NOT EXISTS tb_note (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                    folder TEXT,
-                    location TEXT,
-                    uuid TEXT,
-                    name TEXT,
-                    created TEXT,
-                    modified TEXT
-                    );"""
-            cur.execute(sql_create_note_table)
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_create_note_table = """CREATE TABLE IF NOT EXISTS tb_note (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                        folder TEXT,
+                                        location TEXT,
+                                        uuid TEXT,
+                                        name TEXT,
+                                        created TEXT,
+                                        modified TEXT
+                                        );"""
+                    cursor.execute(sql_create_note_table)
         except sqlite3.OperationalError as e:
             return False, repr(e)
         return True, 'tb_note table created'
@@ -580,15 +592,16 @@ class NoteFolder:
                     ))
 
         try:
-            con = sqlite3.connect(helpers.db_folder())
-            cur = con.cursor()
-            sql_delete_folders = "DELETE FROM tb_note"
-            cur.execute(sql_delete_folders)
-            sql_insert_notes = """INSERT INTO tb_note(folder, location, uuid, name, created, modified)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """
-            cur.executemany(sql_insert_notes, notes)
-            con.commit()
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_delete_folders = "DELETE FROM tb_note"
+                    cursor.execute(sql_delete_folders)
+                    sql_insert_notes = """INSERT INTO tb_note(folder, location, uuid, name, created, modified)
+                                        VALUES (?, ?, ?, ?, ?, ?)
+                                        """
+                    cursor.executemany(sql_insert_notes, notes)
+                    connection.commit()
         except sqlite3.OperationalError as e:
             return False, repr(e)
         return True, 'Notes stored in tb_notes'
@@ -697,6 +710,10 @@ class NoteFolder:
                     return False, repr(e)
 
         return True, result
+
+    @staticmethod
+    def reset_list():
+        NoteFolder.FOLDER_LIST.clear()
 
 
 class LocalNoteFolder:
