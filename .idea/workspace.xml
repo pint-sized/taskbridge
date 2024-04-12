@@ -5,53 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/100.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/102.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/114.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/120.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/128.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/144.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/152.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/167.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/172.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/180.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/196.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/20.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/216.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/256.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/29.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/32.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/40.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/48.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/512.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/55.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/57.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/58.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/60.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/64.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/66.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/72.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/76.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/80.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/87.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/88.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/92.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/Contents.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/appstore.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/AppIcons/playstore.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/TaskBridge.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/trash.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_black.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_black.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_optimised.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_white.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_white.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_black.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/assets/bridge_white.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/view/viewmodel/trayicon.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/notes/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/model/notescript.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/model/notescript.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/taskbridge/reminders/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/taskbridge.ui" beforeDir="false" afterPath="$PROJECT_DIR$/view/taskbridge.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/reminders/model/reminderscript.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/model/reminderscript.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/ui_mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/ui_mainwindow.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,8 +30,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="AppleScript File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -90,9 +59,10 @@
     "Python docs.Generate Docs.executor": "Run",
     "Python.app.executor": "Run",
     "Python.app2.executor": "Run",
+    "Python.traytest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/keith/LocalCode/TaskBridge/taskbridge/reminders",
+    "last_opened_file_path": "/Users/keith/LocalCode/TaskBridge",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
@@ -105,12 +75,15 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/view" />
+      <recent name="$PROJECT_DIR$/view/viewmodel" />
       <recent name="$PROJECT_DIR$/taskbridge/reminders" />
       <recent name="$PROJECT_DIR$/taskbridge" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/view/viewmodel" />
       <recent name="$PROJECT_DIR$/view/assets" />
+      <recent name="$PROJECT_DIR$/view/viewmodel" />
       <recent name="$APPLICATION_CONFIG_DIR$/scratches" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/view" />
@@ -131,6 +104,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="traytest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TaskBridge" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/traytest.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -170,6 +165,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.app" />
+        <item itemvalue="Python.traytest" />
       </list>
     </recent_temporary>
   </component>

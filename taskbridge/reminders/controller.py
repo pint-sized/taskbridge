@@ -156,6 +156,10 @@ class ReminderController:
         return True, debug_msg
 
     @staticmethod
+    def quit_reminders():
+        ReminderContainer
+
+    @staticmethod
     def init_logging(log_level_str: str, log_function: Callable = None):
         log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
         log_folder.mkdir(parents=True, exist_ok=True)

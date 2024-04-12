@@ -7,9 +7,11 @@ import schedule
 
 from PyQt6.QtCore import QThread, pyqtSignal
 
+from taskbridge import helpers
 from taskbridge.notes.controller import NoteController
+from taskbridge.notes.model import notescript
 from taskbridge.reminders.controller import ReminderController
-
+from taskbridge.reminders.model import reminderscript
 
 # noinspection PyUnresolvedReferences
 class ReminderPreWarm(QThread):
@@ -46,6 +48,10 @@ class ReminderPreWarm(QThread):
         if not success:
             return  # TODO show some sort of error
 
+        # Quit Reminders
+        quit_reminders_script = reminderscript.quit_reminders_script
+        helpers.run_applescript(quit_reminders_script)
+
         self.message_signal.emit("")
         self.cb(data)
 
@@ -81,6 +87,10 @@ class NotePreWarm(QThread):
         if not success:
             return  # TODO show some sort of error
 
+        # Quit Notes
+        quit_notes_script = notescript.quit_notes_script
+        helpers.run_applescript(quit_notes_script)
+
         self.message_signal.emit("")
         self.cb(data)
 
@@ -115,6 +125,8 @@ class Sync(QThread):
             ReminderController.sync_reminders_to_db()
             progress += progress_increment
             self.progress_signal.emit(progress)
+            quit_reminders_script = reminderscript.quit_reminders_script
+            helpers.run_applescript(quit_reminders_script)
 
         if self.sync_notes:
             self.message_signal.emit('Synchronising deleted notes...')
@@ -125,6 +137,8 @@ class Sync(QThread):
             NoteController.sync_notes()
             progress += progress_increment
             self.progress_signal.emit(progress)
+            quit_notes_script = notescript.quit_notes_script
+            helpers.run_applescript(quit_notes_script)
 
         self.cb()
 

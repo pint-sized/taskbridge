@@ -4,27 +4,29 @@ import datetime
 import json
 import os.path
 import re
+import sys
 from pathlib import Path
 from typing import List
 
+import darkdetect
 import keyring
 import schedule
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QEvent, Qt
-from PyQt6.QtWidgets import QApplication, QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox, QMainWindow
 
 from taskbridge import helpers
 from taskbridge.notes.controller import NoteController
 from taskbridge.notes.model.notefolder import NoteFolder
 from taskbridge.reminders.controller import ReminderController
 from taskbridge.reminders.model.remindercontainer import ReminderContainer
-from view.viewmodel import threadedtasks
+from view.viewmodel import threadedtasks, trayicon
 from view.viewmodel.mainwindow import MainWindow
 from view.viewmodel.notecheckbox import NoteCheckBox
 from view.viewmodel.remindercheckbox import ReminderCheckbox
 
 
-class TaskBridgeApp(QApplication):
+class TaskBridgeApp(QMainWindow):
     SETTINGS = {
         'sync_notes': '0',
         'remote_notes_folder': '',
@@ -49,12 +51,13 @@ class TaskBridgeApp(QApplication):
 
     PENDING_CHANGES: bool = False
 
-    def __init__(self, argv: List[str]):
-        super().__init__(argv)
+    def __init__(self):
+        super().__init__()
         self.reminder_pw_worker = threadedtasks.ReminderPreWarm(self.display_reminders_table)
         self.note_pw_worker = threadedtasks.NotePreWarm(self.display_notes_table)
         self.autosync_worker = None
         self.sync_worker = None
+        self.tray_icon = None
         TaskBridgeApp.bootstrap_settings()
         QtCore.QDir.addSearchPath('assets', 'view/assets/')
         self.note_boxes: List = []
@@ -73,7 +76,6 @@ class TaskBridgeApp(QApplication):
         ]
         self.bootstrap_ui()
         self.ui.show()
-        self.exec()
 
     # GENERAL DECLARATIONS ---------------------------------------------------------------------------------------------
 
@@ -563,6 +565,8 @@ class TaskBridgeApp(QApplication):
             return
 
         self.ui.btn_sync.setEnabled(False)
+        icon_path = "view/assets/bridge_animated_white.gif" if darkdetect.isDark() else "view/assets/bridge_animated_black.png"
+        self.tray_icon.set_animated_icon(icon_path)
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)
         self.sync_worker.message_signal.connect(self.display_log)
         self.sync_worker.progress_signal.connect(self.update_progress)
@@ -631,6 +635,19 @@ class TaskBridgeApp(QApplication):
             TaskBridgeApp.SETTINGS['autosync'] = '0'
             self.save_settings()
 
+    # Tray Handling-----------------------------------------------------------------------------------------------------
+    def quit_gracefully(self):
+        if self.reminder_pw_worker:
+            self.reminder_pw_worker.quit()
+        if self.note_pw_worker:
+            self.note_pw_worker.quit()
+        if self.autosync_worker:
+            self.autosync_worker.set()
+        if self.sync_worker:
+            self.sync_worker.quit()
+        schedule.clear()
+        sys.exit(0)
+
     # Thread Handling---------------------------------------------------------------------------------------------------
     def update_status(self, status: str = "Currently idle."):
         self.ui.lbl_sync_status.setText(status)
@@ -643,6 +660,8 @@ class TaskBridgeApp(QApplication):
         self.ui.progressBar.setValue(progress)
 
     def sync_complete(self):
+        icon_path = "view/assets/bridge_white.png" if darkdetect.isDark() else "view/assets/bridge_white.png"
+        self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':
             current_time = datetime.datetime.now()

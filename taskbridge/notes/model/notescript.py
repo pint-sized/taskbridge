@@ -156,3 +156,7 @@ tell application "Notes"
     end tell
 end tell
 end run"""
+
+#: Quit the Notes app
+quit_notes_script = '''tell application "Notes" to if it is running then quit'''
+

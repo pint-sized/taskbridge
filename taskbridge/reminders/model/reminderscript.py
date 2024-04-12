@@ -130,3 +130,6 @@ tell application "Reminders"
     delete every reminder whose completed is true
 end tell
 end run'''
+
+#: Quit the Reminders app
+quit_reminders_script = '''tell application "Reminders" to if it is running then quit'''
