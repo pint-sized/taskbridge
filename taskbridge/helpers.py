@@ -4,12 +4,14 @@ This is a helper file for both note and reminder synchronisation.
 
 from __future__ import annotations
 
+import logging
 import re
 import sys
 import uuid
 from datetime import datetime
 from pathlib import Path
 from subprocess import Popen, PIPE
+from typing import Callable
 
 from caldav import Principal
 import markdown2
@@ -168,3 +170,13 @@ class DateUtil:
             except ValueError:
                 print('Could not convert date to specified format {}'.format(required_format), file=sys.stderr)
                 return False
+
+
+class FunctionHandler(logging.Handler):
+    def __init__(self, func: Callable):
+        logging.Handler.__init__(self)
+        self.func = func
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.func(msg)

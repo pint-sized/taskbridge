@@ -7,8 +7,9 @@ import datetime
 import logging
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Callable
 
+from taskbridge import helpers
 from taskbridge.notes.model.notefolder import NoteFolder, LocalNoteFolder, RemoteNoteFolder
 
 
@@ -104,16 +105,27 @@ class NoteController:
         logging.debug(debug_msg)
         return True, data
 
+    @staticmethod
+    def init_logging(log_level_str: str, log_function: Callable = None):
+        log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
+        log_folder.mkdir(parents=True, exist_ok=True)
+        log_file = datetime.datetime.now().strftime("Notes_%Y%m%d-%H%M%S") + '.log'
+        log_levels = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'critical': logging.CRITICAL
+        }
+        log_level = log_levels[log_level_str]
 
-log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
-log_folder.mkdir(parents=True, exist_ok=True)
-log_file = datetime.datetime.now().strftime("Notes_%Y%m%d-%H%M%S") + '.log'
-log_level = logging.DEBUG
-logging.basicConfig(
-    level=log_level,
-    format='%(asctime)s %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler(log_folder / log_file),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+        logging.basicConfig(
+            level=log_level,
+            format='%(asctime)s %(levelname)s: %(message)s',
+            handlers=[
+                logging.FileHandler(log_folder / log_file),
+                logging.StreamHandler(sys.stdout),
+            ]
+        )
+        if log_function is not None:
+            func_handler = helpers.FunctionHandler(log_function)
+            logging.getLogger().addHandler(func_handler)

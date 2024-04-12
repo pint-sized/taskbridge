@@ -3,7 +3,10 @@ This is the reminder synchronisation controller. It takes care of the reminder s
 """
 
 import logging
-from typing import List
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import List, Callable
 
 import caldav
 
@@ -111,7 +114,7 @@ class ReminderController:
                 error = 'Failed to sync reminders {}'.format(data)
                 logging.critical(error)
                 return False, error
-        debug_msg = "Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
+        debug_msg = "Reminder synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
                 ','.join(data['remote_added']),
                 ', '.join(data['remote_updated']),
                 ', '.join(data['local_added']),
@@ -126,7 +129,7 @@ class ReminderController:
             error = 'Failed to save reminders in database {}'.format(data)
             logging.critical(error)
             return False, error
-        debug_msg = 'Notes saved to database.'
+        debug_msg = 'Reminders saved to database.'
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -151,3 +154,29 @@ class ReminderController:
         debug_msg = 'Deleted completed reminders.'
         logging.debug(debug_msg)
         return True, debug_msg
+
+    @staticmethod
+    def init_logging(log_level_str: str, log_function: Callable = None):
+        log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
+        log_folder.mkdir(parents=True, exist_ok=True)
+        log_file = datetime.now().strftime("Reminders_%Y%m%d-%H%M%S") + '.log'
+        log_levels = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'critical': logging.CRITICAL
+        }
+        log_level = log_levels[log_level_str]
+
+        logging.basicConfig(
+            level=log_level,
+            format='%(asctime)s %(levelname)s: %(message)s',
+            handlers=[
+                logging.FileHandler(log_folder / log_file),
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
+        if log_function is not None:
+            func_handler = helpers.FunctionHandler(log_function)
+            logging.getLogger().addHandler(func_handler)
+

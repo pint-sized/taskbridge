@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>623</width>
-    <height>666</height>
+    <height>681</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
     <item alignment="Qt::AlignTop">
      <widget class="QTabWidget" name="tab_container">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_sync">
        <attribute name="title">
@@ -55,11 +55,32 @@
               <number>0</number>
              </property>
              <widget class="QWidget" name="page">
-              <layout class="QVBoxLayout" name="verticalLayout_9">
+              <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
                 <widget class="QLabel" name="lbl_sync_graphic">
+                 <property name="minimumSize">
+                  <size>
+                   <width>345</width>
+                   <height>345</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>345</width>
+                   <height>345</height>
+                  </size>
+                 </property>
+                 <property name="baseSize">
+                  <size>
+                   <width>345</width>
+                   <height>345</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>TextLabel</string>
+                  <string>TaskBridge</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -96,6 +117,13 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QToolButton" name="btn_clear_logs">
+                   <property name="text">
+                    <string>...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacer">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -111,7 +139,19 @@
                 </layout>
                </item>
                <item>
-                <widget class="QListWidget" name="lst_sync_log"/>
+                <widget class="QTextEdit" name="txt_log_display">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="html">
+                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;TaskBridge Initialised&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -161,12 +201,15 @@
            <string>Scheduled Sync</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="gb_autosync_2">
+         <widget class="QGroupBox" name="gb_autosync">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string/>
           </property>
@@ -211,9 +254,9 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="btn_sync_update_schedule">
+              <widget class="QPushButton" name="btn_sync_set_schedule">
                <property name="text">
-                <string>Update Schedule</string>
+                <string>Set Schedule</string>
                </property>
               </widget>
              </item>
@@ -844,7 +887,7 @@
   <tabstop>cb_sync_scheduled</tabstop>
   <tabstop>spn_sync_frequency</tabstop>
   <tabstop>cmb_sync_frequency</tabstop>
-  <tabstop>btn_sync_update_schedule</tabstop>
+  <tabstop>btn_sync_set_schedule</tabstop>
   <tabstop>cb_reminders_sync</tabstop>
   <tabstop>rb_server_nextcloud</tabstop>
   <tabstop>rb_server_caldav</tabstop>
@@ -864,7 +907,6 @@
   <tabstop>btn_notes_cancel</tabstop>
   <tabstop>btn_notes_save</tabstop>
   <tabstop>cmb_sync_log_level</tabstop>
-  <tabstop>lst_sync_log</tabstop>
  </tabstops>
  <resources/>
  <connections/>
