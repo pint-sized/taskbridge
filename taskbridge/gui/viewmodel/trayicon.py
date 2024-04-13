@@ -3,7 +3,7 @@ from __future__ import annotations
 from PyQt6.QtGui import QIcon, QAction, QMovie
 from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
 
-from view.viewmodel.taskbridgeapp import TaskBridgeApp
+from taskbridge.gui.viewmodel.taskbridgeapp import TaskBridgeApp
 
 
 # noinspection PyUnresolvedReferences

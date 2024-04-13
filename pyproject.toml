@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "TaskBridge"
+version = "0.1.0"
+description = ""
+keywords = ["egg", "bacon", "sausage", "tomatoes", "Lobster Thermidor"]
+authors = ["Keith Vassallo <keith@vassallo.cloud>"]
+readme = "README.md"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+license = "GPL-3.0-or-later"
+homepage = "https://taskbridge.app/"
+repository = "https://github.com/keithvassallomt/TaskBridge"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+PyQt6 = "^6.6.1"
+darkdetect = "^0.8.0"
+keyring = "^25.1.0"
+schedule = "^1.2.1"
+caldav = "^1.3.9"
+markdown2 = "^2.4.13"
+markdownify = "^0.12.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

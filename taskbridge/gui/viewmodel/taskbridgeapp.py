@@ -20,10 +20,10 @@ from taskbridge.notes.controller import NoteController
 from taskbridge.notes.model.notefolder import NoteFolder
 from taskbridge.reminders.controller import ReminderController
 from taskbridge.reminders.model.remindercontainer import ReminderContainer
-from view.viewmodel import threadedtasks
-from view.viewmodel.mainwindow import MainWindow
-from view.viewmodel.notecheckbox import NoteCheckBox
-from view.viewmodel.remindercheckbox import ReminderCheckbox
+from taskbridge.gui.viewmodel import threadedtasks
+from taskbridge.gui.viewmodel.mainwindow import MainWindow
+from taskbridge.gui.viewmodel.notecheckbox import NoteCheckBox
+from taskbridge.gui.viewmodel.remindercheckbox import ReminderCheckbox
 
 
 class TaskBridgeApp(QMainWindow):
@@ -59,7 +59,7 @@ class TaskBridgeApp(QMainWindow):
         self.sync_worker = None
         self.tray_icon = None
         TaskBridgeApp.bootstrap_settings()
-        QtCore.QDir.addSearchPath('assets', 'view/assets/')
+        QtCore.QDir.addSearchPath('assets', 'taskbridge/gui/assets')
         self.note_boxes: List = []
         self.reminder_boxes: List = []
         self.ui: MainWindow = MainWindow()
@@ -577,9 +577,9 @@ class TaskBridgeApp(QMainWindow):
             return
 
         self.ui.btn_sync.setEnabled(False)
-        icon_path = "view/assets/bridge_animated_white.gif" if darkdetect.isDark() else "view/assets/bridge_animated_black.png"
+        icon_path = "taskbridge/gui/assets/bridge_animated_white.gif" if darkdetect.isDark() else "taskbridge/gui/assets/bridge_animated_black.gif"
         self.tray_icon.set_animated_icon(icon_path)
-        self.ui.lbl_sync_status("Synchronising...")
+        self.ui.lbl_sync_status.setText("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)
         self.sync_worker.message_signal.connect(self.display_log)
         self.sync_worker.progress_signal.connect(self.update_progress)
@@ -680,7 +680,7 @@ class TaskBridgeApp(QMainWindow):
         self._show_message("Synchronisation Error", message, 'error')
 
     def sync_complete(self):
-        icon_path = "view/assets/bridge_white.png" if darkdetect.isDark() else "view/assets/bridge_white.png"
+        icon_path = "gui/assets/bridge_white.png" if darkdetect.isDark() else "gui/assets/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':

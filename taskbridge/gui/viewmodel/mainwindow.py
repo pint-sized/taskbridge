@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow
 
-from view.viewmodel.ui_mainwindow import Ui_MainWindow
+from taskbridge.gui.viewmodel.ui_mainwindow import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
