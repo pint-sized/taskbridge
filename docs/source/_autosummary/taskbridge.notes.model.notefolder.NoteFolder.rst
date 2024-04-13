@@ -1,4 +1,4 @@
-﻿taskbridge.notes.model.notefolder.NoteFolder
+taskbridge.notes.model.notefolder.NoteFolder
 ============================================
 
 .. currentmodule:: taskbridge.notes.model.notefolder
@@ -23,6 +23,7 @@
       ~NoteFolder.load_remote_notes
       ~NoteFolder.persist_folders
       ~NoteFolder.persist_notes
+      ~NoteFolder.reset_list
       ~NoteFolder.seed_folder_table
       ~NoteFolder.seed_note_table
       ~NoteFolder.sync_folder_deletions

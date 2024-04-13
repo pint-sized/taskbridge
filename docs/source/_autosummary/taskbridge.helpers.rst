@@ -1,4 +1,4 @@
-﻿taskbridge.helpers
+taskbridge.helpers
 ==================
 
 .. automodule:: taskbridge.helpers
@@ -29,6 +29,7 @@
       html_to_markdown
       markdown_to_html
       run_applescript
+      settings_folder
       temp_folder
    
    
@@ -43,6 +44,7 @@
       :nosignatures:
    
       DateUtil
+      FunctionHandler
    
    
 

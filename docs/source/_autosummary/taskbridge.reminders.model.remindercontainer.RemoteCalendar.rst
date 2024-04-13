@@ -1,4 +1,4 @@
-﻿taskbridge.reminders.model.remindercontainer.RemoteCalendar
+taskbridge.reminders.model.remindercontainer.RemoteCalendar
 ===========================================================
 
 .. currentmodule:: taskbridge.reminders.model.remindercontainer

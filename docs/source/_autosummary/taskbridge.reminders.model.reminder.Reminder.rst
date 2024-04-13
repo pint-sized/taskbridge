@@ -1,4 +1,4 @@
-﻿taskbridge.reminders.model.reminder.Reminder
+taskbridge.reminders.model.reminder.Reminder
 ============================================
 
 .. currentmodule:: taskbridge.reminders.model.reminder

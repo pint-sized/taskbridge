@@ -1,7 +1,7 @@
-taskbridge.reminders.controller
-===============================
+taskbridge.gui.viewmodel.trayicon
+=================================
 
-.. automodule:: taskbridge.reminders.controller
+.. automodule:: taskbridge.gui.viewmodel.trayicon
 
    
    
@@ -20,7 +20,7 @@ taskbridge.reminders.controller
       :template: custom-class-template.rst
       :nosignatures:
    
-      ReminderController
+      TaskBridgeTray
    
    
 

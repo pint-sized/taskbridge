@@ -15,7 +15,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx_rtd_dark_mode'
 ]
-autodoc_mock_imports = ["six.moves", "icalendar", "caldav", "caldav.Principal", "Principal"]
+autodoc_mock_imports = ["six.moves", "icalendar", "caldav", "caldav.Principal", "Principal", "PyQt6"]
 
 autodoc_default_options = {
     'autosummary': True,

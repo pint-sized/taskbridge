@@ -1,4 +1,4 @@
-﻿taskbridge.notes.model.notefolder.RemoteNoteFolder
+taskbridge.notes.model.notefolder.RemoteNoteFolder
 ==================================================
 
 .. currentmodule:: taskbridge.notes.model.notefolder

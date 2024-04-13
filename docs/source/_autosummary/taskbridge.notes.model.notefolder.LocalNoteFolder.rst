@@ -1,4 +1,4 @@
-﻿taskbridge.notes.model.notefolder.LocalNoteFolder
+taskbridge.notes.model.notefolder.LocalNoteFolder
 =================================================
 
 .. currentmodule:: taskbridge.notes.model.notefolder

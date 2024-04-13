@@ -1,4 +1,4 @@
-﻿taskbridge.reminders.model.reminderscript
+taskbridge.reminders.model.reminderscript
 =========================================
 
 .. automodule:: taskbridge.reminders.model.reminderscript
@@ -16,6 +16,10 @@
       add_reminder_script
       delete_reminder_script
       delete_list_script
+      count_completed_script
+      delete_completed_script
+      is_reminders_running_script
+      quit_reminders_script
    
    
 

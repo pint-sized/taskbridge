@@ -9,17 +9,18 @@ taskbridge.notes.controller
 
    
    
-   .. rubric:: Functions
+   
+
+   
+   
+   .. rubric:: Classes
 
    .. autosummary::
       :toctree:
+      :template: custom-class-template.rst
       :nosignatures:
    
-      sync
-   
-   
-
-   
+      NoteController
    
    
 

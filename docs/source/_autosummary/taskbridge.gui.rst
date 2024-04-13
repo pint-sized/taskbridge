@@ -1,7 +1,7 @@
-﻿taskbridge
-==========
+taskbridge.gui
+==============
 
-.. automodule:: taskbridge
+.. automodule:: taskbridge.gui
 
    
    
@@ -26,8 +26,6 @@
    :template: custom-module-template.rst
    :recursive:
 
-   taskbridge.gui
-   taskbridge.helpers
-   taskbridge.notes
-   taskbridge.reminders
+   taskbridge.gui.app
+   taskbridge.gui.viewmodel
 

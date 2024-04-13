@@ -5,71 +5,248 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/TaskBridge.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TaskBridge.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.app.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.mainwindow.MainWindow.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.notecheckbox.NoteCheckBox.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.remindercheckbox.ReminderCheckbox.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.remindercheckbox.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.taskbridgeapp.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.LoggingThread.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.NotePreWarm.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.ReminderPreWarm.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.Sync.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.threadedtasks.run_continuously.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.trayicon.TaskBridgeTray.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.ui_mainwindow.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.helpers.FunctionHandler.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.controller.NoteController.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notescript.is_notes_running_script.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notescript.quit_notes_script.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.controller.ReminderController.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.quit_reminders_script.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/100.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/100.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/102.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/102.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/1024.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/114.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/114.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/120.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/120.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/128.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/128.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/144.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/144.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/152.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/152.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/16.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/167.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/167.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/172.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/172.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/180.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/180.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/196.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/196.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/20.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/20.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/216.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/216.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/256.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/256.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/29.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/29.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/32.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/32.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/40.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/40.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/48.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/48.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/50.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/50.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/512.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/512.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/55.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/55.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/57.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/57.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/58.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/58.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/60.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/60.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/64.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/64.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/66.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/66.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/72.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/72.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/76.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/76.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/80.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/80.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/87.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/87.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/88.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/88.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/92.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/92.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/Contents.json" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/Assets.xcassets/AppIcon.appiconset/Contents.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/appstore.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/appstore.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/AppIcons/playstore.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/AppIcons/playstore.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/TaskBridge.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge.xcf" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge.xcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_animated_black.gif" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_black.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_animated_black.xcf" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_black.xcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_animated_optimised.xcf" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_optimised.xcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_animated_white.gif" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_white.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_animated_white.xcf" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_white.xcf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_black.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_black.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/bridge_white.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_white.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/refresh.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/refresh.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/assets/trash.png" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/assets/trash.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/taskbridge.ui" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/taskbridge.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/mainwindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/notecheckbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/notecheckbox.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/remindercheckbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/remindercheckbox.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/taskbridgeapp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/threadedtasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/trayicon.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/trayicon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/viewmodel/ui_mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/ui_mainwindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.buildinfo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.DATA_LOCATION.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.DRY_RUN.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.DateUtil.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.confirm.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.db_folder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.get_uuid.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.html_to_markdown.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.markdown_to_html.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.run_applescript.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.helpers.temp_folder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.controller.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.controller.sync.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.note.Attachment.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.note.Note.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.note.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notefolder.LocalNoteFolder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notefolder.NoteFolder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notefolder.RemoteNoteFolder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notefolder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.create_folder_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.create_note_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.delete_folder_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.delete_note_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.get_notes_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.load_folders_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.notes.model.notescript.update_note_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.controller.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.controller.sync.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminder.Reminder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminder.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.remindercontainer.LocalList.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.remindercontainer.ReminderContainer.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.remindercontainer.RemoteCalendar.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.remindercontainer.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.add_reminder_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.create_reminder_list_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.delete_list_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.delete_reminder_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.get_reminder_lists_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/_autosummary/taskbridge.reminders.model.reminderscript.get_reminders_in_list_script.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/environment.pickle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/.doctrees/index.doctree" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.DATA_LOCATION.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.DRY_RUN.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.DateUtil.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.confirm.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.db_folder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.get_uuid.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.html_to_markdown.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.markdown_to_html.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.run_applescript.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.helpers.temp_folder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.controller.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.controller.sync.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.note.Attachment.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.note.Note.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.note.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notefolder.LocalNoteFolder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notefolder.NoteFolder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notefolder.RemoteNoteFolder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notefolder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.create_folder_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.create_note_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.delete_folder_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.delete_note_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.get_notes_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.load_folders_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.notes.model.notescript.update_note_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.controller.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.controller.sync.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminder.Reminder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminder.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.remindercontainer.LocalList.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.remindercontainer.ReminderContainer.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.remindercontainer.RemoteCalendar.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.remindercontainer.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.add_reminder_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.create_reminder_list_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.delete_list_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.delete_reminder_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.get_reminder_lists_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.get_reminders_in_list_script.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_autosummary/taskbridge.reminders.model.reminderscript.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.DATA_LOCATION.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.DRY_RUN.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.DateUtil.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.confirm.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.db_folder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.get_uuid.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.html_to_markdown.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.markdown_to_html.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.run_applescript.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.helpers.settings_folder.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.helpers.temp_folder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.controller.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.controller.sync.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.note.Attachment.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.note.Note.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.note.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.notecheckbox.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notefolder.LocalNoteFolder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notefolder.NoteFolder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notefolder.RemoteNoteFolder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notefolder.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.trayicon.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.create_folder_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.create_note_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.delete_folder_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.delete_note_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.get_notes_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.load_folders_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.notescript.update_note_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.model.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.notes.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.controller.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.controller.sync.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminder.Reminder.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminder.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.mainwindow.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.remindercontainer.LocalList.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.ui_mainwindow.Ui_MainWindow.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.remindercontainer.ReminderContainer.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.remindercontainer.RemoteCalendar.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.remindercontainer.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.add_reminder_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.create_reminder_list_script.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.is_reminders_running_script.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.delete_list_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.delete_reminder_script.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.count_completed_script.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.get_reminder_lists_script.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.delete_completed_script.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.get_reminders_in_list_script.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.reminderscript.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.model.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.reminders.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/_autosummary/taskbridge.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_sources/index.rst.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/_sphinx_javascript_frameworks_compat.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/alabaster.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/basic.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/badge_only.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/Roboto-Slab-Bold.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/Roboto-Slab-Bold.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/Roboto-Slab-Regular.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/Roboto-Slab-Regular.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/fontawesome-webfont.eot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/fontawesome-webfont.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/fontawesome-webfont.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/fontawesome-webfont.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/fontawesome-webfont.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-bold-italic.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-bold-italic.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-bold.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-bold.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-normal-italic.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-normal-italic.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-normal.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/fonts/lato-normal.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/css/theme.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/custom.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_css/custom.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_css/dark.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_css/general.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_js/default_dark.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_js/default_light.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/dark_mode_js/theme_switcher.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/doctools.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/documentation_options.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/file.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/jquery.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/js/badge_only.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/js/html5shiv-printshiv.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/js/html5shiv.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/js/theme.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/language_data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/minus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/plus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/pygments.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/searchtools.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/_static/sphinx_highlight.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/genindex.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/objects.inv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/py-modindex.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/search.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/build/searchindex.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.helpers.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.helpers.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.controller.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.controller.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.controller.sync.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.note.Attachment.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.note.Attachment.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.note.Note.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.note.Note.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.LocalNoteFolder.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.LocalNoteFolder.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.NoteFolder.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.NoteFolder.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.RemoteNoteFolder.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notefolder.RemoteNoteFolder.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notescript.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.notes.model.notescript.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.controller.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.controller.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.controller.sync.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminder.Reminder.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminder.Reminder.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.LocalList.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.LocalList.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.ReminderContainer.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.ReminderContainer.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.RemoteCalendar.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.remindercontainer.RemoteCalendar.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.reminders.model.reminderscript.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poetry.lock" beforeDir="false" afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,10 +283,12 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "Python docs.Generate Docs.executor": "Run",
+    "Python.Run App.executor": "Run",
     "Python.app.executor": "Run",
     "Python.app2.executor": "Run",
     "Python.traytest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/keith/LocalCode/TaskBridge",
     "run.code.analysis.last.selected.profile": "pProject Default",
@@ -131,15 +310,15 @@
       <recent name="$PROJECT_DIR$/taskbridge" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/taskbridge/gui/assets/source" />
       <recent name="$PROJECT_DIR$/taskbridge/gui" />
       <recent name="$PROJECT_DIR$/taskbridge" />
       <recent name="$PROJECT_DIR$/view/assets" />
       <recent name="$PROJECT_DIR$/view/viewmodel" />
-      <recent name="$APPLICATION_CONFIG_DIR$/scratches" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.app">
-    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Shell Script.py2app Final">
+    <configuration name="Run App" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TaskBridge" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -152,6 +331,16 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </EXTENSION>
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/taskbridge/gui/app.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -161,26 +350,64 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="traytest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="TaskBridge" />
-      <option name="ENV_FILES" value="" />
+    <configuration name="Poetry Build" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="poetry run poetry build" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/traytest.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Update Lock" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="poetry run poetry lock" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="py2app Alias" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="python setup.py py2app -A" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="py2app Final" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="python setup.py py2app" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
       <method v="2" />
     </configuration>
     <configuration name="Generate Docs" type="docs" factoryName="Sphinx task">
@@ -188,8 +415,8 @@
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="SDK_NAME" value="Python 3.12 (TaskBridge)" />
+      <option name="SDK_HOME" value="$USER_HOME$/Library/Caches/pypoetry/virtualenvs/taskbridge-WAxmuoni-py3.12/bin/python" />
+      <option name="SDK_NAME" value="Poetry (TaskBridge)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -211,10 +438,17 @@
       <option name="docutils_open_in_browser" value="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.Run App" />
+      <item itemvalue="Python docs.Generate Docs" />
+      <item itemvalue="Shell Script.Update Lock" />
+      <item itemvalue="Shell Script.Poetry Build" />
+      <item itemvalue="Shell Script.py2app Alias" />
+      <item itemvalue="Shell Script.py2app Final" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.app" />
-        <item itemvalue="Python.traytest" />
+        <item itemvalue="Python.Run App" />
       </list>
     </recent_temporary>
   </component>

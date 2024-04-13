@@ -1,9 +1,9 @@
-taskbridge.reminders.model.remindercontainer.LocalList
+taskbridge.gui.viewmodel.ui\_mainwindow.Ui\_MainWindow
 ======================================================
 
-.. currentmodule:: taskbridge.reminders.model.remindercontainer
+.. currentmodule:: taskbridge.gui.viewmodel.ui_mainwindow
 
-.. autoclass:: LocalList
+.. autoclass:: Ui_MainWindow
    :members:
    :show-inheritance:
    :inherited-members:
@@ -16,8 +16,8 @@ taskbridge.reminders.model.remindercontainer.LocalList
    .. autosummary::
       :nosignatures:
    
-      ~LocalList.create
-      ~LocalList.delete
+      ~Ui_MainWindow.retranslateUi
+      ~Ui_MainWindow.setupUi
    
    
 

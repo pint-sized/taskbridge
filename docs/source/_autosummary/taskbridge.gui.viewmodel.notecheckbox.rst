@@ -1,7 +1,7 @@
-taskbridge.reminders.controller
-===============================
+taskbridge.gui.viewmodel.notecheckbox
+=====================================
 
-.. automodule:: taskbridge.reminders.controller
+.. automodule:: taskbridge.gui.viewmodel.notecheckbox
 
    
    
@@ -20,7 +20,7 @@ taskbridge.reminders.controller
       :template: custom-class-template.rst
       :nosignatures:
    
-      ReminderController
+      NoteCheckBox
    
    
 

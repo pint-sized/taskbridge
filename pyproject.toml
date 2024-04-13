@@ -14,7 +14,7 @@ homepage = "https://taskbridge.app/"
 repository = "https://github.com/keithvassallomt/TaskBridge"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 PyQt6 = "^6.6.1"
 darkdetect = "^0.8.0"
 keyring = "^25.1.0"
@@ -23,6 +23,17 @@ caldav = "^1.3.9"
 markdown2 = "^2.4.13"
 markdownify = "^0.12.1"
 
+[tool.poetry.group.dev.dependencies]
+py2app = "^0.28.7"
+sphinx = "^7.2.6"
+sphinx-autodoc-typehints = "^2.0.1"
+sphinx-rtd-dark-mode = "^1.3.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tools.py2app.bundle.main]
+name = "TaskBridge"
+script = "taskbridge/gui/app.py"
+build-type = "alias"

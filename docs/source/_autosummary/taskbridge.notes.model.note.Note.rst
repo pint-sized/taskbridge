@@ -1,4 +1,4 @@
-﻿taskbridge.notes.model.note.Note
+taskbridge.notes.model.note.Note
 ================================
 
 .. currentmodule:: taskbridge.notes.model.note

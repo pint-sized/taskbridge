@@ -1,4 +1,4 @@
-﻿taskbridge.reminders.model.remindercontainer.ReminderContainer
+taskbridge.reminders.model.remindercontainer.ReminderContainer
 ==============================================================
 
 .. currentmodule:: taskbridge.reminders.model.remindercontainer
@@ -16,7 +16,9 @@
    .. autosummary::
       :nosignatures:
    
+      ~ReminderContainer.count_local_completed
       ~ReminderContainer.create_linked_containers
+      ~ReminderContainer.delete_local_completed
       ~ReminderContainer.load_caldav_calendars
       ~ReminderContainer.load_local_lists
       ~ReminderContainer.load_local_reminders
