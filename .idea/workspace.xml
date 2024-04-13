@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_black.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_black.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_optimised.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_white.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_animated_white.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/assets/bridge_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/view/viewmodel/trayicon.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/notes/model/notescript.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/model/notescript.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/taskbridge/reminders/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/reminders/model/reminderscript.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/model/reminderscript.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" afterDir="false" />
     </list>

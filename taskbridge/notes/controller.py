@@ -3,7 +3,6 @@ This is the note synchronisation controller. It takes care of the note synchroni
 """
 from __future__ import annotations
 
-import datetime
 import logging
 import sys
 from pathlib import Path
@@ -104,28 +103,3 @@ class NoteController:
             )
         logging.debug(debug_msg)
         return True, data
-
-    @staticmethod
-    def init_logging(log_level_str: str, log_function: Callable = None):
-        log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
-        log_folder.mkdir(parents=True, exist_ok=True)
-        log_file = datetime.datetime.now().strftime("Notes_%Y%m%d-%H%M%S") + '.log'
-        log_levels = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'critical': logging.CRITICAL
-        }
-        log_level = log_levels[log_level_str]
-
-        logging.basicConfig(
-            level=log_level,
-            format='%(asctime)s %(levelname)s: %(message)s',
-            handlers=[
-                logging.FileHandler(log_folder / log_file),
-                logging.StreamHandler(sys.stdout),
-            ]
-        )
-        if log_function is not None:
-            func_handler = helpers.FunctionHandler(log_function)
-            logging.getLogger().addHandler(func_handler)

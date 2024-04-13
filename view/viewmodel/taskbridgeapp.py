@@ -20,7 +20,7 @@ from taskbridge.notes.controller import NoteController
 from taskbridge.notes.model.notefolder import NoteFolder
 from taskbridge.reminders.controller import ReminderController
 from taskbridge.reminders.model.remindercontainer import ReminderContainer
-from view.viewmodel import threadedtasks, trayicon
+from view.viewmodel import threadedtasks
 from view.viewmodel.mainwindow import MainWindow
 from view.viewmodel.notecheckbox import NoteCheckBox
 from view.viewmodel.remindercheckbox import ReminderCheckbox
@@ -65,8 +65,8 @@ class TaskBridgeApp(QMainWindow):
         self.ui: MainWindow = MainWindow()
 
         TaskBridgeApp.load_settings()
-        NoteController.init_logging(TaskBridgeApp.SETTINGS['log_level'], self.display_log)
-        ReminderController.init_logging(TaskBridgeApp.SETTINGS['log_level'], self.display_log)
+        self.logging_worker = threadedtasks.LoggingThread(TaskBridgeApp.SETTINGS['log_level'], log_stdout=True)
+        self.logging_worker.log_signal.connect(self.display_log)
 
         self.login_widgets = [
             self.ui.txt_reminder_username,
@@ -165,6 +165,8 @@ class TaskBridgeApp(QMainWindow):
     def set_logging_level(self):
         log_level = self.ui.cmb_sync_log_level.currentText().lower()
         TaskBridgeApp.SETTINGS['log_level'] = log_level
+        if self.logging_worker:
+            self.logging_worker.set_logging_level(log_level)
         self.save_settings()
 
     def switch_sync_view(self):
@@ -643,6 +645,8 @@ class TaskBridgeApp(QMainWindow):
             self.note_pw_worker.quit()
         if self.autosync_worker:
             self.autosync_worker.set()
+        if self.logging_worker:
+            self.logging_worker.quit()
         if self.sync_worker:
             self.sync_worker.quit()
         schedule.clear()

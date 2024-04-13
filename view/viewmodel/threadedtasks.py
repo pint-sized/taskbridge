@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import logging
+import sys
+from datetime import datetime
+from pathlib import Path
 from typing import Callable
 import threading
 import time
@@ -12,6 +16,53 @@ from taskbridge.notes.controller import NoteController
 from taskbridge.notes.model import notescript
 from taskbridge.reminders.controller import ReminderController
 from taskbridge.reminders.model import reminderscript
+
+
+# noinspection PyUnresolvedReferences
+class LoggingThread(QThread):
+    log_signal = pyqtSignal(str)
+    stop_logging = threading.Event()
+
+    def __init__(self, logging_level: str, log_stdout: bool = False, log_file: bool = True, log_gui: bool = True):
+        super().__init__()
+        self.logging_level: str = logging_level
+        self.log_stdout: bool = log_stdout
+        self.log_file: bool = log_file
+        self.log_gui: bool = log_gui
+        self.logger: Logger = logging.getLogger()
+        self.setup_logging()
+
+    def setup_logging(self):
+        log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
+        log_folder.mkdir(parents=True, exist_ok=True)
+        log_file = datetime.now().strftime("TaskBridge_%Y%m%d-%H%M%S") + '.log'
+        log_levels = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'critical': logging.CRITICAL
+        }
+        log_level = log_levels[self.logging_level]
+
+        logging.basicConfig(
+            level=log_level,
+            format='%(asctime)s %(levelname)s: %(message)s',
+        )
+        if self.log_file:
+            logging.getLogger().addHandler(logging.FileHandler(log_folder / log_file))
+        if self.log_stdout:
+            logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+        if self.log_gui:
+            func_handler = helpers.FunctionHandler(lambda msg: self.log_signal.emit(msg))
+            logging.getLogger().addHandler(func_handler)
+
+    def set_logging_level(self, logging_level: str):
+        self.logger.setLevel(logging_level)
+
+    def run(self):
+        while not self.stop_logging.is_set():
+            time.sleep(1)
+
 
 # noinspection PyUnresolvedReferences
 class ReminderPreWarm(QThread):
