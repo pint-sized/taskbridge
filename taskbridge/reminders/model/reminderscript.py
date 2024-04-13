@@ -131,5 +131,14 @@ tell application "Reminders"
 end tell
 end run'''
 
+#: Check if the Reminders app is running
+is_reminders_running_script = '''tell application "System Events"
+if (get name of every application process) contains "Reminders" then
+    return true
+else
+    return false
+end if
+end tell'''
+
 #: Quit the Reminders app
 quit_reminders_script = '''tell application "Reminders" to if it is running then quit'''

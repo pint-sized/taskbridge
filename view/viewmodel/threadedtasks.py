@@ -74,6 +74,11 @@ class ReminderPreWarm(QThread):
         self.cb: Callable = cb
 
     def run(self):
+        # Check if the Reminders app is running
+        is_reminders_running_script = reminderscript.is_reminders_running_script
+        return_code, stdout, stderr = helpers.run_applescript(is_reminders_running_script)
+        reminders_was_running = stdout.strip() == 'true'
+
         # Connect to remote server
         self.message_signal.emit("Connecting to remote reminder server...")
         ReminderController.connect_caldav()
@@ -104,9 +109,10 @@ class ReminderPreWarm(QThread):
             self.error_signal.emit("Error associating reminder containers: {}".format(data))
             return
 
-        # Quit Reminders
-        quit_reminders_script = reminderscript.quit_reminders_script
-        helpers.run_applescript(quit_reminders_script)
+        # Quit Reminders if it wasn't running
+        if not reminders_was_running:
+            quit_reminders_script = reminderscript.quit_reminders_script
+            helpers.run_applescript(quit_reminders_script)
 
         self.message_signal.emit("")
         self.cb(data)
@@ -121,6 +127,11 @@ class NotePreWarm(QThread):
         self.cb: Callable = cb
 
     def run(self):
+        # Check if the Notes app is running
+        is_notes_running_script = notescript.is_notes_running_script
+        return_code, stdout, stderr = helpers.run_applescript(is_notes_running_script)
+        notes_was_running = stdout.strip() == 'true'
+
         # Get folder lists
         self.message_signal.emit("Fetching local note folders...")
         success, data = NoteController.get_local_folders()
@@ -147,9 +158,10 @@ class NotePreWarm(QThread):
             self.error_signal.emit("Error associating note folders: {}".format(data))
             return
 
-        # Quit Notes
-        quit_notes_script = notescript.quit_notes_script
-        helpers.run_applescript(quit_notes_script)
+        # Quit Notes if it wasn't running
+        if not notes_was_running:
+            quit_notes_script = notescript.quit_notes_script
+            helpers.run_applescript(quit_notes_script)
 
         self.message_signal.emit("")
         self.cb(data)
@@ -173,6 +185,9 @@ class Sync(QThread):
         self.progress_signal.emit(progress)
 
         if self.sync_reminders:
+            is_reminders_running_script = reminderscript.is_reminders_running_script
+            return_code, stdout, stderr = helpers.run_applescript(is_reminders_running_script)
+            reminders_was_running = stdout.strip() == 'true'
             if self.prune_reminders:
                 self.message_signal.emit('Pruning completed reminders...')
                 ReminderController.delete_completed()
@@ -187,8 +202,14 @@ class Sync(QThread):
             self.progress_signal.emit(progress)
             quit_reminders_script = reminderscript.quit_reminders_script
             helpers.run_applescript(quit_reminders_script)
+            if not reminders_was_running:
+                quit_reminders_script = reminderscript.quit_reminders_script
+                helpers.run_applescript(quit_reminders_script)
 
         if self.sync_notes:
+            is_notes_running_script = notescript.is_notes_running_script
+            return_code, stdout, stderr = helpers.run_applescript(is_notes_running_script)
+            notes_was_running = stdout.strip() == 'true'
             self.message_signal.emit('Synchronising deleted notes...')
             NoteController.sync_deleted_notes()
             progress += progress_increment
@@ -199,6 +220,9 @@ class Sync(QThread):
             self.progress_signal.emit(progress)
             quit_notes_script = notescript.quit_notes_script
             helpers.run_applescript(quit_notes_script)
+            if not notes_was_running:
+                quit_notes_script = notescript.quit_notes_script
+                helpers.run_applescript(quit_notes_script)
 
         self.cb()
 

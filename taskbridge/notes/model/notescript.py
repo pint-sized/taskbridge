@@ -157,6 +157,15 @@ tell application "Notes"
 end tell
 end run"""
 
+#: Check if the Notes app is running
+is_notes_running_script = '''tell application "System Events"
+if (get name of every application process) contains "Notes" then
+    return true
+else
+    return false
+end if
+end tell'''
+
 #: Quit the Notes app
 quit_notes_script = '''tell application "Notes" to if it is running then quit'''
 
