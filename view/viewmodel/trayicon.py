@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from PyQt6.QtGui import QIcon, QAction, QMovie
-from PyQt6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
+from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
 
 from view.viewmodel.taskbridgeapp import TaskBridgeApp
 
 
+# noinspection PyUnresolvedReferences
 class TaskBridgeTray(QSystemTrayIcon):
 
     def __init__(self, icon: QIcon, parent: TaskBridgeApp, *args, **kwargs):

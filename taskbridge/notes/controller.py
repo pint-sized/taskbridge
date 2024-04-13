@@ -4,11 +4,9 @@ This is the note synchronisation controller. It takes care of the note synchroni
 from __future__ import annotations
 
 import logging
-import sys
 from pathlib import Path
-from typing import List, Callable
+from typing import List
 
-from taskbridge import helpers
 from taskbridge.notes.model.notefolder import NoteFolder, LocalNoteFolder, RemoteNoteFolder
 
 

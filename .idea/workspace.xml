@@ -7,9 +7,10 @@
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/taskbridge/notes/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/reminders/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/model/notefolder.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/model/notefolder.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/taskbridgeapp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/threadedtasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/viewmodel/trayicon.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/viewmodel/trayicon.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +29,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -175,6 +176,17 @@
       <updated>1712416877428</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />

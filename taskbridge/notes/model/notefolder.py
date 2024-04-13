@@ -428,7 +428,6 @@ class NoteFolder:
                 folder.sync_direction
             ))
 
-
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row

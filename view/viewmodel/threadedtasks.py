@@ -67,6 +67,7 @@ class LoggingThread(QThread):
 # noinspection PyUnresolvedReferences
 class ReminderPreWarm(QThread):
     message_signal = pyqtSignal(str)
+    error_signal = pyqtSignal(str)
 
     def __init__(self, cb: Callable):
         super().__init__()
@@ -81,23 +82,27 @@ class ReminderPreWarm(QThread):
         self.message_signal.emit("Fetching local reminder lists...")
         success, data = ReminderController.fetch_local_reminders()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error fetching local reminder lists: {}".format(data))
+            return
         self.message_signal.emit("Fetching remote reminder lists...")
         success, data = ReminderController.fetch_remote_reminders()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error fetching remote reminder lists: {}".format(data))
+            return
 
         # Sync deletions
         self.message_signal.emit("Synchronising deleted reminder containers...")
         success, data = ReminderController.sync_deleted_containers()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error synchronising deleted reminder containers: {}".format(data))
+            return
 
         # Associate containers
         self.message_signal.emit("Associating reminder containers...")
         success, data = ReminderController.associate_containers()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error associating reminder containers: {}".format(data))
+            return
 
         # Quit Reminders
         quit_reminders_script = reminderscript.quit_reminders_script
@@ -120,23 +125,27 @@ class NotePreWarm(QThread):
         self.message_signal.emit("Fetching local note folders...")
         success, data = NoteController.get_local_folders()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error fetching local note folders: {}".format(data))
+            return
         self.message_signal.emit("Fetching remote note folders...")
         success, data = NoteController.get_remote_folders()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error fetching remote note folders: {}".format(data))
+            return
 
         # Sync deletions
         self.message_signal.emit("Synchronising deleted note folders...")
         success, data = NoteController.sync_folder_deletions()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error synchronising deleted note folders: {}".format(data))
+            return
 
         # Associate folders
         self.message_signal.emit("Associating note folders...")
         success, data = NoteController.associate_folders()
         if not success:
-            return  # TODO show some sort of error
+            self.error_signal.emit("Error associating note folders: {}".format(data))
+            return
 
         # Quit Notes
         quit_notes_script = notescript.quit_notes_script

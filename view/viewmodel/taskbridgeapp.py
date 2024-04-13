@@ -290,10 +290,12 @@ class TaskBridgeApp(QMainWindow):
         NoteController.ASSOCIATIONS = TaskBridgeApp.SETTINGS['associations']
 
         self.ui.btn_sync.setEnabled(False)
+        self.ui.lbl_sync_status.setText("Loading Note Folders...")
         self.note_pw_worker.message_signal.connect(self.display_log)
         self.note_pw_worker.start()
 
     def display_notes_table(self, folder_list: List[NoteFolder]):
+        self.ui.lbl_sync_status.setText("Currently Idle.")
         self.ui.btn_sync.setEnabled(True)
         # Display folders in table
         self.ui.tbl_notes.setRowCount(0)
@@ -311,8 +313,8 @@ class TaskBridgeApp(QMainWindow):
                 name = folder.local_folder.name
                 location = 'Local & Remote'
             else:
-                # TODO show some sort of error
-                return
+                self.display_log("Warning: One of your notes folders could not be found locally or remotely.")
+                continue
 
             assoc = TaskBridgeApp.SETTINGS['associations']
             self.ui.tbl_notes.insertRow(row)
@@ -373,10 +375,11 @@ class TaskBridgeApp(QMainWindow):
         TaskBridgeApp.PENDING_CHANGES = True
 
     def handle_notes_cancel(self):
-        # TODO show confirmation dialog
-        TaskBridgeApp.load_settings()
-        self.apply_notes_settings()
-        self.load_note_folders()
+        action = self._ask_question("Discard Changes?", "Are you sure you want to discard changes to note synchronisation settings?")
+        if action == QMessageBox.StandardButton.Yes:
+            TaskBridgeApp.load_settings()
+            self.apply_notes_settings()
+            self.load_note_folders()
 
     # REMINDER HANDLING ------------------------------------------------------------------------------------------------
     def bootstrap_reminders(self):
@@ -416,10 +419,12 @@ class TaskBridgeApp(QMainWindow):
 
         # Pre-Warm Reminders
         self.ui.btn_sync.setEnabled(False)
+        self.ui.lbl_sync_status.setText("Loading Reminder Lists...")
         self.reminder_pw_worker.message_signal.connect(self.display_log)
         self.reminder_pw_worker.start()
 
     def display_reminders_table(self, container_list: List[ReminderContainer]):
+        self.ui.lbl_sync_status.setText("Currently Idle.")
         self.ui.btn_sync.setEnabled(True)
         # Display containers in table
         self.ui.tbl_reminders.setRowCount(0)
@@ -435,8 +440,8 @@ class TaskBridgeApp(QMainWindow):
                 name = container.local_list.name
                 location = 'Local & Remote'
             else:
-                # TODO show some sort of error
-                return
+                self.display_log("Warning: One of your reminder containers could not be found locally or remotely.")
+                continue
 
             cbox = ReminderCheckbox(name, TaskBridgeApp.SETTINGS['reminder_sync'])
             self.ui.tbl_reminders.insertRow(row)
@@ -497,7 +502,12 @@ class TaskBridgeApp(QMainWindow):
         return is_valid, full_path if is_valid else error
 
     def handle_reminders_cancel(self):
-        pass
+        action = self._ask_question("Discard Changes?",
+                                    "Are you sure you want to discard changes to reminder synchronisation settings?")
+        if action == QMessageBox.StandardButton.Yes:
+            TaskBridgeApp.load_settings()
+            self.apply_reminders_settings()
+            self.load_reminder_lists()
 
     def handle_reminders_sync(self):
         if self.ui.cb_reminders_sync.isChecked():
@@ -569,6 +579,7 @@ class TaskBridgeApp(QMainWindow):
         self.ui.btn_sync.setEnabled(False)
         icon_path = "view/assets/bridge_animated_white.gif" if darkdetect.isDark() else "view/assets/bridge_animated_black.png"
         self.tray_icon.set_animated_icon(icon_path)
+        self.ui.lbl_sync_status("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)
         self.sync_worker.message_signal.connect(self.display_log)
         self.sync_worker.progress_signal.connect(self.update_progress)
@@ -662,6 +673,11 @@ class TaskBridgeApp(QMainWindow):
 
     def update_progress(self, progress: int):
         self.ui.progressBar.setValue(progress)
+
+    def display_error(self, message: str):
+        self.ui.txt_log_display.append(message)
+        self.ui.txt_log_display.verticalScrollBar().setValue(self.ui.txt_log_display.verticalScrollBar().maximum())
+        self._show_message("Synchronisation Error", message, 'error')
 
     def sync_complete(self):
         icon_path = "view/assets/bridge_white.png" if darkdetect.isDark() else "view/assets/bridge_white.png"
