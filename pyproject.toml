@@ -1,13 +1,20 @@
 [tool.poetry]
 name = "TaskBridge"
 version = "0.1.0"
-description = ""
-keywords = ["egg", "bacon", "sausage", "tomatoes", "Lobster Thermidor"]
+description = "Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - and keep them in sync!"
+keywords = ["sync", "note sync", "reminder sync", "cloud notes", "cloud reminders"]
 authors = ["Keith Vassallo <keith@vassallo.cloud>"]
 readme = "README.md"
 classifiers = [
   "Development Status :: 4 - Beta",
-  "Programming Language :: Python"
+  "Programming Language :: Python",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Environment :: MacOS X",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Topic :: Utilities"
 ]
 license = "GPL-3.0-or-later"
 homepage = "https://taskbridge.app/"
@@ -36,4 +43,4 @@ build-backend = "poetry.core.masonry.api"
 [tools.py2app.bundle.main]
 name = "TaskBridge"
 script = "taskbridge/gui/app.py"
-build-type = "alias"
+build-type = "standalone"

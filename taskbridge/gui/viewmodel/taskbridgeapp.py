@@ -1,3 +1,7 @@
+"""
+Contains the main view controller for the main window of the app.
+"""
+
 from __future__ import annotations
 
 import datetime
@@ -14,7 +18,7 @@ import keyring
 import schedule
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QEvent, Qt, QSize
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QIcon, QKeyEvent
 from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox, QMainWindow, QDialog, QWidget
 
 from taskbridge import helpers
@@ -30,6 +34,28 @@ from taskbridge.gui.viewmodel.remindercheckbox import ReminderCheckbox
 
 
 class TaskBridgeApp(QMainWindow):
+    """
+    View controller for the main window. The :py:att``SETTINGS`` dictionary accepts the following keys:
+
+    - ``sync_notes`` - if '1', notes are synchronised and corresponding configuration is enabled.
+    - ``sync_reminders`` - if '1', reminders are synchronised and corresponding configuration is enabled.
+    - ``remote_notes_folder`` - path to the remote notes folder.
+    - ``associations`` - dictionary which contains list of notes to be synced bidirectionally in ``bi_directional`` and others in ``local_to_remote`` and ``remote_to_local`` respectively.
+    - ``prune_reminders`` - if '1', completed reminders are deleted before synchronisation.
+    - ``caldav_server`` - host of the CalDav server.
+    - ``caldav_path`` - path to the calendar list for this user on the CalDav server.
+    - ``caldav_url`` - automatically set by combining ``caldav_server`` and ``caldav_path``.
+    - ``caldav_username`` - username for the CalDav server.
+    - ``caldav_type`` - stores either 'NextCloud' or 'CalDav' and enables appropriate settings in GUI.
+    - ``reminder_sync`` - list of reminder contains to be synchronised.
+    - ``log_level`` - the logging level. Can be 'debug', 'info', 'warning' or 'critical'.
+    - ``autosync`` - if '1', automatic synchronisation is enabled.
+    - ``autosync_interval`` - the interval for automatic synchronisation.
+    - ``autosync_unit`` - determines the unit for ``autosync_interval``. Either 'Minutes' or 'Hours'.
+
+    """
+
+    #: Application settings
     SETTINGS = {
         'sync_notes': '0',
         'remote_notes_folder': '',
@@ -52,9 +78,14 @@ class TaskBridgeApp(QMainWindow):
         'autosync_unit': 'Minutes'
     }
 
+    #: If True, there are unsaved changes.
     PENDING_CHANGES: bool = False
 
     def __init__(self):
+        """
+        Initialise the window and load settings.
+        """
+
         super().__init__()
         self.reminder_pw_worker = threadedtasks.ReminderPreWarm(self.display_reminders_table)
         self.note_pw_worker = threadedtasks.NotePreWarm(self.display_notes_table)
@@ -83,14 +114,20 @@ class TaskBridgeApp(QMainWindow):
     # GENERAL DECLARATIONS ---------------------------------------------------------------------------------------------
 
     @staticmethod
-    def bootstrap_settings():
+    def bootstrap_settings() -> None:
+        """
+        Create configuration file if it doesn't exist.
+        """
         conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
             with open(helpers.settings_folder() / 'conf.json', 'w') as fp:
                 json.dump(TaskBridgeApp.SETTINGS, fp)
 
     @staticmethod
-    def load_settings():
+    def load_settings() -> None:
+        """
+        Load settings from configuration file.
+        """
         conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
             return
@@ -98,7 +135,14 @@ class TaskBridgeApp(QMainWindow):
             TaskBridgeApp.SETTINGS = json.load(fp)
 
     @staticmethod
-    def _show_message(title: str, message: str, message_type: str = 'info'):
+    def _show_message(title: str, message: str, message_type: str = 'info') -> None:
+        """
+        Show an informational or error message.
+
+        :param title: window title for the message dialog.
+        :param message: message to show.
+        :param message_type: the type of message. Either 'info' or 'error'.
+        """
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Icon.Critical if message_type == 'error' else QMessageBox.Icon.Information)
         msg.setWindowTitle(title)
@@ -108,6 +152,12 @@ class TaskBridgeApp(QMainWindow):
 
     @staticmethod
     def _ask_question(title: str, message: str) -> int:
+        """
+        Show a question dialog.
+
+        :param title: the window title for the dialog.
+        :param message: message to show.
+        """
         ask = QMessageBox()
         ask.setIcon(QMessageBox.Icon.Warning)
         ask.setText(message)
@@ -118,11 +168,17 @@ class TaskBridgeApp(QMainWindow):
         return action
 
     @staticmethod
-    def open_docs():
+    def open_docs() -> None:
+        """
+        Open TaskBridge documentation in browser.
+        """
         webbrowser.open("https://github.com/keithvassallomt/TaskBridge")
 
     @staticmethod
-    def show_about():
+    def show_about() -> None:
+        """
+        Show the About dialog.
+        """
         dialog = QDialog()
         dialog.ui = Ui_Dialog()
         dialog.ui.setupUi(dialog)
@@ -133,12 +189,25 @@ class TaskBridgeApp(QMainWindow):
         dialog.exec()
 
     @staticmethod
-    def get_table_icon(image: str):
+    def get_table_icon(image: str) -> str:
+        """
+        Gets an icon for inline-display in table. Returns correct icon depending on whether dark mode is set.
+
+        :param image: the name of the image to display from the 'taskbridge/gui/assets/table' folder.
+
+        :return: path to the correct image.
+        """
         colour = 'white' if darkdetect.isDark() else 'black'
         image_path = 'taskbridge/gui/assets/table/{0}_{1}.png'.format(image, colour)
         return image_path
 
-    def save_settings(self, what: str | None = None, silent: bool = True):
+    def save_settings(self, what: str | None = None, silent: bool = True) -> None:
+        """
+        Save settings to file.
+
+        :param what: what was saved. Used when displaying confirmation dialog and to prompt for reminder pruning.
+        :param silent: if True, no confirmation dialog is shown.
+        """
         if (what == 'reminders' and not self.ui.cb_reminder_autoprune.isChecked) and not silent:
             title = "Enable Completed Reminder Pruning?"
             message = "You have not selected to automatically prune completed reminders. This can significantly slow the sync process. Do you want to enable automatic completed reminders pruning?"
@@ -153,14 +222,22 @@ class TaskBridgeApp(QMainWindow):
             TaskBridgeApp._show_message("Settings Saved", "Your {} sync settings have been saved.".format(what))
         TaskBridgeApp.PENDING_CHANGES = False
 
-    def trigger_unsaved(self, view: str):
+    def trigger_unsaved(self, view: str) -> None:
+        """
+        Triggers an unsaved changes state and enables the form to save changes.
+
+        :param view: the view for which to enable the save/cancel form.
+        """
         TaskBridgeApp.PENDING_CHANGES = True
         if view == 'notes':
             self.ui.frm_notes.setEnabled(True)
         elif view == 'reminders':
             self.ui.frm_reminders.setEnabled(True)
 
-    def bootstrap_ui(self):
+    def bootstrap_ui(self) -> None:
+        """
+        Bootstraps the TaskBridge UI.
+        """
         self.ui.tab_container.setCurrentIndex(0)
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.tbl_notes.setRowCount(0)
@@ -208,23 +285,37 @@ class TaskBridgeApp(QMainWindow):
         self.ui.rb_server_nextcloud.clicked.connect(lambda: self.trigger_unsaved("reminders"))
         self.ui.cb_reminder_autoprune.clicked.connect(self.handle_prune_checkbox)
 
-    def switch_ui(self, index: int):
+    def switch_ui(self, index: int) -> None:
+        """
+        Switches to the given tab. Also updates the menu.
+
+        :param index: the tab number to switch to.
+        """
         menus = [self.ui.actionSync, self.ui.actionReminders, self.ui.actionNotes]
         self.ui.tab_container.setCurrentIndex(index)
         for i in range(len(menus)):
             menus[i].setChecked(True) if i == index else menus[i].setChecked(False)
 
-    def clear_logs(self):
+    def clear_logs(self) -> None:
+        """
+        Clears the log view.
+        """
         self.ui.txt_log_display.clear()
 
-    def set_logging_level(self):
+    def set_logging_level(self) -> None:
+        """
+        Sets the logging level (and saves).
+        """
         log_level = self.ui.cmb_sync_log_level.currentText().lower()
         TaskBridgeApp.SETTINGS['log_level'] = log_level
         if self.logging_worker:
             self.logging_worker.set_logging_level(log_level)
         self.save_settings()
 
-    def switch_sync_view(self):
+    def switch_sync_view(self) -> None:
+        """
+        Switches between the two stacks in the Sync view (logo or debug).
+        """
         if self.ui.stackedWidget.currentIndex() == 0:
             self.ui.stackedWidget.setCurrentIndex(1)
             self.ui.btn_sync_view.setArrowType(Qt.ArrowType.LeftArrow)
@@ -232,7 +323,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.stackedWidget.setCurrentIndex(0)
             self.ui.btn_sync_view.setArrowType(Qt.ArrowType.RightArrow)
 
-    def check_changes(self):
+    def check_changes(self) -> None:
+        """
+        Checks for unsaved changes and prompts to save. If cancelled, resets changes.
+        """
         if not TaskBridgeApp.PENDING_CHANGES:
             return
 
@@ -254,7 +348,15 @@ class TaskBridgeApp(QMainWindow):
             self.refresh_notes()
             TaskBridgeApp.PENDING_CHANGES = False
 
-    def eventFilter(self, widget, event):
+    def eventFilter(self, widget: QWidget, event: QEvent | QKeyEvent) -> bool:
+        """
+        Handles various minor UI events.
+
+        :param widget: the widget which fired the event.
+        :param event: the event which was fired.
+
+        :return: False to allow further even handling to occur.
+        """
         # Focusing out of any login form widget validates the form (to enable/disable login button)
         if event.type() == QEvent.Type.FocusOut and widget in self.login_widgets:
             self.ui.btn_reminder_login.setEnabled(self.validate_login_form()[0])
@@ -280,7 +382,7 @@ class TaskBridgeApp(QMainWindow):
             self.trigger_unsaved('notes')
             self.ui.frm_notes.setEnabled(True)
 
-        # Tabbing out of the remote folder triggers refresh TODO check
+        # Tabbing out of the remote folder triggers refresh
         if event.type() == QEvent.Type.KeyPress and widget == self.ui.txt_notes_folder:
             if event.key() == Qt.Key.Key_Tab:
                 self.load_note_folders()
@@ -289,7 +391,13 @@ class TaskBridgeApp(QMainWindow):
 
     # NOTE HANDLING ----------------------------------------------------------------------------------------------------
     @staticmethod
-    def set_note_folder_association(folder_name: str, direction: str | None = None):
+    def set_note_folder_association(folder_name: str, direction: str | None = None) -> None:
+        """
+        Updates :py:att`SETTINGS` with the association setting for this folder
+
+        :param folder_name: the folder whose association was changed.
+        :param direction: the sync direction as per keys in :py:att`SETTINGS`.
+        """
         assoc = TaskBridgeApp.SETTINGS['associations']
         for sync_direction in assoc.keys():
             if folder_name in assoc[sync_direction]:
@@ -298,7 +406,10 @@ class TaskBridgeApp(QMainWindow):
         if direction is not None:
             assoc[direction].append(folder_name)
 
-    def handle_notes_sync(self):
+    def handle_notes_sync(self) -> None:
+        """
+        Triggered when the Synchronise Notes option is checked.
+        """
         if self.ui.cb_notes_sync.isChecked():
             TaskBridgeApp.SETTINGS['sync_notes'] = '1'
             if TaskBridgeApp.SETTINGS['remote_notes_folder'] == '':
@@ -317,7 +428,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.gb_notes.setEnabled(False)
             self.ui.frm_notes.setEnabled(False)
 
-    def bootstrap_notes(self):
+    def bootstrap_notes(self) -> None:
+        """
+        Initialises the notes table
+        """
         self.ui.tbl_notes.setColumnCount(5)
         self.ui.tbl_notes.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.tbl_notes.setHorizontalHeaderItem(0, QTableWidgetItem('Folder'))
@@ -334,7 +448,10 @@ class TaskBridgeApp(QMainWindow):
         self.ui.tbl_notes.setIconSize(QSize(56, 56))
         self.refresh_notes()
 
-    def refresh_notes(self):
+    def refresh_notes(self) -> None:
+        """
+        Clears the notes table and reloads the notes folders.
+        """
         self.ui.tbl_notes.setRowCount(0)
         self.apply_notes_settings()
         self.ui.cb_notes_sync.setChecked(TaskBridgeApp.SETTINGS['sync_notes'] == '1')
@@ -345,7 +462,10 @@ class TaskBridgeApp(QMainWindow):
         self.ui.gb_notes.setEnabled(True)
         self.load_note_folders()
 
-    def apply_notes_settings(self):
+    def apply_notes_settings(self) -> None:
+        """
+        Applies settings to the notes view from configuration file.
+        """
         if TaskBridgeApp.SETTINGS['sync_notes'] == '1':
             self.ui.txt_notes_folder.setText(str(TaskBridgeApp.SETTINGS['remote_notes_folder']))
             self.ui.cb_notes_sync.setChecked(True)
@@ -354,7 +474,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.gb_notes.setEnabled(False)
             self.ui.frm_notes.setEnabled(False)
 
-    def load_note_folders(self):
+    def load_note_folders(self) -> None:
+        """
+        Starts the thread to load the note folders.
+        """
         if self.note_pw_worker.isRunning():
             return
 
@@ -371,7 +494,12 @@ class TaskBridgeApp(QMainWindow):
         self.note_pw_worker.message_signal.connect(self.display_log)
         self.note_pw_worker.start()
 
-    def display_notes_table(self, folder_list: List[NoteFolder]):
+    def display_notes_table(self, folder_list: List[NoteFolder]) -> None:
+        """
+        Displays the note folders in the table.
+
+        :param folder_list: List of note folders to display.
+        """
         self.ui.lbl_sync_status.setText("Currently Idle.")
         self.ui.btn_sync.setEnabled(True)
         # Display folders in table
@@ -407,7 +535,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.tbl_notes.setItem(row, 4, NoteCheckBox(check_type='bi_directional', location=location,
                                                            folder_name=name, associations=assoc))
 
-    def handle_note_checkbox(self, row, col):
+    def handle_note_checkbox(self, row, col) -> None:
+        """
+        Handles the UI logic for the checkboxes in the notes folder. Refer to the ``NoteCheckbox`` class.
+        """
         self.ui.tbl_notes.setUpdatesEnabled(False)
         item = self.ui.tbl_notes.item(row, col)
         if not isinstance(item, NoteCheckBox):
@@ -448,13 +579,19 @@ class TaskBridgeApp(QMainWindow):
         self.ui.tbl_notes.setUpdatesEnabled(True)
         self.trigger_unsaved('notes')
 
-    def handle_folder_browse(self):
+    def handle_folder_browse(self) -> None:
+        """
+        Shows the folder chooser dialog for selecting the remote notes folder.
+        """
         remote_notes_folder = QFileDialog.getExistingDirectory(None, 'Select Remote Notes Folder')
         TaskBridgeApp.SETTINGS['remote_notes_folder'] = remote_notes_folder
         self.ui.txt_notes_folder.setText(remote_notes_folder)
         self.trigger_unsaved('notes')
 
     def handle_notes_cancel(self):
+        """
+        Prompts the user to save unsaved changes in the notes view. If cancelled, changes are discarded.
+        """
         action = self._ask_question("Discard Changes?", "Are you sure you want to discard changes to note synchronisation settings?")
         if action == QMessageBox.StandardButton.Yes:
             TaskBridgeApp.load_settings()
@@ -464,11 +601,17 @@ class TaskBridgeApp(QMainWindow):
 
     # REMINDER HANDLING ------------------------------------------------------------------------------------------------
     def bootstrap_reminders(self):
+        """
+        Initialises the reminders view.
+        """
         self.ui.tbl_reminders.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.tbl_reminders.setIconSize(QSize(28, 28))
         self.refresh_reminders()
 
-    def refresh_reminders(self):
+    def refresh_reminders(self) -> None:
+        """
+        Resets the reminders view and loads the reminder containers.
+        """
         self.ui.tbl_reminders.setRowCount(0)
         self.ui.btn_reminder_login.setEnabled(self.validate_login_form()[0])
         self.apply_reminders_settings()
@@ -482,7 +625,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.gb_reminders.setEnabled(True)
             self.ui.frm_caldav_login.setEnabled(True)
 
-    def load_reminder_lists(self):
+    def load_reminder_lists(self) -> None:
+        """
+        Loads the reminder containers by starting a thread.
+        """
         if self.reminder_pw_worker.isRunning():
             return
 
@@ -499,7 +645,12 @@ class TaskBridgeApp(QMainWindow):
         self.reminder_pw_worker.message_signal.connect(self.display_log)
         self.reminder_pw_worker.start()
 
-    def display_reminders_table(self, container_list: List[ReminderContainer]):
+    def display_reminders_table(self, container_list: List[ReminderContainer]) -> None:
+        """
+        Displays the reminder contains in the reminder view table.
+
+        :param container_list: the list of reminder containers.
+        """
         self.ui.lbl_sync_status.setText("Currently Idle.")
         self.ui.btn_sync.setEnabled(True)
         # Display containers in table
@@ -526,7 +677,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.tbl_reminders.setItem(row, 1, QTableWidgetItem(location_icon, None, QTableWidgetItem.ItemType.UserType))
             self.ui.tbl_reminders.setItem(row, 2, cbox)
 
-    def apply_reminders_settings(self):
+    def apply_reminders_settings(self) -> None:
+        """
+        Reads reminder settings from file and applies to reminders view.
+        """
         if TaskBridgeApp.SETTINGS['sync_reminders'] == '1':
             self.ui.txt_reminder_username.setText(TaskBridgeApp.SETTINGS['caldav_username'])
             self.ui.txt_reminder_address.setText(TaskBridgeApp.SETTINGS['caldav_server'])
@@ -548,6 +702,16 @@ class TaskBridgeApp(QMainWindow):
             self.ui.gb_reminders.setEnabled(False)
 
     def validate_login_form(self) -> tuple[bool, str]:
+        """
+        Validates the login form.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if form is valid.
+
+            -data (:py:class:`str`) - error message(s) if invalid input, or full CalDav path if valid.
+
+        """
         error = ""
         missing = []
 
@@ -578,7 +742,10 @@ class TaskBridgeApp(QMainWindow):
 
         return is_valid, full_path if is_valid else error
 
-    def handle_reminders_cancel(self):
+    def handle_reminders_cancel(self) -> None:
+        """
+        Prompts the user to save their reminder view changes. If cancelled, changes are discarded and reminder lists are reloaded.
+        """
         action = self._ask_question("Discard Changes?",
                                     "Are you sure you want to discard changes to reminder synchronisation settings?")
         if action == QMessageBox.StandardButton.Yes:
@@ -586,7 +753,10 @@ class TaskBridgeApp(QMainWindow):
             self.apply_reminders_settings()
             self.load_reminder_lists()
 
-    def handle_reminders_sync(self):
+    def handle_reminders_sync(self) -> None:
+        """
+        Triggered when the Sync Reminders checkbox is enabled or disabled and sets the reminders UI state.
+        """
         if self.ui.cb_reminders_sync.isChecked():
             TaskBridgeApp.SETTINGS['sync_reminders'] = '1'
 
@@ -604,7 +774,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.frm_reminders.setEnabled(False)
             self.ui.frm_caldav_login.setEnabled(False)
 
-    def handle_login(self):
+    def handle_login(self) -> None:
+        """
+        Processes the login form.
+        """
         valid, msg = self.validate_login_form()
         if not valid:
             TaskBridgeApp._show_message("Invalid Login Credentials", msg, 'error')
@@ -621,7 +794,13 @@ class TaskBridgeApp(QMainWindow):
         self.ui.gb_reminders.setEnabled(True)
         self.trigger_unsaved('reminders')
 
-    def handle_reminder_checkbox(self, row: int, col: int):
+    def handle_reminder_checkbox(self, row: int, col: int) -> None:
+        """
+        Triggered when a checkbox in the reminders table is checked and updates :py:att`SETTINGS`.
+
+        :param row: the row in the table containing this checkbox.
+        :param col: the column in the table containing this checkbox.
+        """
         cbox = self.ui.tbl_reminders.item(row, col)
         if not isinstance(cbox, ReminderCheckbox):
             return
@@ -633,19 +812,28 @@ class TaskBridgeApp(QMainWindow):
 
         self.trigger_unsaved('reminders')
 
-    def handle_prune_checkbox(self):
+    def handle_prune_checkbox(self) -> None:
+        """
+        Updates :py:att``SETTINGS`` when the Prune reminders checkbox is clicked.
+        """
         TaskBridgeApp.SETTINGS['prune_reminders'] = '1' if self.ui.cb_reminder_autoprune.isChecked() else '0'
         self.trigger_unsaved('reminders')
 
     # Sync Handling-----------------------------------------------------------------------------------------------------
-    def bootstrap_sync(self):
+    def bootstrap_sync(self) -> None:
+        """
+        Prepare the Sync view.
+        """
         self.ui.cb_sync_scheduled.clicked.connect(self.handle_sync_toggle)
         self.ui.cmb_sync_frequency.currentIndexChanged.connect(self.validate_autosync_form)
         self.apply_autosync_settings()
         self.ui.spn_sync_frequency.installEventFilter(self)
         self.ui.btn_sync_set_schedule.clicked.connect(self.set_autosync)
 
-    def do_sync(self):
+    def do_sync(self) -> None:
+        """
+        Start the sync thread.
+        """
         sync_reminders = TaskBridgeApp.SETTINGS['sync_reminders'] == '1'
         sync_notes = TaskBridgeApp.SETTINGS['sync_notes'] == '1'
         prune_reminders = TaskBridgeApp.SETTINGS['prune_reminders'] == '1'
@@ -662,7 +850,12 @@ class TaskBridgeApp(QMainWindow):
         self.sync_worker.progress_signal.connect(self.update_progress)
         self.sync_worker.start()
 
-    def validate_autosync_form(self):
+    def validate_autosync_form(self) -> None:
+        """
+        Validates the autosync form.
+
+        Valid sync intervals: 10-59 minutes, 1-12 hours.
+        """
         if self.ui.cmb_sync_frequency.currentText() == 'Minutes':
             self.ui.spn_sync_frequency.setMinimum(10)
             self.ui.spn_sync_frequency.setMaximum(59)
@@ -674,7 +867,10 @@ class TaskBridgeApp(QMainWindow):
             current_interval = self.ui.spn_sync_frequency.value()
             self.ui.spn_sync_frequency.setValue(current_interval if current_interval <= 12 else 12)
 
-    def set_autosync(self):
+    def set_autosync(self) -> None:
+        """
+        Updates :py:att`SETTINGS` for autosync.
+        """
         interval = self.ui.spn_sync_frequency.value()
         unit = self.ui.cmb_sync_frequency.currentText()
         TaskBridgeApp.SETTINGS['autosync'] = '1'
@@ -683,7 +879,13 @@ class TaskBridgeApp(QMainWindow):
         self.save_settings()
         self.start_autosync(interval, unit)
 
-    def start_autosync(self, interval: int, unit: str):
+    def start_autosync(self, interval: int, unit: str) -> None:
+        """
+        Starts the autosync thread.
+
+        :param interval: the interval specified by the user.
+        :param unit: the interval unit specified by the user. 'Minutes' or 'Hours'.
+        """
         seconds = 0
         delta = 0
         if unit == 'Minutes':
@@ -702,7 +904,10 @@ class TaskBridgeApp(QMainWindow):
         next_sync = datetime.datetime.now() + delta
         self.ui.lbl_sync_status.setText('Next Sync at {}.'.format(next_sync.strftime('%H:%M:%S')))
 
-    def apply_autosync_settings(self):
+    def apply_autosync_settings(self) -> None:
+        """
+        Loads autosync settings and applies to UI.
+        """
         if TaskBridgeApp.SETTINGS['autosync'] == '1':
             interval = TaskBridgeApp.SETTINGS['autosync_interval']
             unit = TaskBridgeApp.SETTINGS['autosync_unit']
@@ -712,7 +917,10 @@ class TaskBridgeApp(QMainWindow):
             self.ui.cb_sync_scheduled.setChecked(True)
             self.ui.gb_autosync.setEnabled(True)
 
-    def handle_sync_toggle(self):
+    def handle_sync_toggle(self) -> None:
+        """
+        Triggers when the autosync checkbox is clicked and sets UI state.
+        """
         if self.ui.cb_sync_scheduled.isChecked():
             self.ui.gb_autosync.setEnabled(True)
         else:
@@ -726,7 +934,10 @@ class TaskBridgeApp(QMainWindow):
             self.save_settings()
 
     # Tray Handling-----------------------------------------------------------------------------------------------------
-    def quit_gracefully(self):
+    def quit_gracefully(self) -> None:
+        """
+        Quits TaskBridge. Terminates all threads and clears schedule before quitting.
+        """
         if self.reminder_pw_worker:
             self.reminder_pw_worker.quit()
         if self.note_pw_worker:
@@ -741,22 +952,46 @@ class TaskBridgeApp(QMainWindow):
         sys.exit(0)
 
     # Thread Handling---------------------------------------------------------------------------------------------------
-    def update_status(self, status: str = "Currently idle."):
+    def update_status(self, status: str = "Currently idle.") -> None:
+        """
+        Updates the status label.
+
+        :param status: the status to set.
+        """
         self.ui.lbl_sync_status.setText(status)
 
-    def display_log(self, message: str):
+    def display_log(self, message: str) -> None:
+        """
+        Displays a log message.
+
+        :param message: the message to display.
+        """
         self.ui.txt_log_display.append(message)
         self.ui.txt_log_display.verticalScrollBar().setValue(self.ui.txt_log_display.verticalScrollBar().maximum())
 
-    def update_progress(self, progress: int):
+    def update_progress(self, progress: int) -> None:
+        """
+        Updates the progress bar.
+
+        :param progress: the progress value to set.
+        """
         self.ui.progressBar.setValue(progress)
 
-    def display_error(self, message: str):
+    def display_error(self, message: str) -> None:
+        """
+        Displays an error message coming from a thread during synchronisation tasks.
+
+        :param message: the message to display.
+        """
         self.ui.txt_log_display.append(message)
         self.ui.txt_log_display.verticalScrollBar().setValue(self.ui.txt_log_display.verticalScrollBar().maximum())
         self._show_message("Synchronisation Error", message, 'error')
 
-    def sync_complete(self):
+    def sync_complete(self) -> None:
+        """
+        Triggered when a sync is completed.
+        Sets next UI state.
+        """
         icon_path = "gui/assets/tray/bridge_white.png" if darkdetect.isDark() else "gui/assets/tray/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)

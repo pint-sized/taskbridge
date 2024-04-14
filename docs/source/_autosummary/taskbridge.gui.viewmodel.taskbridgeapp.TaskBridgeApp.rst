@@ -32,6 +32,7 @@ taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp
       ~TaskBridgeApp.display_reminders_table
       ~TaskBridgeApp.do_sync
       ~TaskBridgeApp.eventFilter
+      ~TaskBridgeApp.get_table_icon
       ~TaskBridgeApp.handle_folder_browse
       ~TaskBridgeApp.handle_login
       ~TaskBridgeApp.handle_note_checkbox
@@ -45,6 +46,7 @@ taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp
       ~TaskBridgeApp.load_note_folders
       ~TaskBridgeApp.load_reminder_lists
       ~TaskBridgeApp.load_settings
+      ~TaskBridgeApp.open_docs
       ~TaskBridgeApp.quit_gracefully
       ~TaskBridgeApp.refresh_notes
       ~TaskBridgeApp.refresh_reminders
@@ -52,8 +54,10 @@ taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp
       ~TaskBridgeApp.set_autosync
       ~TaskBridgeApp.set_logging_level
       ~TaskBridgeApp.set_note_folder_association
+      ~TaskBridgeApp.show_about
       ~TaskBridgeApp.start_autosync
       ~TaskBridgeApp.switch_sync_view
+      ~TaskBridgeApp.switch_ui
       ~TaskBridgeApp.sync_complete
       ~TaskBridgeApp.trigger_unsaved
       ~TaskBridgeApp.update_progress

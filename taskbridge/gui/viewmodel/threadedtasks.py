@@ -1,3 +1,7 @@
+"""
+Contains classes and functions which are run in a separate thread.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -20,10 +24,24 @@ from taskbridge.reminders.model import reminderscript
 
 # noinspection PyUnresolvedReferences
 class LoggingThread(QThread):
+    """
+    Used to collect logs.
+    """
+
+    #: Log messages are emitted to this signal.
     log_signal = pyqtSignal(str)
+    #: When set, causes this thread to stop.
     stop_logging = threading.Event()
 
     def __init__(self, logging_level: str, log_stdout: bool = False, log_file: bool = True, log_gui: bool = True):
+        """
+        Initialises the logging thread.
+
+        :param logging_level: the logging level which can be `DEBUG`, `INFO`, `WARNING` or `CRITICAL`.
+        :param log_stdout: if True, logs are sent to standard out.
+        :param log_file: if True, logs are sent to file.
+        :param log_gui: if True, logs are sent to a function which handles displaying logs in the GUI.
+        """
         super().__init__()
         self.logging_level: str = logging_level
         self.log_stdout: bool = log_stdout
@@ -32,7 +50,10 @@ class LoggingThread(QThread):
         self.logger: Logger = logging.getLogger()
         self.setup_logging()
 
-    def setup_logging(self):
+    def setup_logging(self) -> None:
+        """
+        Sets up the logging system as configured in the constructor.
+        """
         log_folder = Path.home() / "Library" / "Logs" / "TaskBridge"
         log_folder.mkdir(parents=True, exist_ok=True)
         log_file = datetime.now().strftime("TaskBridge_%Y%m%d-%H%M%S") + '.log'
@@ -56,24 +77,53 @@ class LoggingThread(QThread):
             func_handler = helpers.FunctionHandler(lambda msg: self.log_signal.emit(msg))
             logging.getLogger().addHandler(func_handler)
 
-    def set_logging_level(self, logging_level: str):
+    def set_logging_level(self, logging_level: str) -> None:
+        """
+        Changes the logging level.
+
+        :param logging_level: the desired logging level.
+        """
         self.logger.setLevel(logging_level)
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Keeps the logging thread running until it is stopped.
+        """
         while not self.stop_logging.is_set():
             time.sleep(1)
 
 
 # noinspection PyUnresolvedReferences
 class ReminderPreWarm(QThread):
+    """
+    Performs tasks required to allow the user to configure reminder synchronisation and prepare for synchronisation.
+    """
+
+    #: Log messages are sent to this signal.
     message_signal = pyqtSignal(str)
+    #: Error messages are sent to this signal.
     error_signal = pyqtSignal(str)
 
     def __init__(self, cb: Callable):
+        """
+        Initialises the pre-warm.
+
+        :param cb: function which is called when the pre-warm is complete.
+        """
         super().__init__()
         self.cb: Callable = cb
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Carries out the pre-warm tasks. This includes:
+
+        1. Connect ot the remote reminder server.
+        2. Fetch the local reminder lists.
+        3. Fetch the remote task calendars.
+        4. Synchronise deleted reminder lists and task calendars.
+        5. Associate reminder lists and tasks calendars.
+
+        """
         # Check if the Reminders app is running
         is_reminders_running_script = reminderscript.is_reminders_running_script
         return_code, stdout, stderr = helpers.run_applescript(is_reminders_running_script)
@@ -120,13 +170,32 @@ class ReminderPreWarm(QThread):
 
 # noinspection PyUnresolvedReferences
 class NotePreWarm(QThread):
+    """
+    Performs tasks required to allow the user to configure note synchronisation and prepare for synchronisation.
+    """
+
+    #: Log messages are sent to this signal.
     message_signal = pyqtSignal(str)
 
     def __init__(self, cb: Callable):
+        """
+        Initialises the pre-warm.
+
+        :param cb: function which is called when the pre-warm is complete.
+        """
         super().__init__()
         self.cb: Callable = cb
 
     def run(self):
+        """
+        Carries out the pre-warm tasks. This includes.
+
+        1. Fetch the local notes folders.
+        2. Fetch the remote notes folders.
+        3. Synchronise deleted folders.
+        4. Associate local and remote folders.
+        """
+
         # Check if the Notes app is running
         is_notes_running_script = notescript.is_notes_running_script
         return_code, stdout, stderr = helpers.run_applescript(is_notes_running_script)
@@ -169,17 +238,45 @@ class NotePreWarm(QThread):
 
 # noinspection PyUnresolvedReferences
 class Sync(QThread):
+    """
+    Thread which carries out the main synchronisation for both notes and reminders.
+    """
+
+    #: Log messages are sent to this signal.
     message_signal = pyqtSignal(str)
+    #: Progress updates are sent to this signal.
     progress_signal = pyqtSignal(int)
 
     def __init__(self, sync_reminders: bool, sync_notes: bool, cb: Callable, prune_reminders: bool = False):
+        """
+        Initialises the synchronisation process.
+
+        :param sync_reminders: if True, reminders will be synced.
+        :param sync_notes: if True, notes will be synced.
+        :param cb: function which is called after synchronisation is complete.
+        :param prune_reminders: if True, completed reminders are deleted before sync.
+        """
         super().__init__()
         self.sync_reminders: bool = sync_reminders
         self.sync_notes: bool = sync_notes
         self.cb: Callable = cb
         self.prune_reminders: bool = prune_reminders
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Carries out the synchronisation process.
+
+        For reminders, if enabled, this involves:
+        1. Pruning local completed reminders, if enabled.
+        2. Synchronising deleted reminders.
+        3. Synchronising reminders.
+        4. Saving reminders to the database.
+
+        For notes, if enabled, this involves:
+        1. Synchronising deleted notes.
+        2. Synchronising notes.
+
+        """
         progress = 0
         progress_increment = 25 if self.sync_reminders and self.sync_notes else 50
         self.progress_signal.emit(progress)
@@ -227,7 +324,16 @@ class Sync(QThread):
         self.cb()
 
 
-def run_continuously(interval=1):
+def run_continuously(interval=1) -> threading.Event():
+    """
+    Utility function which continuously calls ``schedule`` to run any pending tasks.
+
+    :param interval: interval between cycles.
+
+    :return: a threading event which can be used to stop the continuous run.
+    """
+
+    #: When set, the thread will be stopped
     cease_continuous_run = threading.Event()
 
     class ScheduleThread(threading.Thread):

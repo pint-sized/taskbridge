@@ -5,58 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/about.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.icns" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_128x128.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_128x128@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_16x16.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_16x16@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_256x256.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_256x256@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_32x32.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_32x32@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_512x512.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.iconset/icon_512x512@2x.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/TaskBridge_Icon.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/ios-arrow-round-up-7-512.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/ios-swap-7-512.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/local.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/local_and_remote_black.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/local_and_remote_white.xcf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/source/remote.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/bidirectional_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/bidirectional_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_and_remote_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_and_remote_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_to_remote_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_to_remote_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/local_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/remote_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/remote_to_local_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/remote_to_local_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/table/remote_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/tray/bridge_animated_black.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/tray/bridge_animated_white.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/tray/bridge_black.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/tray/bridge_white.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/ui/TaskBridge.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/ui/refresh.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/assets/ui/trash.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/ui_aboutwindow.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.TaskBridge.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.ui_aboutwindow.Ui_Dialog.rst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.ui_aboutwindow.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/TaskBridge.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/TaskBridge.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_black.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_animated_white.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_black.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/bridge_white.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/refresh.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/assets/trash.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/taskbridge.ui" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/taskbridge.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.app.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/source/_autosummary/taskbridge.gui.viewmodel.taskbridgeapp.TaskBridgeApp.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/TaskBridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/TaskBridge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/mainwindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/notecheckbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/notecheckbox.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/remindercheckbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/remindercheckbox.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/taskbridgeapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/taskbridgeapp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/ui_mainwindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/ui_mainwindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/threadedtasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/threadedtasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/gui/viewmodel/trayicon.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/gui/viewmodel/trayicon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/notes/model/notefolder.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/notes/model/notefolder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskbridge/reminders/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/taskbridge/reminders/controller.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +46,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="NamedScopeManager">
+    <scope name="MyCode" pattern="(file[TaskBridge]:taskbridge/reminders//*||file[TaskBridge]:taskbridge/notes//*||file:taskbridge/gui/__init__.py||file:taskbridge/gui/TaskBridge.py||file[TaskBridge]:taskbridge/gui/viewmodel//*)&amp;&amp;!file:taskbridge/gui/viewmodel/ui_mainwindow.py&amp;&amp;!file:taskbridge/gui/viewmodel/ui_aboutwindow.py" />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -89,29 +64,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Python docs.Generate Docs.executor": "Run",
-    "Python.Run App.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.app2.executor": "Run",
-    "Python.traytest.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Shell Script.py2app Alias.executor": "Run",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/keith/LocalCode/TaskBridge/taskbridge/gui/assets",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Python docs.Generate Docs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Run App.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.traytest.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Shell Script.py2app Alias.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/keith/LocalCode/TaskBridge/taskbridge/gui/assets&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python",
-      "PLAIN_TEXT"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;PLAIN_TEXT&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/taskbridge/gui/assets" />
@@ -128,7 +103,7 @@
       <recent name="$PROJECT_DIR$/taskbridge" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Run App">
+  <component name="RunManager" selected="Python docs.Generate Docs">
     <configuration name="Run App" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TaskBridge" />
       <option name="ENV_FILES" value="" />

@@ -1,4 +1,7 @@
-import os
+"""
+Main application entry point. Creates system tray icon and displays main window.
+"""
+
 import sys
 
 from PyQt6.QtGui import QIcon
@@ -12,7 +15,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     tb = TaskBridgeApp()
-    print(os.getcwd())
     icon_path = "taskbridge/gui/assets/tray/bridge_white.png" if darkdetect.isDark() else "taskbridge/gui/assets/tray/bridge_white.png"
     trayIcon = trayicon.TaskBridgeTray(QIcon(icon_path), tb)
     tb.tray_icon = trayIcon

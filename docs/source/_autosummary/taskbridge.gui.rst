@@ -26,6 +26,6 @@ taskbridge.gui
    :template: custom-module-template.rst
    :recursive:
 
-   taskbridge.gui.app
+   taskbridge.gui.TaskBridge
    taskbridge.gui.viewmodel
 

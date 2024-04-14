@@ -32,5 +32,6 @@ taskbridge.gui.viewmodel
    taskbridge.gui.viewmodel.taskbridgeapp
    taskbridge.gui.viewmodel.threadedtasks
    taskbridge.gui.viewmodel.trayicon
+   taskbridge.gui.viewmodel.ui_aboutwindow
    taskbridge.gui.viewmodel.ui_mainwindow
 

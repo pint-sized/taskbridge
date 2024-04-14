@@ -134,7 +134,7 @@ class NoteFolder:
         - ``local_added`` - name of notes added to the local folder as :py:class:`List[str]`.
         - ``local_updated`` - name of notes updated in the local folder as :py:class:`List[str]`.
 
-        Anh of the above may be empty if no such changes were made.
+        Any of the above may be empty if no such changes were made.
 
         :returns:
 
