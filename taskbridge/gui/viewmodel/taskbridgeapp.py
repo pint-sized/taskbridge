@@ -5,6 +5,7 @@ import json
 import os.path
 import re
 import sys
+import webbrowser
 from pathlib import Path
 from typing import List
 
@@ -12,10 +13,12 @@ import darkdetect
 import keyring
 import schedule
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtCore import QEvent, Qt
-from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox, QMainWindow
+from PyQt6.QtCore import QEvent, Qt, QSize
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QFileDialog, QMessageBox, QMainWindow, QDialog, QWidget
 
 from taskbridge import helpers
+from taskbridge.gui.viewmodel.ui_aboutwindow import Ui_Dialog
 from taskbridge.notes.controller import NoteController
 from taskbridge.notes.model.notefolder import NoteFolder
 from taskbridge.reminders.controller import ReminderController
@@ -114,6 +117,27 @@ class TaskBridgeApp(QMainWindow):
         action = ask.exec()
         return action
 
+    @staticmethod
+    def open_docs():
+        webbrowser.open("https://github.com/keithvassallomt/TaskBridge")
+
+    @staticmethod
+    def show_about():
+        dialog = QDialog()
+        dialog.ui = Ui_Dialog()
+        dialog.ui.setupUi(dialog)
+        dialog.ui.lbl_taskbridge_logo.setPixmap(QtGui.QPixmap('assets:ui/TaskBridge.png'))
+        dialog.setWindowFlags(dialog.windowFlags() | QtCore.Qt.WindowType.CustomizeWindowHint)
+        dialog.setWindowFlags(dialog.windowFlags() & ~QtCore.Qt.WindowType.WindowMaximizeButtonHint)
+        dialog.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        dialog.exec()
+
+    @staticmethod
+    def get_table_icon(image: str):
+        colour = 'white' if darkdetect.isDark() else 'black'
+        image_path = 'taskbridge/gui/assets/table/{0}_{1}.png'.format(image, colour)
+        return image_path
+
     def save_settings(self, what: str | None = None, silent: bool = True):
         if (what == 'reminders' and not self.ui.cb_reminder_autoprune.isChecked) and not silent:
             title = "Enable Completed Reminder Pruning?"
@@ -145,12 +169,18 @@ class TaskBridgeApp(QMainWindow):
         self.bootstrap_notes()
         self.bootstrap_reminders()
         self.bootstrap_sync()
+        self.ui.actionSync.triggered.connect(lambda: self.switch_ui(0))
+        self.ui.actionReminders.triggered.connect(lambda: self.switch_ui(1))
+        self.ui.actionNotes.triggered.connect(lambda: self.switch_ui(2))
+        self.ui.actionDocumentation.triggered.connect(TaskBridgeApp.open_docs)
+        self.ui.actionAbout_TaskBridge.triggered.connect(TaskBridgeApp.show_about)
+        self.ui.actionQuit_TaskBridge.triggered.connect(self.quit_gracefully)
         self.ui.cb_notes_sync.clicked.connect(self.handle_notes_sync)
         self.ui.cb_reminders_sync.clicked.connect(self.handle_reminders_sync)
-        self.ui.setWindowIcon(QtGui.QIcon('assets:TaskBridge.png'))
-        self.ui.btn_notes_refresh.setIcon(QtGui.QIcon('assets:refresh.png'))
-        self.ui.btn_clear_logs.setIcon(QtGui.QIcon('assets:trash.png'))
-        self.ui.lbl_sync_graphic.setPixmap(QtGui.QPixmap('assets:TaskBridge.png'))
+        self.ui.setWindowIcon(QtGui.QIcon('assets:ui/TaskBridge.png'))
+        self.ui.btn_notes_refresh.setIcon(QtGui.QIcon('assets:ui/refresh.png'))
+        self.ui.btn_clear_logs.setIcon(QtGui.QIcon('assets:ui/trash.png'))
+        self.ui.lbl_sync_graphic.setPixmap(QtGui.QPixmap('assets:ui/TaskBridge.png'))
         self.ui.lbl_sync_graphic.setScaledContents(True)
         self.ui.btn_clear_logs.clicked.connect(self.clear_logs)
         self.ui.tab_container.currentChanged.connect(self.check_changes)
@@ -158,6 +188,31 @@ class TaskBridgeApp(QMainWindow):
         self.ui.cmb_sync_log_level.setCurrentText(TaskBridgeApp.SETTINGS['log_level'].title())
         self.ui.cmb_sync_log_level.currentIndexChanged.connect(self.set_logging_level)
         self.ui.btn_sync.clicked.connect(self.do_sync)
+
+        # Note view handlers
+        self.ui.btn_notes_choose.clicked.connect(self.handle_folder_browse)
+        self.ui.btn_notes_save.clicked.connect(lambda: self.save_settings("notes", False))
+        self.ui.btn_notes_cancel.clicked.connect(self.handle_notes_cancel)
+        self.ui.btn_notes_refresh.clicked.connect(self.load_note_folders)
+        self.ui.tbl_notes.cellClicked.connect(self.handle_note_checkbox)
+        self.ui.txt_notes_folder.installEventFilter(self)
+
+        # Reminder view handlers
+        self.ui.btn_reminder_save.clicked.connect(lambda: self.save_settings("reminders", False))
+        self.ui.btn_reminder_cancel.clicked.connect(self.handle_reminders_cancel)
+        self.ui.btn_reminder_login.clicked.connect(self.handle_login)
+        self.ui.tbl_reminders.cellClicked.connect(self.handle_reminder_checkbox)
+        for widget in self.login_widgets:
+            widget.installEventFilter(self)
+        self.ui.rb_server_caldav.clicked.connect(lambda: self.trigger_unsaved("reminders"))
+        self.ui.rb_server_nextcloud.clicked.connect(lambda: self.trigger_unsaved("reminders"))
+        self.ui.cb_reminder_autoprune.clicked.connect(self.handle_prune_checkbox)
+
+    def switch_ui(self, index: int):
+        menus = [self.ui.actionSync, self.ui.actionReminders, self.ui.actionNotes]
+        self.ui.tab_container.setCurrentIndex(index)
+        for i in range(len(menus)):
+            menus[i].setChecked(True) if i == index else menus[i].setChecked(False)
 
     def clear_logs(self):
         self.ui.txt_log_display.clear()
@@ -214,11 +269,21 @@ class TaskBridgeApp(QMainWindow):
 
         # Making changes to the reminder login form triggers unsaved changes
         if event.type() == QEvent.Type.KeyRelease and widget in self.login_widgets:
-            TaskBridgeApp.PENDING_CHANGES = True
+            self.trigger_unsaved('reminders')
 
         # Changing the autosync frequency revalidates the form
         if event.type() == QEvent.Type.FocusOut and widget == self.ui.spn_sync_frequency:
             self.validate_autosync_form()
+
+        # Changing the remote notes folder triggers unsaved changes
+        if event.type() == QEvent.Type.KeyRelease and widget == self.ui.txt_notes_folder:
+            self.trigger_unsaved('notes')
+            self.ui.frm_notes.setEnabled(True)
+
+        # Tabbing out of the remote folder triggers refresh TODO check
+        if event.type() == QEvent.Type.KeyPress and widget == self.ui.txt_notes_folder:
+            if event.key() == Qt.Key.Key_Tab:
+                self.load_note_folders()
 
         return False
 
@@ -253,13 +318,20 @@ class TaskBridgeApp(QMainWindow):
             self.ui.frm_notes.setEnabled(False)
 
     def bootstrap_notes(self):
+        self.ui.tbl_notes.setColumnCount(5)
         self.ui.tbl_notes.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.ui.btn_notes_choose.clicked.connect(self.handle_folder_browse)
-        self.ui.btn_notes_save.clicked.connect(lambda: self.save_settings("notes", False))
-        self.ui.btn_notes_cancel.clicked.connect(self.handle_notes_cancel)
-        self.ui.btn_notes_refresh.clicked.connect(self.load_note_folders)
-        self.ui.tbl_notes.cellClicked.connect(self.handle_note_checkbox)
-
+        self.ui.tbl_notes.setHorizontalHeaderItem(0, QTableWidgetItem('Folder'))
+        self.ui.tbl_notes.setHorizontalHeaderItem(1, QTableWidgetItem('Location'))
+        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('local_to_remote')))
+        self.ui.tbl_notes.setHorizontalHeaderItem(2, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
+        self.ui.tbl_notes.horizontalHeaderItem(2).setToolTip('Sync local notes to remote')
+        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('remote_to_local')))
+        self.ui.tbl_notes.setHorizontalHeaderItem(3, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
+        self.ui.tbl_notes.horizontalHeaderItem(3).setToolTip('Sync remote notes to local')
+        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('bidirectional')))
+        self.ui.tbl_notes.setHorizontalHeaderItem(4, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
+        self.ui.tbl_notes.horizontalHeaderItem(4).setToolTip('Bi-directional sync')
+        self.ui.tbl_notes.setIconSize(QSize(56, 56))
         self.refresh_notes()
 
     def refresh_notes(self):
@@ -276,15 +348,20 @@ class TaskBridgeApp(QMainWindow):
     def apply_notes_settings(self):
         if TaskBridgeApp.SETTINGS['sync_notes'] == '1':
             self.ui.txt_notes_folder.setText(str(TaskBridgeApp.SETTINGS['remote_notes_folder']))
-            if TaskBridgeApp.SETTINGS['prune_reminders'] == '1':
-                self.ui.cb_reminder_autoprune.setChecked(True)
             self.ui.cb_notes_sync.setChecked(True)
         else:
-            self.ui.cb_notes_sync.setChecked(True)
+            self.ui.cb_notes_sync.setChecked(False)
             self.ui.gb_notes.setEnabled(False)
             self.ui.frm_notes.setEnabled(False)
 
     def load_note_folders(self):
+        if self.note_pw_worker.isRunning():
+            return
+
+        if not os.path.exists(self.ui.txt_notes_folder.text()):
+            TaskBridgeApp._show_message("Notes Folder Not Found", "Could not find the specified notes folder", "error")
+            return
+
         # Set fields
         NoteController.REMOTE_NOTE_FOLDER = Path(TaskBridgeApp.SETTINGS['remote_notes_folder'])
         NoteController.ASSOCIATIONS = TaskBridgeApp.SETTINGS['associations']
@@ -306,12 +383,15 @@ class TaskBridgeApp(QMainWindow):
             if folder.local_folder is not None and folder.remote_folder is None:
                 name = folder.local_folder.name
                 location = 'Local'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('local'))
             elif folder.local_folder is None and folder.remote_folder is not None:
                 name = folder.remote_folder.name
                 location = 'Remote'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('remote'))
             elif folder.local_folder is not None and folder.remote_folder is not None:
                 name = folder.local_folder.name
                 location = 'Local & Remote'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('local_and_remote'))
             else:
                 self.display_log("Warning: One of your notes folders could not be found locally or remotely.")
                 continue
@@ -319,7 +399,7 @@ class TaskBridgeApp(QMainWindow):
             assoc = TaskBridgeApp.SETTINGS['associations']
             self.ui.tbl_notes.insertRow(row)
             self.ui.tbl_notes.setItem(row, 0, QTableWidgetItem(name))
-            self.ui.tbl_notes.setItem(row, 1, QTableWidgetItem(location))
+            self.ui.tbl_notes.setItem(row, 1, QTableWidgetItem(location_icon, None, QTableWidgetItem.ItemType.UserType))
             self.ui.tbl_notes.setItem(row, 2, NoteCheckBox(check_type='local_to_remote', location=location,
                                                            folder_name=name, associations=assoc))
             self.ui.tbl_notes.setItem(row, 3, NoteCheckBox(check_type='remote_to_local', location=location,
@@ -372,27 +452,20 @@ class TaskBridgeApp(QMainWindow):
         remote_notes_folder = QFileDialog.getExistingDirectory(None, 'Select Remote Notes Folder')
         TaskBridgeApp.SETTINGS['remote_notes_folder'] = remote_notes_folder
         self.ui.txt_notes_folder.setText(remote_notes_folder)
-        TaskBridgeApp.PENDING_CHANGES = True
+        self.trigger_unsaved('notes')
 
     def handle_notes_cancel(self):
         action = self._ask_question("Discard Changes?", "Are you sure you want to discard changes to note synchronisation settings?")
         if action == QMessageBox.StandardButton.Yes:
             TaskBridgeApp.load_settings()
             self.apply_notes_settings()
-            self.load_note_folders()
+            if TaskBridgeApp.SETTINGS['sync_notes'] == '1':
+                self.load_note_folders()
 
     # REMINDER HANDLING ------------------------------------------------------------------------------------------------
     def bootstrap_reminders(self):
         self.ui.tbl_reminders.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.ui.btn_reminder_save.clicked.connect(lambda: self.save_settings("reminders", False))
-        self.ui.btn_reminder_cancel.clicked.connect(self.handle_reminders_cancel)
-        self.ui.btn_reminder_login.clicked.connect(self.handle_login)
-        self.ui.tbl_reminders.cellClicked.connect(self.handle_reminder_checkbox)
-        for widget in self.login_widgets:
-            widget.installEventFilter(self)
-        self.ui.rb_server_caldav.clicked.connect(lambda: self.trigger_unsaved("reminders"))
-        self.ui.rb_server_nextcloud.clicked.connect(lambda: self.trigger_unsaved("reminders"))
-        self.ui.cb_reminder_autoprune.clicked.connect(self.handle_prune_checkbox)
+        self.ui.tbl_reminders.setIconSize(QSize(28, 28))
         self.refresh_reminders()
 
     def refresh_reminders(self):
@@ -410,6 +483,9 @@ class TaskBridgeApp(QMainWindow):
             self.ui.frm_caldav_login.setEnabled(True)
 
     def load_reminder_lists(self):
+        if self.reminder_pw_worker.isRunning():
+            return
+
         # Set fields
         ReminderController.CALDAV_USERNAME = TaskBridgeApp.SETTINGS['caldav_username']
         ReminderController.CALDAV_URL = TaskBridgeApp.SETTINGS['caldav_url']
@@ -429,16 +505,17 @@ class TaskBridgeApp(QMainWindow):
         # Display containers in table
         self.ui.tbl_reminders.setRowCount(0)
         row = 0
+
         for container in container_list:
             if container.local_list is not None and container.remote_calendar is None:
                 name = container.local_list.name
-                location = 'Local'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('local'))
             elif container.local_list is None and container.remote_calendar is not None:
                 name = container.remote_calendar.name
-                location = 'Remote'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('remote'))
             elif container.local_list is not None and container.remote_calendar is not None:
                 name = container.local_list.name
-                location = 'Local & Remote'
+                location_icon = QIcon(TaskBridgeApp.get_table_icon('local_and_remote'))
             else:
                 self.display_log("Warning: One of your reminder containers could not be found locally or remotely.")
                 continue
@@ -446,7 +523,7 @@ class TaskBridgeApp(QMainWindow):
             cbox = ReminderCheckbox(name, TaskBridgeApp.SETTINGS['reminder_sync'])
             self.ui.tbl_reminders.insertRow(row)
             self.ui.tbl_reminders.setItem(row, 0, QTableWidgetItem(name))
-            self.ui.tbl_reminders.setItem(row, 1, QTableWidgetItem(location))
+            self.ui.tbl_reminders.setItem(row, 1, QTableWidgetItem(location_icon, None, QTableWidgetItem.ItemType.UserType))
             self.ui.tbl_reminders.setItem(row, 2, cbox)
 
     def apply_reminders_settings(self):
@@ -554,7 +631,7 @@ class TaskBridgeApp(QMainWindow):
         else:
             TaskBridgeApp.SETTINGS['reminder_sync'].remove(cbox.container_name)
 
-        TaskBridgeApp.PENDING_CHANGES = True
+        self.trigger_unsaved('reminders')
 
     def handle_prune_checkbox(self):
         TaskBridgeApp.SETTINGS['prune_reminders'] = '1' if self.ui.cb_reminder_autoprune.isChecked() else '0'
@@ -577,7 +654,7 @@ class TaskBridgeApp(QMainWindow):
             return
 
         self.ui.btn_sync.setEnabled(False)
-        icon_path = "taskbridge/gui/assets/bridge_animated_white.gif" if darkdetect.isDark() else "taskbridge/gui/assets/bridge_animated_black.gif"
+        icon_path = "taskbridge/gui/assets/tray/bridge_animated_white.gif" if darkdetect.isDark() else "taskbridge/gui/assets/tray/bridge_animated_black.gif"
         self.tray_icon.set_animated_icon(icon_path)
         self.ui.lbl_sync_status.setText("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)
@@ -680,7 +757,7 @@ class TaskBridgeApp(QMainWindow):
         self._show_message("Synchronisation Error", message, 'error')
 
     def sync_complete(self):
-        icon_path = "gui/assets/bridge_white.png" if darkdetect.isDark() else "gui/assets/bridge_white.png"
+        icon_path = "gui/assets/tray/bridge_white.png" if darkdetect.isDark() else "gui/assets/tray/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':

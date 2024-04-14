@@ -13,7 +13,7 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
     tb = TaskBridgeApp()
     print(os.getcwd())
-    icon_path = "taskbridge/gui/assets/bridge_white.png" if darkdetect.isDark() else "taskbridge/gui/assets/bridge_white.png"
+    icon_path = "taskbridge/gui/assets/tray/bridge_white.png" if darkdetect.isDark() else "taskbridge/gui/assets/tray/bridge_white.png"
     trayIcon = trayicon.TaskBridgeTray(QIcon(icon_path), tb)
     tb.tray_icon = trayIcon
     app.exec()

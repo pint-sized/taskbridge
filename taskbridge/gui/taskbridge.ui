@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>623</width>
-    <height>681</height>
+    <height>685</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
     <item alignment="Qt::AlignTop">
      <widget class="QTabWidget" name="tab_container">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_sync">
        <attribute name="title">
@@ -690,67 +690,6 @@ hr { height: 1px; border-width: 0; }
              <attribute name="verticalHeaderVisible">
               <bool>false</bool>
              </attribute>
-             <row>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </row>
-             <column>
-              <property name="text">
-               <string>Folder Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Location</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Local -&gt; Remote</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Local &lt;- Remote</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Bidirectional</string>
-              </property>
-             </column>
-             <item row="0" column="0">
-              <property name="text">
-               <string>Notes</string>
-              </property>
-             </item>
-             <item row="0" column="1">
-              <property name="text">
-               <string>Local</string>
-              </property>
-             </item>
-             <item row="0" column="2">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="checkState">
-               <enum>Unchecked</enum>
-              </property>
-             </item>
-             <item row="0" column="3">
-              <property name="checkState">
-               <enum>Unchecked</enum>
-              </property>
-             </item>
-             <item row="0" column="4">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="checkState">
-               <enum>Checked</enum>
-              </property>
-             </item>
             </widget>
            </item>
           </layout>
@@ -834,11 +773,19 @@ hr { height: 1px; border-width: 0; }
      <string>View</string>
     </property>
     <addaction name="actionSync"/>
-    <addaction name="actionCofigure"/>
-    <addaction name="actionConfigure_Notes"/>
+    <addaction name="actionReminders"/>
+    <addaction name="actionNotes"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuTaskBridge">
+    <property name="title">
+     <string>TaskBridge</string>
+    </property>
+    <addaction name="actionQuit_TaskBridge"/>
    </widget>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuTaskBridge"/>
   </widget>
   <action name="actionOink">
    <property name="text">
@@ -866,17 +813,25 @@ hr { height: 1px; border-width: 0; }
     <string>Sync</string>
    </property>
   </action>
-  <action name="actionCofigure">
+  <action name="actionReminders">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Configure Reminders</string>
+    <string>Reminders</string>
    </property>
   </action>
-  <action name="actionConfigure_Notes">
+  <action name="actionNotes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Configure Notes</string>
+    <string>Notes</string>
+   </property>
+  </action>
+  <action name="actionQuit_TaskBridge">
+   <property name="text">
+    <string>Quit TaskBridge</string>
    </property>
   </action>
  </widget>
