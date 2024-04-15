@@ -232,3 +232,6 @@ fabric.properties
 
 # OS Stuff
 .DS_Store
+
+# Other Stuff
+./risky.sh
