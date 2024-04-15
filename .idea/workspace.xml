@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a18c6fa-1491-41be-85aa-abece4959eb4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.readthedocs.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,29 +42,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Python docs.Generate Docs.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Run App.executor&quot;: &quot;Run&quot;,
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.app2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.traytest.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Shell Script.py2app Alias.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/keith/LocalCode/TaskBridge/taskbridge/gui/assets&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Python docs.Generate Docs.executor": "Run",
+    "Python.Run App.executor": "Run",
+    "Python.app.executor": "Run",
+    "Python.app2.executor": "Run",
+    "Python.traytest.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Shell Script.py2app Alias.executor": "Run",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/keith/LocalCode/pintsized/TaskBridge",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "Errors"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;,
-      &quot;PLAIN_TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python",
+      "PLAIN_TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/taskbridge/gui/assets" />
@@ -203,11 +204,11 @@
     </configuration>
     <list>
       <item itemvalue="Python.Run App" />
+      <item itemvalue="Python docs.Generate Docs" />
       <item itemvalue="Shell Script.Poetry Build" />
       <item itemvalue="Shell Script.Update Lock" />
       <item itemvalue="Shell Script.py2app Alias" />
       <item itemvalue="Shell Script.py2app Final" />
-      <item itemvalue="Python docs.Generate Docs" />
     </list>
     <recent_temporary>
       <list>
