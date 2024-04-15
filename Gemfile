@@ -1,6 +1,5 @@
 source "https://rubygems.org"
 
-gem "jekyll-theme-slate"
 gem "github-pages", "~> 231", group: :jekyll_plugins
 # If you have any plugins, put them here!
 group :jekyll_plugins do
