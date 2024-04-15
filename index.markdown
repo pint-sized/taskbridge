@@ -4,3 +4,6 @@
 
 layout: home
 ---
+This is the front page of the TaskBridge user documentation.
+
+This is some **bold** text.
