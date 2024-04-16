@@ -998,7 +998,7 @@ class TaskBridgeApp(QMainWindow):
         Triggered when a sync is completed.
         Sets next UI state.
         """
-        icon_path = "gui/assets/tray/bridge_white.png" if darkdetect.isDark() else "gui/assets/tray/bridge_white.png"
+        icon_path = "gui/assets/tray/bridge_black.png" if darkdetect.isDark() else "gui/assets/tray/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':
