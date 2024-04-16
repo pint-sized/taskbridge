@@ -201,10 +201,10 @@ class ReminderController:
                 logging.critical(error)
                 return False, error
         debug_msg = "Reminder synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
-                ','.join(data['remote_added']),
-                ', '.join(data['remote_updated']),
-                ', '.join(data['local_added']),
-                ', '.join(data['local_updated']))
+                ','.join(data['remote_added'] if 'remote_added' in data else ['No remote reminders added']),
+                ', '.join(data['remote_updated'] if 'remote_updated' in data else ['No remote reminders updated']),
+                ', '.join(data['local_added'] if 'local_added' in data else ['No local reminders added']),
+                ', '.join(data['local_updated'] if 'local_updated' in data else ['No local reminders updated']))
         logging.debug(debug_msg)
         return True, data
 

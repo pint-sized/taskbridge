@@ -500,8 +500,11 @@ class TaskBridgeApp(QMainWindow):
 
         :param folder_list: List of note folders to display.
         """
-        self.ui.lbl_sync_status.setText("Currently Idle.")
-        self.ui.btn_sync.setEnabled(True)
+        self.note_pw_worker.quit()
+        if not self.reminder_pw_worker.isRunning():
+            self.ui.lbl_sync_status.setText("Currently Idle.")
+            self.ui.btn_sync.setEnabled(True)
+
         # Display folders in table
         self.ui.tbl_notes.setRowCount(0)
         NoteCheckBox.CB_LIST.clear()
@@ -651,8 +654,11 @@ class TaskBridgeApp(QMainWindow):
 
         :param container_list: the list of reminder containers.
         """
-        self.ui.lbl_sync_status.setText("Currently Idle.")
-        self.ui.btn_sync.setEnabled(True)
+        self.reminder_pw_worker.quit()
+        if not self.note_pw_worker.isRunning():
+            self.ui.lbl_sync_status.setText("Currently Idle.")
+            self.ui.btn_sync.setEnabled(True)
+
         # Display containers in table
         self.ui.tbl_reminders.setRowCount(0)
         row = 0

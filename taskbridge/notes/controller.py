@@ -134,10 +134,10 @@ class NoteController:
             logging.critical(error)
             return False, error
         debug_msg = "Deleted notes synchronisation:: Deleted Local: {} | Deleted Remote: {} | Remote Not Found: {} | Local Not Found: {}".format(
-                ','.join(data['local_deleted']),
-                ','.join(data['remote_deleted']),
-                ','.join(data['remote_not_found']),
-                ','.join(data['local_not_found'])
+                ','.join(data['local_deleted'] if 'local_deleted' in data else ['No local notes deleted']),
+                ','.join(data['remote_deleted'] if 'remote_deleted' in data else ['No remote notes deleted']),
+                ','.join(data['remote_not_found'] if 'remote_not_found' in data else ['All remote notes found']),
+                ','.join(data['local_not_found'] if 'local_not_found' in data else ['No local notes found'])
             )
         logging.debug(debug_msg)
         return True, debug_msg
@@ -170,10 +170,10 @@ class NoteController:
                 return False, error
 
         debug_msg = "Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
-                ','.join(data['remote_added']),
-                ','.join(data['remote_updated']),
-                ','.join(data['local_added']),
-                ','.join(data['local_updated'])
+                ','.join(data['remote_added'] if 'remote_added' in data else ['No remote notes added']),
+                ','.join(data['remote_updated'] if 'remote_updated' in data else ['No remote notes updated']),
+                ','.join(data['local_added'] if 'local_added' in data else ['No local notes added']),
+                ','.join(data['local_updated'] if 'local_updated' in data else ['No local notes updated'])
             )
         logging.debug(debug_msg)
         return True, data

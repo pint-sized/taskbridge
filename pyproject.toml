@@ -21,7 +21,7 @@ homepage = "https://taskbridge.app/"
 repository = "https://github.com/keithvassallomt/TaskBridge"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 PyQt6 = "^6.6.1"
 darkdetect = "^0.8.0"
 keyring = "^25.1.0"

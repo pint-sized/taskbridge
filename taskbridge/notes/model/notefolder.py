@@ -143,15 +143,14 @@ class NoteFolder:
             -data (:py:class:`str` | :py:class:`dict`) - error message on failure, or :py:class:`dict` with results as above.
 
         """
-        if self.sync_direction == NoteFolder.SYNC_NONE:
-            return True, 'Folder {} is set to NO SYNC so skipped'.format(self.local_folder.name)
-
         result = {
             'remote_added': [],
             'remote_updated': [],
             'local_added': [],
             'local_updated': []
         }
+        if self.sync_direction == NoteFolder.SYNC_NONE:
+            return True, result
 
         def sync_local_to_remote(local: Note, remote: Note | None) -> tuple[bool, str]:
             if remote is None or local.modified_date > remote.modified_date:
@@ -175,7 +174,8 @@ class NoteFolder:
                         return False, i_data
                     result[key].append(local.name)
                     return True, i_data
-                return True, ''
+                return True, 'Note synchronised'
+            return True, 'Sync skipped since local note has been modified.'
 
         # Sync local notes to remote
         for local_note in self.local_notes:
@@ -702,7 +702,7 @@ class NoteFolder:
                                         if note_object is not None:
                                             folder.local_notes.remove(note_object)
                                         if return_code != 0:
-                                            result['local_note_found'].append(row['name'])
+                                            result['local_not_found'].append(row['name'])
                                         else:
                                             result['local_deleted'].append(row['name'])
                 except sqlite3.OperationalError as e:

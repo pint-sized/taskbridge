@@ -1,3 +1,4 @@
+
 """
 Contains the ``Note`` class, which represents a note (whether local or remote), and the ``Attachment`` class, which
 represents an attachment within a note.
@@ -179,7 +180,7 @@ class Note:
         """
         html = ""
         remote_lines.pop(0)  # First line is note name
-        image_list = [attachment for attachment in attachments if attachment.file_type == Attachment.TYPE_IMAGE]
+        image_list = [attachment for attachment in attachments if attachment and attachment.file_type == Attachment.TYPE_IMAGE]
         image_index = 0
         for idx in range(len(remote_lines)):
             line = remote_lines[idx]
@@ -303,7 +304,7 @@ class Attachment:
     _SUPPORTED_IMAGE_TYPES = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.apng',
                               '.avif', '.bmp', '.ico', '.tiff', '.svg']
 
-    def __init__(self, file_type: int = '', file_name: str = '', url: str = '', b64_data: str = '', uuid: str = ''):
+    def __init__(self, file_type: int = '', file_name: str = '', url: str = '', b64_data: str | None = None, uuid: str = ''):
         """
         Creates a new instance of Attachment.
 
@@ -398,16 +399,13 @@ class Attachment:
         return result
 
     @staticmethod
-    def parse_remote(attachments: List[Attachment]) -> List[Attachment] | tuple[bool, str]:
+    def parse_remote(attachments: List[Attachment]) -> List[Attachment]:
         """
         Parses attachments from a remote note and updates Attachment fields
 
         :param attachments: the list of attachments from the file
-        :returns:
 
-            -success (:py:class:`bool`) - true if the note is successfully parsed.
-
-            -data (:py:class:`str` | List[Attachment]) - error message on failure or List[Attachment].
+        :return: the list of parsed attachments for this note
 
         """
         result = []
@@ -415,8 +413,6 @@ class Attachment:
             f_name, f_ext = os.path.splitext(attachment.file_name)
             if f_ext in Attachment._SUPPORTED_IMAGE_TYPES:
                 attachment.b64_data = Attachment._get_remote_image(attachment.url)
-                if attachment.b64_data is None:
-                    return False, "Warning, could not find Base64 data for image {}".format(attachment.file_name)
                 attachment.uuid = helpers.get_uuid() + f_ext
             result.append(attachment)
         return result
@@ -459,8 +455,8 @@ class Attachment:
         try:
             with open(url, "rb") as fp:
                 encoded_string = base64.b64encode(fp.read()).decode('utf-8')
-                return encoded_string
-        except ValueError | TypeError:
+                return encoded_string if encoded_string != '' else None
+        except FileNotFoundError:
             return None
 
     @staticmethod
