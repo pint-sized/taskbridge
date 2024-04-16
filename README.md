@@ -4,13 +4,16 @@ Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - an
 
 [![Documentation Status](https://readthedocs.org/projects/taskbridge/badge/?version=latest)](https://taskbridge.readthedocs.io/en/latest/?badge=latest)
 
-Apple Notes & Reminders are great apps... as long as you're using them in the Apple ecosystem. If you need access to these 
-apps from Windows, Linux or an Android device, you're stuck using web apps. TaskBridge is a small attempt at solving this
+Apple Notes & Reminders are great apps... as long as you're using them in the Apple ecosystem. If you need access to your 
+data from Windows, Linux or an Android device, you're stuck using web apps. TaskBridge is an attempt at solving this
 problem, by allowing notes and reminders to be synchronised to other cloud services which can more easily be accessed on 
 multiple devices. 
 
+> TaskBridge is in no way affiliated-with or endorsed by Apple, Inc.
+
 
 ![screenflow_sync.gif](docs/screenflow_sync.gif)  ![screenflow_notes.gif](docs/screenflow_notes.gif)  ![screenflow_reminders.gif](docs/screenflow_reminders.gif)
+
 ## Current Sync Support
 
 - Apple Notes can be synchronised with NextCloud Notes, or any other Markdown folder.
@@ -18,7 +21,7 @@ multiple devices.
 
 ## Documentation
 
-- For full user documentation, please see [TaskBridge User Documentation](https://docs.taskbridge.app).
+- For full user documentation, see [TaskBridge User Documentation](https://docs.taskbridge.app).
 - For technical documentation, see [TaskBridge on Read the Docs](https://taskbridge.readthedocs.io).
 
 ## Limitations
@@ -29,7 +32,7 @@ This is unfortunate, but a reality.
 You should therefore be aware of the following limitations:
 
 ### Notes
-- Only image and URL attachments are supported. This is due to the closed way that other attachment types are handled by Apple Notes, and the fact that NextCloud notes do not support other attachment types.
+- Only image and URL attachments are supported. This is due to the closed way that other attachment types are handled by Apple Notes, and the fact that NextCloud Notes does not support other attachment types.
 - Todo items (i.e. items with a checkable box) are not supported, and will be converted to bullets once synchronised. This is due to the closed (and undocumented) way that Apple Notes handles these items.
 
 ### Reminders
@@ -63,47 +66,47 @@ and logged into iCloud for synchronisation functions to work.
 1.  Install [Homebrew](https://brew.sh/).
 
 2. Install Git:
-        
-        brew install git
+
+       brew install git
 
 3. Clone this repository:
 
-        git clone https://github.com/pint-sized/taskbridge.git
+       git clone https://github.com/pint-sized/taskbridge.git
 
 4. Install Poetry:
 
-        pipx install poetry
+       pipx install poetry
 
 5. Active the virtual environment:
 
-        cd /path/to/TaskBridge
-        poetry shell
+       cd /path/to/TaskBridge
+       poetry shell
 
 6. Install dependencies:
 
-        poetry install
+       poetry install
 
-7. Useful commands (especially if you're not using PyCharm):
+### Useful commands
 
 Run TaskBridge: 
 
-        python taskbridge/gui/TaskBridge.py
+    python taskbridge/gui/TaskBridge.py
 
 Build:
 
-        poetry run poetry build
+    poetry run poetry build
 
 Update lock file (after changing `pyproject.toml`):
 
-        poetry run poetry lock
+    poetry run poetry lock
 
 Generate App file (alias):
 
-        python setup.py py2app -A
+    python setup.py py2app -A
 
 Generate App file (production):
 
-        python setup.py py2app
+    python setup.py py2app
 
 ## FAQ
 
@@ -125,7 +128,7 @@ Do I have to keep my Mac switched on if I use scheduled reminders?
 : Yes.
 
 Why does TaskBridge prompt me to prune completed reminders?
-: For some reason, the Apple Reminders app is extremely slow to respond when there are many active reminders. For most people, 
+: For some reason, the Apple Reminders app is extremely slow to respond when there are many stored reminders. For most people, 
 the majority of their reminders are in the Completed section. Clearing this out greatly improves performance. Even with just 20-or-so 
 completed reminders, Reminder synchronisation takes **considerably** longer.
 
