@@ -581,6 +581,28 @@ class ReminderContainer:
         return True, "Local reminders deleted."
 
     @staticmethod
+    def get_saved_reminders() -> tuple[bool, str] | tuple[bool, List[sqlite3.Row]]:
+        """
+        Get the list of saved reminders from the database.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if database reminders are successfully loaded
+
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure or list of saved reminders.
+
+        """
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_get_reminders = "SELECT * FROM tb_reminder"
+                    saved_reminders = cursor.execute(sql_get_reminders).fetchall()
+        except sqlite3.OperationalError as e:
+            return False, 'Error retrieving reminders from table: {}'.format(e)
+        return True, saved_reminders
+
+    @staticmethod
     def sync_reminder_deletions() -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises deletions to reminders.
@@ -623,14 +645,10 @@ class ReminderContainer:
             'deleted_remote_reminders': []
         }
 
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    sql_get_reminders = "SELECT * FROM tb_reminder"
-                    saved_reminders = cursor.execute(sql_get_reminders).fetchall()
-        except sqlite3.OperationalError as e:
-            return False, 'Error retrieving reminders from table: {}'.format(e)
+        success, data = ReminderContainer.get_saved_reminders()
+        if not success:
+            return False, data
+        saved_reminders = data
 
         if not len(saved_reminders) > 0:
             return True, result
@@ -710,6 +728,74 @@ class ReminderContainer:
 
         return True, len(self.remote_reminders)
 
+    def sync_local_reminders_to_remote(self, result: dict):
+        """
+        Sync local reminders to remote tasks.
+
+        :param result: dictionary where actions are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        for local_reminder in self.local_reminders:
+            # Get the associated remote reminder, if any
+            remote_reminder = next((r for r in self.remote_reminders
+                                    if r.uuid == local_reminder.uuid or r.name == local_reminder.name), None)
+            if remote_reminder is None or local_reminder.modified_date > remote_reminder.modified_date:
+                key = 'remote_added' if remote_reminder is None else 'remote_updated'
+                remote_reminder = copy.deepcopy(local_reminder)
+                if helpers.confirm("Upsert remote reminder {}".format(remote_reminder.name)):
+                    success, data = remote_reminder.upsert_remote(self)
+                    if not success:
+                        return False, data
+                    result[key].append(remote_reminder.name)
+            elif local_reminder.modified_date < remote_reminder.modified_date:
+                key = 'local_updated'
+                local_reminder = copy.deepcopy(remote_reminder)
+                if helpers.confirm("Update local reminder {}".format(local_reminder.name)):
+                    success, data = local_reminder.upsert_local(self)
+                    if not success:
+                        return False, data
+                    else:
+                        u_success, u_data = remote_reminder.update_uuid(self, data)
+                        if not u_success:
+                            return False, u_data
+                    result[key].append(local_reminder.name)
+
+    def sync_remote_reminders_to_local(self, result: dict) -> tuple[bool, str]:
+        """
+        Sync remote tasks to local reminders.
+
+        :param result: dictionary where actions are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminders are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        for remote_reminder in self.remote_reminders:
+            # Get the associated local reminder, if any
+            local_reminder = next((r for r in self.local_reminders
+                                   if r.uuid == remote_reminder.uuid or r.name == remote_reminder.name), None)
+            if local_reminder is None:
+                key = 'local_added'
+                local_reminder = copy.deepcopy(remote_reminder)
+                if helpers.confirm("Add local reminder {}".format(local_reminder.name)):
+                    success, data = local_reminder.upsert_local(self)
+                    if not success:
+                        return False, data
+                    else:
+                        u_success, u_data = remote_reminder.update_uuid(self, data)
+                        if not u_success:
+                            return False, u_data
+                    result[key].append(local_reminder.name)
+
     def sync_reminders(self) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises reminders. This method only synchronises reminders for containers with ``sync`` set to True.
@@ -741,48 +827,14 @@ class ReminderContainer:
         }
 
         # Sync local reminders to remote
-        for local_reminder in self.local_reminders:
-            # Get the associated remote reminder, if any
-            remote_reminder = next((r for r in self.remote_reminders
-                                    if r.uuid == local_reminder.uuid or r.name == local_reminder.name), None)
-            if remote_reminder is None or local_reminder.modified_date > remote_reminder.modified_date:
-                key = 'remote_added' if remote_reminder is None else 'remote_updated'
-                remote_reminder = copy.deepcopy(local_reminder)
-                if helpers.confirm("Upsert remote reminder {}".format(remote_reminder.name)):
-                    success, data = remote_reminder.upsert_remote(self)
-                    if not success:
-                        return False, data
-                    result[key].append(remote_reminder.name)
-            elif local_reminder.modified_date < remote_reminder.modified_date:
-                key = 'local_updated'
-                local_reminder = copy.deepcopy(remote_reminder)
-                if helpers.confirm("Update local reminder {}".format(local_reminder.name)):
-                    success, data = local_reminder.upsert_local(self)
-                    if not success:
-                        return False, data
-                    else:
-                        u_success, u_data = remote_reminder.update_uuid(self, data)
-                        if not u_success:
-                            return False, u_data
-                    result[key].append(local_reminder.name)
+        success, data = self.sync_local_reminders_to_remote(result)
+        if not success:
+            return success, data
 
         # Sync remote reminders to local
-        for remote_reminder in self.remote_reminders:
-            # Get the associated local reminder, if any
-            local_reminder = next((r for r in self.local_reminders
-                                   if r.uuid == remote_reminder.uuid or r.name == remote_reminder.name), None)
-            if local_reminder is None:
-                key = 'local_added'
-                local_reminder = copy.deepcopy(remote_reminder)
-                if helpers.confirm("Add local reminder {}".format(local_reminder.name)):
-                    success, data = local_reminder.upsert_local(self)
-                    if not success:
-                        return False, data
-                    else:
-                        u_success, u_data = remote_reminder.update_uuid(self, data)
-                        if not u_success:
-                            return False, u_data
-                    result[key].append(local_reminder.name)
+        success, data = self.sync_remote_reminders_to_local(result)
+        if not success:
+            return success, data
 
         return True, result
 
