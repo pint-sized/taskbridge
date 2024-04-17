@@ -208,7 +208,9 @@ class NoteFolder:
         for remote_note in self.remote_notes:
             local_note = next((n for n in self.local_notes
                                if n.uuid == remote_note.modified_date or n.name == remote_note.name), None)
-            if (self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL or self.sync_direction == NoteFolder.SYNC_BOTH) and local_note is None:
+            if ((
+                    self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL or self.sync_direction == NoteFolder.SYNC_BOTH)
+                    and local_note is None):
                 # Local note is missing and so needs to be created
                 key_change = 'local_added'
                 local_note = copy.deepcopy(remote_note)
@@ -275,7 +277,8 @@ class NoteFolder:
 
             -success (:py:class:`bool`) - true if folders are successfully loaded.
 
-            -data (:py:class:`str` | :py:class:`List[RemoteNoteFolder]`) - error message on failure, list of folders on success.
+            -data (:py:class:`str` | :py:class:`List[RemoteNoteFolder]`) - error message on failure, list of folders on
+            success.
 
         """
         remote_note_folders = []
@@ -348,7 +351,8 @@ class NoteFolder:
             # Check if the remote folder should not be synced and already has a counterpart
             if existing_association is None:
                 existing_association = next(
-                    (f for f in NoteFolder.FOLDER_LIST if f.local_folder.name == remote_folder.name and f.sync_direction == NoteFolder.SYNC_NONE),
+                    (f for f in NoteFolder.FOLDER_LIST if
+                     f.local_folder.name == remote_folder.name and f.sync_direction == NoteFolder.SYNC_NONE),
                     None)
 
             if existing_association is not None:
@@ -394,7 +398,7 @@ class NoteFolder:
                 connection.row_factory = sqlite3.Row
                 with closing(connection.cursor()) as cursor:
                     sql_create_folder_table = """CREATE TABLE IF NOT EXISTS tb_folder (
-                                    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                                     local_uuid TEXT,
                                     local_name TEXT,
                                     remote_path TEXT,
@@ -434,7 +438,8 @@ class NoteFolder:
                 with closing(connection.cursor()) as cursor:
                     sql_delete_folders = "DELETE FROM tb_folder"
                     cursor.execute(sql_delete_folders)
-                    sql_insert_folders = """INSERT INTO tb_folder(local_uuid, local_name, remote_path, remote_name, sync_direction)
+                    sql_insert_folders = """INSERT INTO tb_folder(local_uuid, local_name, remote_path, remote_name,
+                    sync_direction)
                                 VALUES (?, ?, ?, ?, ?)
                                 """
                     cursor.executemany(sql_insert_folders, folders)
@@ -444,7 +449,8 @@ class NoteFolder:
         return True, 'Folders stored in tb_folder'
 
     @staticmethod
-    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> tuple[bool, str]:
+    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> tuple[
+            bool, str]:
         """
         Synchronises deletions to folders.
 
@@ -535,7 +541,7 @@ class NoteFolder:
                 connection.row_factory = sqlite3.Row
                 with closing(connection.cursor()) as cursor:
                     sql_create_note_table = """CREATE TABLE IF NOT EXISTS tb_note (
-                                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                                         folder TEXT,
                                         location TEXT,
                                         uuid TEXT,
@@ -697,7 +703,9 @@ class NoteFolder:
                             for row in rows:
                                 if row['name'] not in [n.name for n in folder.remote_notes]:
                                     if helpers.confirm('Delete local note {}'.format(row['name'])):
-                                        return_code, stdout, stderr = helpers.run_applescript(delete_note_script, folder.local_folder.name, row['name'])
+                                        return_code, stdout, stderr = helpers.run_applescript(delete_note_script,
+                                                                                              folder.local_folder.name,
+                                                                                              row['name'])
                                         note_object = next((n for n in folder.local_notes if n.name == row['name']), None)
                                         if note_object is not None:
                                             folder.local_notes.remove(note_object)

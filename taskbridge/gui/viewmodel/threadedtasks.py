@@ -47,7 +47,7 @@ class LoggingThread(QThread):
         self.log_stdout: bool = log_stdout
         self.log_file: bool = log_file
         self.log_gui: bool = log_gui
-        self.logger: Logger = logging.getLogger()
+        self.logger: logging.Logger = logging.getLogger()
         self.setup_logging()
 
     def setup_logging(self) -> None:

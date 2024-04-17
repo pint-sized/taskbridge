@@ -16,4 +16,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.obj = obj
         self.setupUi(self)
-

@@ -139,10 +139,12 @@ class Reminder:
                                     self.name,
                                     self.body if self.body is not None else '',
                                     'true' if self.completed else 'false',
-                                    DateUtil.convert('', self.completed_date, DateUtil.APPLE_DATETIME) if self.completed_date else '',
+                                    DateUtil.convert('', self.completed_date,
+                                                     DateUtil.APPLE_DATETIME) if self.completed_date else '',
                                     DateUtil.convert('', self.due_date, DateUtil.APPLE_DATETIME) if self.due_date else '',
                                     'true' if self.all_day else 'false',
-                                    DateUtil.convert('', self.remind_me_date, DateUtil.APPLE_DATETIME) if self.remind_me_date else '',
+                                    DateUtil.convert('', self.remind_me_date,
+                                                     DateUtil.APPLE_DATETIME) if self.remind_me_date else '',
                                     container.local_list.name
                                     ))
         if return_code == 0:
@@ -273,7 +275,8 @@ END:VALARM""".format(alarm_trigger=alarm_trigger, summary=self.name)
             else:
                 alarm_string = None
         except AttributeError as e:
-            return False, 'Unable to parse reminder remind me date for {0} ({1}): {2}'.format(self.remind_me_date, self.name, e)
+            return False, 'Unable to parse reminder remind me date for {0} ({1}): {2}'.format(self.remind_me_date, self.name,
+                                                                                              e)
 
         modification_date = DateUtil.convert('', self.modified_date, DateUtil.CALDAV_DATETIME)
 

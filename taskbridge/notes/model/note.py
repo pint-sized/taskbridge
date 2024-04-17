@@ -1,4 +1,3 @@
-
 """
 Contains the ``Note`` class, which represents a note (whether local or remote), and the ``Attachment`` class, which
 represents an attachment within a note.
@@ -308,7 +307,8 @@ class Attachment:
         """
         Creates a new instance of Attachment.
 
-        :param file_type: the type of attachment. Accepts ``Attachment.TYPE_IMAGE``, ``Attachment.TYPE_LINK`` or ``Attachment.TYPE_UNSUPPORTED``.
+        :param file_type: the type of attachment. Accepts ``Attachment.TYPE_IMAGE``, ``Attachment.TYPE_LINK`` or
+        ``Attachment.TYPE_UNSUPPORTED``.
         :param file_name: the file name of the attachment (for images).
         :param url: the url of the attachment (location for images, address for links).
         :param b64_data: the Base64 encoded data of an image.

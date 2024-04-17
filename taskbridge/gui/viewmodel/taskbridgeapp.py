@@ -40,7 +40,8 @@ class TaskBridgeApp(QMainWindow):
     - ``sync_notes`` - if '1', notes are synchronised and corresponding configuration is enabled.
     - ``sync_reminders`` - if '1', reminders are synchronised and corresponding configuration is enabled.
     - ``remote_notes_folder`` - path to the remote notes folder.
-    - ``associations`` - dictionary which contains list of notes to be synced bidirectionally in ``bi_directional`` and others in ``local_to_remote`` and ``remote_to_local`` respectively.
+    - ``associations`` - dictionary which contains list of notes to be synced bidirectionally in ``bi_directional`` and
+    others in ``local_to_remote`` and ``remote_to_local`` respectively.
     - ``prune_reminders`` - if '1', completed reminders are deleted before synchronisation.
     - ``caldav_server`` - host of the CalDav server.
     - ``caldav_path`` - path to the calendar list for this user on the CalDav server.
@@ -210,7 +211,8 @@ class TaskBridgeApp(QMainWindow):
         """
         if (what == 'reminders' and not self.ui.cb_reminder_autoprune.isChecked) and not silent:
             title = "Enable Completed Reminder Pruning?"
-            message = "You have not selected to automatically prune completed reminders. This can significantly slow the sync process. Do you want to enable automatic completed reminders pruning?"
+            message = ("You have not selected to automatically prune completed reminders. This can significantly slow the "
+                       "sync process. Do you want to enable automatic completed reminders pruning?")
             action = TaskBridgeApp._ask_question(title, message)
             if action == QMessageBox.StandardButton.Yes:
                 self.ui.cb_reminder_autoprune.setChecked(True)
@@ -362,7 +364,8 @@ class TaskBridgeApp(QMainWindow):
             self.ui.btn_reminder_login.setEnabled(self.validate_login_form()[0])
 
         # Tabbing out of username with a NextCloud server automatically populates the reminder path
-        if widget == self.ui.txt_reminder_username and self.ui.txt_reminder_username.text() and self.ui.rb_server_nextcloud.isChecked():
+        if (widget == self.ui.txt_reminder_username and self.ui.txt_reminder_username.text() and
+                self.ui.rb_server_nextcloud.isChecked()):
             self.ui.txt_reminder_path.setText('/remote.php/dav/calendars/{}'.format(self.ui.txt_reminder_username.text()))
 
         # Tabbing out of the password field triggers the login button being enabled
@@ -595,7 +598,8 @@ class TaskBridgeApp(QMainWindow):
         """
         Prompts the user to save unsaved changes in the notes view. If cancelled, changes are discarded.
         """
-        action = self._ask_question("Discard Changes?", "Are you sure you want to discard changes to note synchronisation settings?")
+        action = self._ask_question("Discard Changes?",
+                                    "Are you sure you want to discard changes to note synchronisation settings?")
         if action == QMessageBox.StandardButton.Yes:
             TaskBridgeApp.load_settings()
             self.apply_notes_settings()
@@ -750,7 +754,8 @@ class TaskBridgeApp(QMainWindow):
 
     def handle_reminders_cancel(self) -> None:
         """
-        Prompts the user to save their reminder view changes. If cancelled, changes are discarded and reminder lists are reloaded.
+        Prompts the user to save their reminder view changes. If cancelled, changes are discarded and reminder lists are
+        reloaded.
         """
         action = self._ask_question("Discard Changes?",
                                     "Are you sure you want to discard changes to reminder synchronisation settings?")
@@ -848,7 +853,8 @@ class TaskBridgeApp(QMainWindow):
             return
 
         self.ui.btn_sync.setEnabled(False)
-        icon_path = "taskbridge/gui/assets/tray/bridge_animated_white.gif" if darkdetect.isDark() else "taskbridge/gui/assets/tray/bridge_animated_black.gif"
+        icon_path = "taskbridge/gui/assets/tray/bridge_animated_white.gif" if darkdetect.isDark() else \
+            "taskbridge/gui/assets/tray/bridge_animated_black.gif"
         self.tray_icon.set_animated_icon(icon_path)
         self.ui.lbl_sync_status.setText("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)

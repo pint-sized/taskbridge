@@ -99,7 +99,8 @@ class NoteController:
 
             -success (:py:class:`bool`) - true if the folders are successfully associated.
 
-            -data (:py:class:`str` | :py:class:`List[NoteFolder]`) - error message on failure, or list of associations on success.
+            -data (:py:class:`str` | :py:class:`List[NoteFolder]`) - error message on failure, or list of associations on
+            success.
 
         """
         NoteFolder.reset_list()
@@ -133,12 +134,13 @@ class NoteController:
             error = 'Failed to synchronise note deletions {}'.format(data)
             logging.critical(error)
             return False, error
-        debug_msg = "Deleted notes synchronisation:: Deleted Local: {} | Deleted Remote: {} | Remote Not Found: {} | Local Not Found: {}".format(
-                ','.join(data['local_deleted'] if 'local_deleted' in data else ['No local notes deleted']),
-                ','.join(data['remote_deleted'] if 'remote_deleted' in data else ['No remote notes deleted']),
-                ','.join(data['remote_not_found'] if 'remote_not_found' in data else ['All remote notes found']),
-                ','.join(data['local_not_found'] if 'local_not_found' in data else ['No local notes found'])
-            )
+        debug_msg = ("Deleted notes synchronisation:: Deleted Local: {} | Deleted Remote: {} | Remote Not Found: {} | Local "
+                     "Not Found: {}").format(
+            ','.join(data['local_deleted'] if 'local_deleted' in data else ['No local notes deleted']),
+            ','.join(data['remote_deleted'] if 'remote_deleted' in data else ['No remote notes deleted']),
+            ','.join(data['remote_not_found'] if 'remote_not_found' in data else ['All remote notes found']),
+            ','.join(data['local_not_found'] if 'local_not_found' in data else ['No local notes found'])
+        )
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -169,11 +171,12 @@ class NoteController:
                 logging.critical(error)
                 return False, error
 
-        debug_msg = "Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
-                ','.join(data['remote_added'] if 'remote_added' in data else ['No remote notes added']),
-                ','.join(data['remote_updated'] if 'remote_updated' in data else ['No remote notes updated']),
-                ','.join(data['local_added'] if 'local_added' in data else ['No local notes added']),
-                ','.join(data['local_updated'] if 'local_updated' in data else ['No local notes updated'])
-            )
+        debug_msg = ("Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {"
+                     "}").format(
+            ','.join(data['remote_added'] if 'remote_added' in data else ['No remote notes added']),
+            ','.join(data['remote_updated'] if 'remote_updated' in data else ['No remote notes updated']),
+            ','.join(data['local_added'] if 'local_added' in data else ['No local notes added']),
+            ','.join(data['local_updated'] if 'local_updated' in data else ['No local notes updated'])
+        )
         logging.debug(debug_msg)
         return True, data

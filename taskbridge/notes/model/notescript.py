@@ -22,7 +22,8 @@ tell application "Notes"
         set stagedContent to nId & "~~" & nName & "~~" & nCreation & "~~" & nModified
         set stagedContent to stagedContent & "\n" & attachmentList & "\n" & nBody
         tell application "Finder"
-            set accessRef to (open for access file ((path to temporary items folder as text) & "taskbridge:notesync:" & folder_name & ":" & nName & ".staged") with write permission)
+            set accessRef to (open for access file ((path to temporary items folder as text) & "taskbridge:notesync:" &
+            folder_name & ":" & nName & ".staged") with write permission)
             try
                 set eof accessRef to 0
                 write stagedContent to accessRef as «class utf8»
@@ -59,7 +60,8 @@ tell application "Notes"
               set image_url to do shell script sed_extract
               set theFile to (image_url) as POSIX file
               make new attachment at end of attachments with data theFile
-              set note_body to note_body & "<div><img style=\"max-width: 100%; max-height: 100%;\" src=\"" & image_url & "\"/><div><br></div>"
+              set note_body to note_body & "<div><img style=\"max-width: 100%; max-height: 100%;\" src=\"" & image_url & "\"/>
+              <div><br></div>"
             else
               -- Normal Line
               set note_body to note_body & note_line
@@ -94,7 +96,8 @@ tell application "Notes"
               set image_url to do shell script sed_extract
               set theFile to (image_url) as POSIX file
               make new attachment at end of attachments with data theFile
-              set note_body to note_body & "<div><img style=\"max-width: 100%; max-height: 100%;\" src=\"" & image_url & "\"/><div><br></div>"
+              set note_body to note_body & "<div><img style=\"max-width: 100%; max-height: 100%;\" src=\"" & image_url & "\"/>
+              <div><br></div>"
             else
               -- Normal Line
               set note_body to note_body & note_line
@@ -168,4 +171,3 @@ end tell'''
 
 #: Quit the Notes app
 quit_notes_script = '''tell application "Notes" to if it is running then quit'''
-

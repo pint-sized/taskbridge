@@ -42,7 +42,8 @@ tell application "Reminders"
         set rRemindMeDate to remind me date of currentRem
         set rModificationDate to modification date of currentRem
         set rCompletionDate to completion date of currentRem
-        set csvLine to rId & "|" & rName & "|" & rCreationDate & "|" & rCompleted & "|" & rDueDate & "|" & rAllDay & "|" & rRemindMeDate & "|" & rModificationDate & "|" & rCompletionDate & "|" & rBody & linefeed
+        set csvLine to rId & "|" & rName & "|" & rCreationDate & "|" & rCompleted & "|" & rDueDate & "|" & rAllDay & "|" &
+        rRemindMeDate & "|" & rModificationDate & "|" & rCompletionDate & "|" & rBody & linefeed
         set fileContent to fileContent & csvLine
     end repeat
 end tell
@@ -61,7 +62,8 @@ end run'''
 
 #: Add a new reminder to the given list in the default account.
 add_reminder_script = '''on run argv
-set {r_id, r_name, r_body, r_completed, r_completed_date, r_due_date, r_allday_due, r_remind_date, r_list } to {item 1, item 2, item 3, item 4, item 5, item 6, item 7, item 8, item 9} of argv
+set {r_id, r_name, r_body, r_completed, r_completed_date, r_due_date, r_allday_due, r_remind_date, r_list } to
+{item 1, item 2, item 3, item 4, item 5, item 6, item 7, item 8, item 9} of argv
 tell application "Reminders"
     set mylist to list r_list
     tell mylist

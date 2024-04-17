@@ -17,7 +17,8 @@ from caldav import Principal
 import markdown2
 from markdownify import markdownify as md
 
-DATA_LOCATION: Path = Path.home() / "Library" / "Application Support" / "TaskBridge"  #: Location where application data is stored.
+DATA_LOCATION: Path = Path.home() / "Library" / "Application Support" / "TaskBridge"  #: Location where application data is
+# stored.
 DRY_RUN: bool = True  #: If set to true, the user will have to confirm any change made by TaskBridge.
 CALDAV_PRINCIPAL: Principal | None = None
 
@@ -148,7 +149,8 @@ class DateUtil:
         """
         Convert one date/datetime format to another.
 
-        :param source_format: the format of the source date/datetime. Can be left empty if ``obj`` is a :py:class:`datetime` object.
+        :param source_format: the format of the source date/datetime. Can be left empty if ``obj`` is a :py:class:`datetime`
+        object.
         :param obj: what to convert from. Can either be a string, or a :py:class:`datetime` object.
         :param required_format: the format required if the required output is of type :py:class:`str`.
         """

@@ -216,7 +216,7 @@ class ReminderContainer:
                 connection.row_factory = sqlite3.Row
                 with closing(connection.cursor()) as cursor:
                     sql_create_container_table = """CREATE TABLE IF NOT EXISTS tb_container (
-                                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                                         local_name TEXT,
                                         remote_name TEXT,
                                         sync INT
@@ -275,7 +275,7 @@ class ReminderContainer:
             con = sqlite3.connect(helpers.db_folder())
             cur = con.cursor()
             sql_create_reminder_table = """CREATE TABLE IF NOT EXISTS tb_reminder (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                         local_uuid TEXT,
                         local_name TEXT,
                         remote_uuid TEXT,
@@ -332,7 +332,8 @@ class ReminderContainer:
                     sql_delete_reminders = "DELETE FROM tb_reminder"
                     cursor.execute(sql_delete_reminders)
                     sql_insert_containers = """
-                    INSERT INTO tb_reminder(local_uuid, local_name, remote_uuid, remote_name, local_container, remote_container) 
+                    INSERT INTO tb_reminder(local_uuid, local_name, remote_uuid, remote_name, local_container,
+                    remote_container)
                     VALUES (?, ?, ?, ?, ?, ?)"""
                     cursor.executemany(sql_insert_containers, reminders)
                     connection.commit()
@@ -503,7 +504,8 @@ class ReminderContainer:
                             container.remote_reminders.remove(remote_reminder)
                             result['deleted_remote_reminders'].append(remote_reminder)
                         else:
-                            return False, 'Failed to delete remote reminder {0} ({1})'.format(remote_reminder.uuid, remote_reminder.name)
+                            return False, 'Failed to delete remote reminder {0} ({1})'.format(remote_reminder.uuid,
+                                                                                              remote_reminder.name)
 
             # Reminders deleted remotely need to be deleted from local
             remote_deleted = [r for r in container_saved_remote if
@@ -516,7 +518,8 @@ class ReminderContainer:
                         delete_reminder_script = reminderscript.delete_reminder_script
                         return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
                         if return_code != 0:
-                            return False, 'Failed to delete local reminder {0} ({1})'.format(local_reminder.uuid, local_reminder.name)
+                            return False, 'Failed to delete local reminder {0} ({1})'.format(local_reminder.uuid,
+                                                                                             local_reminder.name)
                         container.local_reminders.remove(local_reminder)
                         result['deleted_local_reminders'].append(local_reminder)
 
@@ -742,6 +745,7 @@ class LocalList:
     """
     Represents a local folder storing reminders.
     """
+
     def __init__(self, list_name: str, list_id: str | None = None):
         """
         Create a new local list instance. The list is not actually created until the ``create()`` method is called.

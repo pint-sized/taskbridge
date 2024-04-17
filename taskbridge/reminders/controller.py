@@ -1,5 +1,6 @@
 """
-This is the reminder synchronisation controller. It contains all methods required for reminder synchronisation. These are called
+This is the reminder synchronisation controller. It contains all methods required for reminder synchronisation. These are
+called
 by the GUI, but can be called separately if imported.
 """
 from __future__ import annotations
@@ -120,9 +121,9 @@ class ReminderController:
         ReminderController.LOCAL_LISTS = data['updated_local_list']
         ReminderController.REMOTE_CALENDARS = data['updated_remote_list']
         debug_msg = "Lists after deletion:: Local List: {} | Remote List: {}".format(
-                ', '.join(str(u) for u in data['updated_local_list']),
-                ', '.join(str(u) for u in data['updated_remote_list'])
-            )
+            ', '.join(str(u) for u in data['updated_local_list']),
+            ', '.join(str(u) for u in data['updated_remote_list'])
+        )
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -135,7 +136,8 @@ class ReminderController:
 
             -success (:py:class:`bool`) - true if associations are successfully created.
 
-            -data (:py:class:`str` | :py:class:`List[ReminderContainer]`) - error message on failure, or list of reminder containers.
+            -data (:py:class:`str` | :py:class:`List[ReminderContainer]`) - error message on failure, or list of reminder
+            containers.
 
         """
         ReminderContainer.CONTAINER_LIST.clear()
@@ -169,8 +171,8 @@ class ReminderController:
             logging.critical(error)
             return False, error
         debug_msg = "Reminders deleted:: Local: {} | Remote: {}".format(
-                ', '.join(str(r) for r in data['deleted_local_reminders']),
-                ', '.join(str(r) for r in data['deleted_remote_reminders']))
+            ', '.join(str(r) for r in data['deleted_local_reminders']),
+            ', '.join(str(r) for r in data['deleted_remote_reminders']))
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -200,11 +202,12 @@ class ReminderController:
                 error = 'Failed to sync reminders {}'.format(data)
                 logging.critical(error)
                 return False, error
-        debug_msg = "Reminder synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {}".format(
-                ','.join(data['remote_added'] if 'remote_added' in data else ['No remote reminders added']),
-                ', '.join(data['remote_updated'] if 'remote_updated' in data else ['No remote reminders updated']),
-                ', '.join(data['local_added'] if 'local_added' in data else ['No local reminders added']),
-                ', '.join(data['local_updated'] if 'local_updated' in data else ['No local reminders updated']))
+        debug_msg = ("Reminder synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {"
+                     "}").format(
+            ','.join(data['remote_added'] if 'remote_added' in data else ['No remote reminders added']),
+            ', '.join(data['remote_updated'] if 'remote_updated' in data else ['No remote reminders updated']),
+            ', '.join(data['local_added'] if 'local_added' in data else ['No local reminders added']),
+            ', '.join(data['local_updated'] if 'local_updated' in data else ['No local reminders updated']))
         logging.debug(debug_msg)
         return True, data
 
