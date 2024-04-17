@@ -139,6 +139,66 @@ class ReminderContainer:
         return False, "Unable to delete completed reminders: {}".format(stderr)
 
     @staticmethod
+    def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
+            tuple[bool, str]:
+        """
+        Associate local reminder lists with remote lists.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the containers are successfully linked.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        for local_list in local_lists:
+            should_sync = local_list.name in to_sync
+            remote_name = "Tasks" if local_list.name == "Reminders" else local_list.name
+            remote_calendar = next((rc for rc in remote_calendars if rc.name == remote_name), None)
+            if remote_calendar is None:
+                remote_calendar = RemoteCalendar(calendar_name=remote_name)
+                if should_sync:
+                    if helpers.confirm('Create remote calendar {}'.format(remote_name)):
+                        remote_calendar = RemoteCalendar(calendar_name=remote_name)
+                        success, data = remote_calendar.create()
+                        if not success:
+                            return False, data
+            ReminderContainer(local_list, remote_calendar, should_sync)
+        return True, "Local lists associated with remote lists"
+
+    @staticmethod
+    def assoc_list_remote_local(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
+            tuple[bool, str]:
+        """
+        Associate remote reminder lists with local lists.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the containers are successfully linked.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        for remote_calendar in remote_calendars:
+            synced_remote_calendars = [cont.remote_calendar for cont in ReminderContainer.CONTAINER_LIST]
+            if remote_calendar.name in [rc.name for rc in synced_remote_calendars]:
+                continue
+
+            should_sync = remote_calendar.name in to_sync
+            local_name = "Reminders" if remote_calendar.name == "Tasks" else remote_calendar.name
+            local_list = next((ll for ll in local_lists if ll.name == local_name), None)
+            if local_list is None:
+                local_list = LocalList(list_name=local_name)
+                if should_sync:
+                    if helpers.confirm('Create local list {}'.format(local_name)):
+                        local_list = LocalList(list_name=local_name)
+                        success, data = local_list.create()
+                        if not success:
+                            return False, data
+            ReminderContainer(local_list, remote_calendar, should_sync)
+        return True, "Remote lists associated with local lists"
+
+    @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
                                  to_sync: List[str]) -> tuple[bool, str] | tuple[bool, List[ReminderContainer]]:
         """
@@ -163,38 +223,10 @@ class ReminderContainer:
         """
 
         # Associate local lists with remote calendars
-        for local_list in local_lists:
-            should_sync = local_list.name in to_sync
-            remote_name = "Tasks" if local_list.name == "Reminders" else local_list.name
-            remote_calendar = next((rc for rc in remote_calendars if rc.name == remote_name), None)
-            if remote_calendar is None:
-                remote_calendar = RemoteCalendar(calendar_name=remote_name)
-                if should_sync:
-                    if helpers.confirm('Create remote calendar {}'.format(remote_name)):
-                        remote_calendar = RemoteCalendar(calendar_name=remote_name)
-                        success, data = remote_calendar.create()
-                        if not success:
-                            return False, data
-            ReminderContainer(local_list, remote_calendar, should_sync)
+        ReminderContainer.assoc_list_local_remote(local_lists, remote_calendars, to_sync)
 
         # Associate remote calendars with local lists
-        for remote_calendar in remote_calendars:
-            synced_remote_calendars = [cont.remote_calendar for cont in ReminderContainer.CONTAINER_LIST]
-            if remote_calendar.name in [rc.name for rc in synced_remote_calendars]:
-                continue
-
-            should_sync = remote_calendar.name in to_sync
-            local_name = "Reminders" if remote_calendar.name == "Tasks" else remote_calendar.name
-            local_list = next((ll for ll in local_lists if ll.name == local_name), None)
-            if local_list is None:
-                local_list = LocalList(list_name=local_name)
-                if should_sync:
-                    if helpers.confirm('Create local list {}'.format(local_name)):
-                        local_list = LocalList(list_name=local_name)
-                        success, data = local_list.create()
-                        if not success:
-                            return False, data
-            ReminderContainer(local_list, remote_calendar, should_sync)
+        ReminderContainer.assoc_list_remote_local(local_lists, remote_calendars, to_sync)
 
         ReminderContainer.persist_containers()
         return True, "Associations completed"
@@ -342,6 +374,73 @@ class ReminderContainer:
         return True, 'Reminders stored in tb_reminder'
 
     @staticmethod
+    def _delete_remote_containers(removed_local_containers: List[sqlite3.Row],
+                                  discovered_remote: List[RemoteCalendar],
+                                  to_sync: List[str],
+                                  result: dict) -> tuple[bool, str]:
+        """
+        Deletes remote reminder containers which have been deleted locally.
+
+        :param removed_local_containers: list of containers which have been deleted locally.
+        :param discovered_remote: the list of remote task calendars.
+        :param to_sync: the list of lists/calendars which should be synchronised.
+        :param result: dictionary where changes are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if container deletions are successfully carried out.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        for local in removed_local_containers:
+            if local['local_name'] in to_sync:
+                # Local container has been deleted, so delete remote
+                if helpers.confirm('Delete remote container {}'.format(local['local_name'])):
+                    remote_name = "Tasks" if local['local_name'] == "Reminders" else local['local_name']
+                    success, data = RemoteCalendar(calendar_name=remote_name).delete()
+                    if not success:
+                        return False, data
+                    discovered_remote = [dc for dc in discovered_remote if dc.name != remote_name]
+                    result['updated_remote_list'] = discovered_remote
+        return True, "Local container deleted."
+
+    @staticmethod
+    def _delete_local_containers(removed_remote_containers: List[sqlite3.Row],
+                                 removed_local_containers: List[sqlite3.Row],
+                                 discovered_local: List[LocalList],
+                                 to_sync: List[str],
+                                 result: dict) -> tuple[bool, str]:
+        """
+        Deletes remote reminder containers which have been deleted locally.
+
+        :param removed_remote_containers: list of containers which have been deleted remotely.
+        :param removed_local_containers: list of containers which have been deleted locally.
+        :param discovered_local: the list of local reminder lists.
+        :param to_sync: the list of lists/calendars which should be synchronised.
+        :param result: dictionary where changes are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if container deletions are successfully carried out.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        for remote in removed_remote_containers:
+            if remote['remote_name'] in to_sync and remote['remote_name'] not in [rl['remote_name'] for rl in
+                                                                                  removed_local_containers]:
+                # Remote container has been deleted, so delete local
+                if helpers.confirm('Delete local container {}'.format(remote['remote_name'])):
+                    local_name = "Reminders" if remote['remote_name'] == "Tasks" else remote['remote_name']
+                    success, data = LocalList(list_name=local_name).delete()
+                    if not success:
+                        return False, data
+                    discovered_local = [dc for dc in discovered_local if dc.name != local_name]
+                    result['updated_local_list'] = discovered_local
+        return True, "Remote container deleted."
+
+    @staticmethod
     def sync_container_deletions(discovered_local: List[LocalList], discovered_remote: List[RemoteCalendar],
                                  to_sync: List[str]) -> tuple[bool, str] | tuple[bool, dict]:
         """
@@ -393,31 +492,13 @@ class ReminderContainer:
 
         current_local_containers = [ll.name for ll in discovered_local]
         removed_local_containers = [ll for ll in saved_containers if ll['local_name'] not in current_local_containers]
-        for local in removed_local_containers:
-            if local['local_name'] in to_sync:
-                # Local container has been deleted, so delete remote
-                if helpers.confirm('Delete remote container {}'.format(local['local_name'])):
-                    remote_name = "Tasks" if local['local_name'] == "Reminders" else local['local_name']
-                    success, data = RemoteCalendar(calendar_name=remote_name).delete()
-                    if not success:
-                        return False, data
-                    discovered_remote = [dc for dc in discovered_remote if dc.name != remote_name]
-                    result['updated_remote_list'] = discovered_remote
+        ReminderContainer._delete_remote_containers(removed_local_containers, discovered_remote, to_sync, result)
 
         current_remote_containers = [rc.name for rc in discovered_remote]
         removed_remote_containers = [rc for rc in saved_containers if
                                      rc['remote_name'] not in current_remote_containers]
-        for remote in removed_remote_containers:
-            if remote['remote_name'] in to_sync and remote['remote_name'] not in [rl['remote_name'] for rl in
-                                                                                  removed_local_containers]:
-                # Remote container has been deleted, so delete local
-                if helpers.confirm('Delete local container {}'.format(remote['remote_name'])):
-                    local_name = "Reminders" if remote['remote_name'] == "Tasks" else remote['remote_name']
-                    success, data = LocalList(list_name=local_name).delete()
-                    if not success:
-                        return False, data
-                    discovered_local = [dc for dc in discovered_local if dc.name != local_name]
-                    result['updated_local_list'] = discovered_local
+        ReminderContainer._delete_local_containers(removed_remote_containers, removed_local_containers, discovered_local,
+                                                   to_sync, result)
 
         # Empty table
         try:
@@ -429,6 +510,75 @@ class ReminderContainer:
             return False, 'Error deleting container table: {}'.format(e)
 
         return True, result
+
+    @staticmethod
+    def _delete_remote_reminders(container_saved_local: List[sqlite3.Row],
+                                 container: ReminderContainer,
+                                 result: dict) -> tuple[bool, str]:
+        """
+        Delete remote reminders which have been deleted locally.
+
+        :param container_saved_local: list of reminders from last sync.
+        :param container: the reminder container
+        :param result: dictionary where changes are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if reminder deletions are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        local_deleted = [r for r in container_saved_local if
+                         r['local_name'] not in [lr.name for lr in container.local_reminders]]
+        for deleted in local_deleted:
+            remote_reminder = next((r for r in container.remote_reminders
+                                    if r.uuid == deleted['local_uuid'] or r.name == deleted['local_name']), None)
+            if remote_reminder is not None:
+                if helpers.confirm("Delete remote reminder {}".format(remote_reminder.name)):
+                    to_delete = container.remote_calendar.cal_obj.search(todo=True, uid=remote_reminder.uuid)
+                    if len(to_delete) > 0:
+                        to_delete[0].delete()
+                        container.remote_reminders.remove(remote_reminder)
+                        result['deleted_remote_reminders'].append(remote_reminder)
+                    else:
+                        return False, 'Failed to delete remote reminder {0} ({1})'.format(remote_reminder.uuid,
+                                                                                          remote_reminder.name)
+        return True, "Remote reminders deleted."
+
+    @staticmethod
+    def _delete_local_reminders(container_saved_remote: List[sqlite3.Row],
+                                container: ReminderContainer,
+                                result: dict) -> tuple[bool, str]:
+        """
+        Delete local reminders which have been deleted remotely.
+
+        :param container_saved_remote: list of reminders from last sync.
+        :param container: the reminder container
+        :param result: dictionary where changes are appended
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if reminder deletions are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        remote_deleted = [r for r in container_saved_remote if
+                          r['remote_name'] not in [rr.name for rr in container.remote_reminders]]
+        for deleted in remote_deleted:
+            local_reminder = next((r for r in container.local_reminders
+                                   if r.uuid == deleted['remote_uuid'] or r.name == deleted['remote_name']), None)
+            if local_reminder is not None:
+                if helpers.confirm("Delete local reminder {}".format(local_reminder.name)):
+                    delete_reminder_script = reminderscript.delete_reminder_script
+                    return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
+                    if return_code != 0:
+                        return False, 'Failed to delete local reminder {0} ({1})'.format(local_reminder.uuid,
+                                                                                         local_reminder.name)
+                    container.local_reminders.remove(local_reminder)
+                    result['deleted_local_reminders'].append(local_reminder)
+        return True, "Local reminders deleted."
 
     @staticmethod
     def sync_reminder_deletions() -> tuple[bool, str] | tuple[bool, dict]:
@@ -491,37 +641,10 @@ class ReminderContainer:
                                       r['remote_container'] == container.remote_calendar.name]
 
             # Reminders deleted locally need to be deleted from CalDav
-            local_deleted = [r for r in container_saved_local if
-                             r['local_name'] not in [lr.name for lr in container.local_reminders]]
-            for deleted in local_deleted:
-                remote_reminder = next((r for r in container.remote_reminders
-                                        if r.uuid == deleted['local_uuid'] or r.name == deleted['local_name']), None)
-                if remote_reminder is not None:
-                    if helpers.confirm("Delete remote reminder {}".format(remote_reminder.name)):
-                        to_delete = container.remote_calendar.cal_obj.search(todo=True, uid=remote_reminder.uuid)
-                        if len(to_delete) > 0:
-                            to_delete[0].delete()
-                            container.remote_reminders.remove(remote_reminder)
-                            result['deleted_remote_reminders'].append(remote_reminder)
-                        else:
-                            return False, 'Failed to delete remote reminder {0} ({1})'.format(remote_reminder.uuid,
-                                                                                              remote_reminder.name)
+            ReminderContainer._delete_remote_reminders(container_saved_local, container, result)
 
             # Reminders deleted remotely need to be deleted from local
-            remote_deleted = [r for r in container_saved_remote if
-                              r['remote_name'] not in [rr.name for rr in container.remote_reminders]]
-            for deleted in remote_deleted:
-                local_reminder = next((r for r in container.local_reminders
-                                       if r.uuid == deleted['remote_uuid'] or r.name == deleted['remote_name']), None)
-                if local_reminder is not None:
-                    if helpers.confirm("Delete local reminder {}".format(local_reminder.name)):
-                        delete_reminder_script = reminderscript.delete_reminder_script
-                        return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
-                        if return_code != 0:
-                            return False, 'Failed to delete local reminder {0} ({1})'.format(local_reminder.uuid,
-                                                                                             local_reminder.name)
-                        container.local_reminders.remove(local_reminder)
-                        result['deleted_local_reminders'].append(local_reminder)
+            ReminderContainer._delete_local_reminders(container_saved_remote, container, result)
 
         # Empty table
         try:

@@ -241,42 +241,15 @@ class Reminder:
             -data (:py:class:`str`) - error message on failure or the iCal string.
 
         """
-        due_date = None
-        try:
-            if self.due_date.strftime("%H:%M:%S") == "00:00:00":
-                ds = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
-                if ds:
-                    due_date = 'DATE:' + ds
-            else:
-                ds = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
-                if ds:
-                    due_date = 'DATE-TIME:' + ds
-            if due_date is not None:
-                due_string = "DUE;VALUE={due_date}".format(due_date=due_date)
-            else:
-                due_string = None
-        except AttributeError as e:
-            return False, 'Unable to parse reminder due date for {0} ({1}): {2}'.format(self.due_date, self.name, e)
+        success, data = self._parse_due_date()
+        if not success:
+            return success, data
+        due_string = data
 
-        alarm_trigger = None
-        try:
-            if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":
-                # Alarm with no time
-                self.remind_me_date = self.remind_me_date.replace(hour=self.default_alarm_hour, minute=0)
-            ds = DateUtil.convert('', self.remind_me_date, DateUtil.CALDAV_DATETIME)
-            if ds:
-                alarm_trigger = 'DATE-TIME:' + ds
-            if alarm_trigger is not None:
-                alarm_string = """BEGIN:VALARM
-TRIGGER;VALUE={alarm_trigger}
-ACTION:DISPLAY
-DESCRIPTION:{summary}
-END:VALARM""".format(alarm_trigger=alarm_trigger, summary=self.name)
-            else:
-                alarm_string = None
-        except AttributeError as e:
-            return False, 'Unable to parse reminder remind me date for {0} ({1}): {2}'.format(self.remind_me_date, self.name,
-                                                                                              e)
+        success, data = self._parse_alarm()
+        if not success:
+            return success, data
+        alarm_string = data
 
         modification_date = DateUtil.convert('', self.modified_date, DateUtil.CALDAV_DATETIME)
 
@@ -305,6 +278,67 @@ UID:{id}
 END:VCALENDAR
 """
         return True, ical_string
+
+    def _parse_due_date(self) -> tuple[bool, str]:
+        """
+        Parse this reminder's due date into iCal format.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder's due date is successfully parsed.
+
+            -data (:py:class:`str`) - error message on failure or the iCal string.
+
+        """
+        due_date = None
+        try:
+            if self.due_date.strftime("%H:%M:%S") == "00:00:00":
+                ds = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
+                if ds:
+                    due_date = 'DATE:' + ds
+            else:
+                ds = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
+                if ds:
+                    due_date = 'DATE-TIME:' + ds
+            if due_date is not None:
+                due_string = "DUE;VALUE={due_date}".format(due_date=due_date)
+            else:
+                due_string = None
+        except AttributeError as e:
+            return False, 'Unable to parse reminder due date for {0} ({1}): {2}'.format(self.due_date, self.name, e)
+        return True, due_string
+
+    def _parse_alarm(self) -> tuple[bool, str]:
+        """
+        Parse this reminder's alarm date into iCal format.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the reminder's alarm date is successfully parsed.
+
+            -data (:py:class:`str`) - error message on failure or the iCal string.
+
+        """
+        alarm_trigger = None
+        try:
+            if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":
+                # Alarm with no time
+                self.remind_me_date = self.remind_me_date.replace(hour=self.default_alarm_hour, minute=0)
+            ds = DateUtil.convert('', self.remind_me_date, DateUtil.CALDAV_DATETIME)
+            if ds:
+                alarm_trigger = 'DATE-TIME:' + ds
+            if alarm_trigger is not None:
+                alarm_string = """BEGIN:VALARM
+TRIGGER;VALUE={alarm_trigger}
+ACTION:DISPLAY
+DESCRIPTION:{summary}
+END:VALARM""".format(alarm_trigger=alarm_trigger, summary=self.name)
+            else:
+                alarm_string = None
+        except AttributeError as e:
+            return False, 'Unable to parse reminder remind me date for {0} ({1}): {2}'.format(self.remind_me_date, self.name,
+                                                                                              e)
+        return True, alarm_string
 
     def __str__(self):
         return self.name

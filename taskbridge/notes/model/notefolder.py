@@ -124,6 +124,128 @@ class NoteFolder:
 
         return True, len(self.remote_notes)
 
+    def sync_local_note_to_remote(self, local: Note, remote: Note | None, result: dict) -> tuple[bool, str]:
+        """
+        Sync local notes to remote. This performs an update or an insert.
+
+        :param local: the local note.
+        :param remote: the remote note.
+        :param result: a dictionary where results of sync will be saved.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        if remote is None or local.modified_date > remote.modified_date:
+            key = 'remote_added' if remote is None else 'remote_updated'
+            remote = copy.deepcopy(local)
+            if helpers.confirm("Upsert remote note {}".format(remote.name)):
+                i_success, i_data = remote.upsert_remote(self.remote_folder.path)
+                if not i_success:
+                    return False, i_data
+                result[key].append(remote.name)
+                return True, i_data
+            return True, ''
+
+    def sync_remote_note_to_local(self, local: Note, remote: Note, result: dict) -> tuple[bool, str]:
+        """
+        Sync remote notes to local. This performs an update or an insert.
+
+        :param local: the local note.
+        :param remote: the remote note.
+        :param result: a dictionary where results of sync will be saved.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        if remote is not None and local.modified_date < remote.modified_date:
+            key = 'local_updated'
+            local = copy.deepcopy(remote)
+            if helpers.confirm("Update local note {}".format(local.name)):
+                i_success, i_data = local.update_local(self.local_folder.name)
+                if not i_success:
+                    return False, i_data
+                result[key].append(local.name)
+                return True, i_data
+            return True, 'Note synchronised'
+        return True, 'Sync skipped since local note has been modified.'
+
+    def sync_local_to_remote(self, result: dict) -> tuple[bool, str]:
+        """
+        Sync all the local notes in this folder to remote.
+
+        :param result: dictionary where results will be saved.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        success = True
+        data = "Local notes in folder synchronised to remote"
+        for local_note in self.local_notes:
+            # Get the associated remote note, if any
+            remote_note = next((n for n in self.remote_notes
+                                if n.uuid == local_note.uuid or n.name == local_note.name), None)
+
+            if self.sync_direction == NoteFolder.SYNC_LOCAL_TO_REMOTE:
+                # Sync Local --> Remote if remote doesn't exist or is outdated
+                success, data = self.sync_local_note_to_remote(local_note, remote_note, result)
+            elif self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL:
+                # Sync Local <-- Remote if local is outdated
+                success, data = self.sync_remote_note_to_local(local_note, remote_note, result)
+            elif self.sync_direction == NoteFolder.SYNC_BOTH:
+                # Sync Local <--> Remote, depending on which is newer
+                if remote_note is None or local_note.modified_date > remote_note.modified_date:
+                    success, data = self.sync_local_note_to_remote(local_note, remote_note, result)
+                elif remote_note.modified_date > local_note.modified_date:
+                    success, data = self.sync_remote_note_to_local(local_note, remote_note, result)
+            if not success:
+                break
+
+        return success, data
+
+    def sync_remote_to_local(self, result) -> tuple[bool, str]:
+        """
+        Sync all remote notes in this folder to local.
+
+        :param result: dictionary where results will be saved.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if notes are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        success = True
+        data = "Remote notes in folder synchronised to local"
+        for remote_note in self.remote_notes:
+            local_note = next((n for n in self.local_notes
+                               if n.uuid == remote_note.modified_date or n.name == remote_note.name), None)
+            if ((
+                    self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL or self.sync_direction == NoteFolder.SYNC_BOTH)
+                    and local_note is None):
+                # Local note is missing and so needs to be created
+                key_change = 'local_added'
+                local_note = copy.deepcopy(remote_note)
+                if helpers.confirm("Create local note {}".format(local_note.name)):
+                    success, data = local_note.create_local(self.local_folder.name)
+                    if not success:
+                        break
+                    result[key_change].append(local_note.name)
+
+        return success, data
+
     def sync_notes(self) -> tuple[bool, dict] | tuple[bool, str]:
         """
         Synchronises notes. This method checks the ``sync_direction`` of this folder to determine what to do. On
@@ -152,73 +274,11 @@ class NoteFolder:
         if self.sync_direction == NoteFolder.SYNC_NONE:
             return True, result
 
-        def sync_local_to_remote(local: Note, remote: Note | None) -> tuple[bool, str]:
-            if remote is None or local.modified_date > remote.modified_date:
-                key = 'remote_added' if remote is None else 'remote_updated'
-                remote = copy.deepcopy(local)
-                if helpers.confirm("Upsert remote note {}".format(remote.name)):
-                    i_success, i_data = remote.upsert_remote(self.remote_folder.path)
-                    if not i_success:
-                        return False, i_data
-                    result[key].append(remote.name)
-                    return True, i_data
-                return True, ''
-
-        def sync_remote_to_local(local: Note, remote: Note) -> tuple[bool, str]:
-            if remote is not None and local.modified_date < remote.modified_date:
-                key = 'local_updated'
-                local = copy.deepcopy(remote)
-                if helpers.confirm("Update local note {}".format(local.name)):
-                    i_success, i_data = local.update_local(self.local_folder.name)
-                    if not i_success:
-                        return False, i_data
-                    result[key].append(local.name)
-                    return True, i_data
-                return True, 'Note synchronised'
-            return True, 'Sync skipped since local note has been modified.'
-
         # Sync local notes to remote
-        for local_note in self.local_notes:
-            # Get the associated remote note, if any
-            remote_note = next((n for n in self.remote_notes
-                                if n.uuid == local_note.uuid or n.name == local_note.name), None)
-
-            if self.sync_direction == NoteFolder.SYNC_LOCAL_TO_REMOTE:
-                # Sync Local --> Remote if remote doesn't exist or is outdated
-                success, data = sync_local_to_remote(local_note, remote_note)
-                if not success:
-                    return False, data
-            elif self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL:
-                # Sync Local <-- Remote if local is outdated
-                success, data = sync_remote_to_local(local_note, remote_note)
-                if not success:
-                    return False, data
-            elif self.sync_direction == NoteFolder.SYNC_BOTH:
-                # Sync Local <--> Remote, depending on which is newer
-                if remote_note is None or local_note.modified_date > remote_note.modified_date:
-                    success, data = sync_local_to_remote(local_note, remote_note)
-                    if not success:
-                        return False, data
-                elif remote_note.modified_date > local_note.modified_date:
-                    success, data = sync_remote_to_local(local_note, remote_note)
-                    if not success:
-                        return False, data
+        self.sync_local_to_remote(result)
 
         # Sync remote notes to local
-        for remote_note in self.remote_notes:
-            local_note = next((n for n in self.local_notes
-                               if n.uuid == remote_note.modified_date or n.name == remote_note.name), None)
-            if ((
-                    self.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL or self.sync_direction == NoteFolder.SYNC_BOTH)
-                    and local_note is None):
-                # Local note is missing and so needs to be created
-                key_change = 'local_added'
-                local_note = copy.deepcopy(remote_note)
-                if helpers.confirm("Create local note {}".format(local_note.name)):
-                    success, data = local_note.create_local(self.local_folder.name)
-                    if not success:
-                        return False, data
-                    result[key_change].append(local_note.name)
+        self.sync_remote_to_local(result)
 
         # Save current note status
         success, data = NoteFolder.persist_notes()
@@ -290,38 +350,19 @@ class NoteFolder:
         return True, remote_note_folders
 
     @staticmethod
-    def create_linked_folders(local_folders: List[LocalNoteFolder],
-                              remote_folders: List[RemoteNoteFolder],
-                              remote_notes_path: Path,
-                              associations: dict) -> tuple[bool, str]:
+    def assoc_local_remote(local_folders: List[LocalNoteFolder],
+                           remote_folders: List[RemoteNoteFolder],
+                           remote_notes_path: Path,
+                           associations: dict) -> None:
         """
-        Creates an association between local and remote folders. Missing folders are created; for example, if the folder
-        *foo* is present locally, and set to ``SYNC_LOCAL_TO_REMOTE`` or ``SYNC_BOTH`` this method will check whether the
-        remote folder *foo* exists and, if not, creates it.
-
-        The list of folders is saved to an SQLite database.
+        Associate local folders with remote folders.
 
         :param local_folders: the list of local note folders.
         :param remote_folders: the list of remote note folders.
         :param remote_notes_path: path to the remote folders, i.e. where on the local filesystem the remote notes are stored.
         :param associations: list of folder associations.
 
-        The associations dictionary must contain the following keys:
-
-        - ``local_to_remote`` - notes to push from local to remote as :py:class`List[str]`.
-        - ``remote_to_local`` - notes to pull from remote to local as :py:class`List[str]`.
-        - ``bi_directional`` - notes to synchronise in both folders as :py:class`List[str]`.
-
-        Any other folders found which are not listed above are not synchronised.
-
-        :returns:
-
-            -success (:py:class:`bool`) - true if the folders are successfully linked.
-
-            -data (:py:class:`str`) - error message on failure, or success message.
-
         """
-        # Create Local --> Remote Associations
         for local_folder in local_folders:
             # Check which local folders need to be synced with remote folders
             remote_folder = next((f for f in remote_folders if f.name == local_folder.name), None)
@@ -342,7 +383,18 @@ class NoteFolder:
                     if helpers.confirm('Create remote folder {}'.format(remote_folder.name)):
                         remote_folder.create()
 
-        # Create Remote --> Local Associations
+    @staticmethod
+    def assoc_remote_local(local_folders: List[LocalNoteFolder],
+                           remote_folders: List[RemoteNoteFolder],
+                           associations: dict) -> None:
+        """
+        Associate remote folders with local folders.
+
+        :param local_folders: the list of local note folders.
+        :param remote_folders: the list of remote note folders.
+        :param associations: list of folder associations.
+
+        """
         for remote_folder in remote_folders:
             # Check if the remote folder is already associated to a local folder
             existing_association = next(
@@ -375,6 +427,44 @@ class NoteFolder:
                     local_folder = LocalNoteFolder(remote_folder.name)
                     if helpers.confirm('Create local folder {}'.format(local_folder.name)):
                         local_folder.create()
+
+    @staticmethod
+    def create_linked_folders(local_folders: List[LocalNoteFolder],
+                              remote_folders: List[RemoteNoteFolder],
+                              remote_notes_path: Path,
+                              associations: dict) -> tuple[bool, str]:
+        """
+        Creates an association between local and remote folders. Missing folders are created; for example, if the folder
+        *foo* is present locally, and set to ``SYNC_LOCAL_TO_REMOTE`` or ``SYNC_BOTH`` this method will check whether the
+        remote folder *foo* exists and, if not, creates it.
+
+        The list of folders is saved to an SQLite database.
+
+        :param local_folders: the list of local note folders.
+        :param remote_folders: the list of remote note folders.
+        :param remote_notes_path: path to the remote folders, i.e. where on the local filesystem the remote notes are stored.
+        :param associations: list of folder associations.
+
+        The associations dictionary must contain the following keys:
+
+        - ``local_to_remote`` - notes to push from local to remote as :py:class`List[str]`.
+        - ``remote_to_local`` - notes to pull from remote to local as :py:class`List[str]`.
+        - ``bi_directional`` - notes to synchronise in both folders as :py:class`List[str]`.
+
+        Any other folders found which are not listed above are not synchronised.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the folders are successfully linked.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        # Create Local --> Remote Associations
+        NoteFolder.assoc_local_remote(local_folders, remote_folders, remote_notes_path, associations)
+
+        # Create Remote --> Local Associations
+        NoteFolder.assoc_remote_local(local_folders, remote_folders, associations)
 
         success, data = NoteFolder.persist_folders()
         if not success:
@@ -449,6 +539,74 @@ class NoteFolder:
         return True, 'Folders stored in tb_folder'
 
     @staticmethod
+    def sync_bidirectional_local_deletions(discovered_local: List[LocalNoteFolder]) -> tuple[bool, str]:
+        """
+        Sync folders that have been marked for bidirectional or local -> remote sync.
+
+        :param discovered_local: list of currently discovered local note folders.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folder deletions are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        folder_filter = (NoteFolder.SYNC_BOTH, NoteFolder.SYNC_LOCAL_TO_REMOTE)
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_bi_and_local = "SELECT * FROM tb_folder WHERE sync_direction = ? OR sync_direction = ?"
+                    rows = cursor.execute(sql_bi_and_local, folder_filter).fetchall()
+                    current_local_names = [f.name for f in discovered_local]
+                    removed_local = [f for f in rows if f['local_name'] not in current_local_names]
+                    for f in removed_local:
+                        # Local folder has been deleted, so delete remote
+                        if helpers.confirm("Delete remote folder {}".format(f['remote_name'])):
+                            success, data = RemoteNoteFolder(f['remote_path'], f['remote_name']).delete()
+                            if not success:
+                                return False, data
+        except sqlite3.OperationalError as e:
+            return False, 'Error retrieving folders from table: {}'.format(e)
+
+        return True, "Bidirectional and local folder deletions synchronised."
+
+    @staticmethod
+    def sync_remote_deletions(discovered_remote: List[RemoteNoteFolder]) -> tuple[bool, str]:
+        """
+        Sync folders that have been marked for local <- remote sync.
+
+        :param discovered_remote: list of currently discovered remote note folders.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if folder deletions are successfully synchronised.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+
+        """
+        folder_filter = (NoteFolder.SYNC_REMOTE_TO_LOCAL,)
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_remote = "SELECT * FROM tb_folder WHERE sync_direction = ?"
+                    rows = cursor.execute(sql_remote, folder_filter).fetchall()
+                    current_remote_names = [f.name for f in discovered_remote]
+                    removed_remote = [f for f in rows if f['remote_name'] not in current_remote_names]
+                    for f in removed_remote:
+                        # Remote folder has been deleted, so delete local
+                        if helpers.confirm("Delete local folder {}".format(f['local_name'])):
+                            success, data = LocalNoteFolder(f['local_name'], f['local_uuid']).delete()
+                            if not success:
+                                return False, data
+        except sqlite3.OperationalError as e:
+            return False, 'Error retrieving folders from table: {}'.format(e)
+
+        return True, "Remote folder deletions synchronised."
+
+    @staticmethod
     def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> tuple[
             bool, str]:
         """
@@ -476,42 +634,10 @@ class NoteFolder:
             return False, message
 
         # Bi-Directional or Local --> Remote Folders
-        folder_filter = (NoteFolder.SYNC_BOTH, NoteFolder.SYNC_LOCAL_TO_REMOTE)
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    sql_bi_and_local = "SELECT * FROM tb_folder WHERE sync_direction = ? OR sync_direction = ?"
-                    rows = cursor.execute(sql_bi_and_local, folder_filter).fetchall()
-                    current_local_names = [f.name for f in discovered_local]
-                    removed_local = [f for f in rows if f['local_name'] not in current_local_names]
-                    for f in removed_local:
-                        # Local folder has been deleted, so delete remote
-                        if helpers.confirm("Delete remote folder {}".format(f['remote_name'])):
-                            success, data = RemoteNoteFolder(f['remote_path'], f['remote_name']).delete()
-                            if not success:
-                                return False, data
-        except sqlite3.OperationalError as e:
-            return False, 'Error retrieving folders from table: {}'.format(e)
+        NoteFolder.sync_bidirectional_local_deletions(discovered_local)
 
         # Local <-- Remote Folders
-        folder_filter = (NoteFolder.SYNC_REMOTE_TO_LOCAL,)
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    sql_remote = "SELECT * FROM tb_folder WHERE sync_direction = ?"
-                    rows = cursor.execute(sql_remote, folder_filter).fetchall()
-                    current_remote_names = [f.name for f in discovered_remote]
-                    removed_remote = [f for f in rows if f['remote_name'] not in current_remote_names]
-                    for f in removed_remote:
-                        # Remote folder has been deleted, so delete local
-                        if helpers.confirm("Delete local folder {}".format(f['local_name'])):
-                            success, data = LocalNoteFolder(f['local_name'], f['local_uuid']).delete()
-                            if not success:
-                                return False, data
-        except sqlite3.OperationalError as e:
-            return False, 'Error retrieving folders from table: {}'.format(e)
+        NoteFolder.sync_remote_deletions(discovered_remote)
 
         # Empty Table
         try:
@@ -612,6 +738,85 @@ class NoteFolder:
         return True, 'Notes stored in tb_notes'
 
     @staticmethod
+    def delete_local_notes(folder: NoteFolder, result: dict):
+        """
+        Delete notes from remote which were deleted locally.
+
+        :param folder: the folder data.
+        :param result: dictionary where results are appended.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if local notes are successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+        """
+        delete_note_script = notescript.delete_note_script
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_remote_notes = "SELECT * FROM tb_note WHERE folder = ? AND location = ?"
+                    remote_filter = (folder.remote_folder.name, 'remote')
+                    rows = cursor.execute(sql_remote_notes, remote_filter).fetchall()
+                    for row in rows:
+                        if row['name'] not in [n.name for n in folder.remote_notes]:
+                            if helpers.confirm('Delete local note {}'.format(row['name'])):
+                                return_code, stdout, stderr = helpers.run_applescript(delete_note_script,
+                                                                                      folder.local_folder.name,
+                                                                                      row['name'])
+                                note_object = next((n for n in folder.local_notes if n.name == row['name']), None)
+                                if note_object is not None:
+                                    folder.local_notes.remove(note_object)
+                                if return_code != 0:
+                                    result['local_not_found'].append(row['name'])
+                                else:
+                                    result['local_deleted'].append(row['name'])
+        except sqlite3.OperationalError as e:
+            return False, repr(e)
+        return True, "Local notes deleted."
+
+    @staticmethod
+    def delete_remote_notes(folder: NoteFolder, remote_folder: Path, result: dict) -> tuple[bool, str]:
+        """
+        Delete notes from remote which were deleted locally.
+
+        :param folder: the folder data.
+        :param remote_folder: the remote folder.
+        :param result: dictionary where results are appended.
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if remote notes are successfully deleted.
+
+            -data (:py:class:`str`) - error message on failure, or success message.
+        """
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    sql_local_notes = "SELECT * FROM tb_note WHERE folder = ? AND location = ?"
+                    local_filter = (folder.local_folder.name, 'local')
+                    rows = cursor.execute(sql_local_notes, local_filter).fetchall()
+                    for row in rows:
+                        if row['uuid'] not in [n.uuid for n in folder.local_notes]:
+                            try:
+                                remote_note = remote_folder / folder.remote_folder.name / (row['name'] + '.md')
+                                if helpers.confirm('Delete remote note {}'.format(row['name'])):
+                                    Path.unlink(remote_note)
+                                    note_object = next((n for n in folder.remote_notes if n.name == row['name']), None)
+                                    for attachment in note_object.attachments:
+                                        attachment.delete_remote()
+                                    if note_object is not None:
+                                        folder.remote_notes.remove(note_object)
+                                    result['remote_deleted'].append(row['name'])
+                            except FileNotFoundError:
+                                result['remote_not_found'].append(row['name'])
+        except sqlite3.OperationalError as e:
+            return False, repr(e)
+        return True, "Remote notes deleted."
+
+    @staticmethod
     def sync_note_deletions(remote_folder: Path) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises deletions to notes.
@@ -645,8 +850,6 @@ class NoteFolder:
         if not success:
             return False, message
 
-        delete_note_script = notescript.delete_note_script
-
         result = {
             'remote_deleted': [],
             'local_deleted': [],
@@ -667,54 +870,11 @@ class NoteFolder:
 
             # Delete remote notes which were deleted locally
             if folder.sync_direction == NoteFolder.SYNC_LOCAL_TO_REMOTE or folder.sync_direction == NoteFolder.SYNC_BOTH:
-                try:
-                    with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                        connection.row_factory = sqlite3.Row
-                        with closing(connection.cursor()) as cursor:
-                            sql_local_notes = "SELECT * FROM tb_note WHERE folder = ? AND location = ?"
-                            local_filter = (folder.local_folder.name, 'local')
-                            rows = cursor.execute(sql_local_notes, local_filter).fetchall()
-                            for row in rows:
-                                if row['uuid'] not in [n.uuid for n in folder.local_notes]:
-                                    try:
-                                        remote_note = remote_folder / folder.remote_folder.name / (row['name'] + '.md')
-                                        if helpers.confirm('Delete remote note {}'.format(row['name'])):
-                                            Path.unlink(remote_note)
-                                            note_object = next((n for n in folder.remote_notes if n.name == row['name']), None)
-                                            for attachment in note_object.attachments:
-                                                attachment.delete_remote()
-                                            if note_object is not None:
-                                                folder.remote_notes.remove(note_object)
-                                            result['remote_deleted'].append(row['name'])
-                                    except FileNotFoundError:
-                                        result['remote_not_found'].append(row['name'])
-                except sqlite3.OperationalError as e:
-                    return False, repr(e)
+                NoteFolder.delete_remote_notes(folder, remote_folder, result)
 
             # Delete local notes which were deleted remotely
             if folder.sync_direction == NoteFolder.SYNC_REMOTE_TO_LOCAL or folder.sync_direction == NoteFolder.SYNC_BOTH:
-                try:
-                    with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                        connection.row_factory = sqlite3.Row
-                        with closing(connection.cursor()) as cursor:
-                            sql_remote_notes = "SELECT * FROM tb_note WHERE folder = ? AND location = ?"
-                            remote_filter = (folder.remote_folder.name, 'remote')
-                            rows = cursor.execute(sql_remote_notes, remote_filter).fetchall()
-                            for row in rows:
-                                if row['name'] not in [n.name for n in folder.remote_notes]:
-                                    if helpers.confirm('Delete local note {}'.format(row['name'])):
-                                        return_code, stdout, stderr = helpers.run_applescript(delete_note_script,
-                                                                                              folder.local_folder.name,
-                                                                                              row['name'])
-                                        note_object = next((n for n in folder.local_notes if n.name == row['name']), None)
-                                        if note_object is not None:
-                                            folder.local_notes.remove(note_object)
-                                        if return_code != 0:
-                                            result['local_not_found'].append(row['name'])
-                                        else:
-                                            result['local_deleted'].append(row['name'])
-                except sqlite3.OperationalError as e:
-                    return False, repr(e)
+                NoteFolder.delete_local_notes(folder, result)
 
         return True, result
 
