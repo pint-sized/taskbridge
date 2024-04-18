@@ -853,8 +853,8 @@ class TaskBridgeApp(QMainWindow):
             return
 
         self.ui.btn_sync.setEnabled(False)
-        icon_path = "taskbridge/gui/assets/tray/bridge_animated_white.gif" if darkdetect.isDark() else \
-            "taskbridge/gui/assets/tray/bridge_animated_black.gif"
+        icon_path = "taskbridge/gui/assets/tray/bridge_animated_black.gif" if darkdetect.isDark() else \
+            "taskbridge/gui/assets/tray/bridge_animated_white.gif"
         self.tray_icon.set_animated_icon(icon_path)
         self.ui.lbl_sync_status.setText("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)

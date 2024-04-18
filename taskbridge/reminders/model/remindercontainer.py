@@ -728,7 +728,7 @@ class ReminderContainer:
 
         return True, len(self.remote_reminders)
 
-    def sync_local_reminders_to_remote(self, result: dict):
+    def sync_local_reminders_to_remote(self, result: dict) -> tuple[bool, str]:
         """
         Sync local reminders to remote tasks.
 
@@ -765,6 +765,7 @@ class ReminderContainer:
                         if not u_success:
                             return False, u_data
                     result[key].append(local_reminder.name)
+        return True, 'Local reminder synced with remote'
 
     def sync_remote_reminders_to_local(self, result: dict) -> tuple[bool, str]:
         """
@@ -795,6 +796,7 @@ class ReminderContainer:
                         if not u_success:
                             return False, u_data
                     result[key].append(local_reminder.name)
+        return True, "Remote reminder synced with local"
 
     def sync_reminders(self) -> tuple[bool, str] | tuple[bool, dict]:
         """
