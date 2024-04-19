@@ -25,7 +25,7 @@ class Reminder:
                  uuid: str | None,
                  name: str,
                  created_date: datetime.datetime | None,
-                 modified_date: datetime.datetime | None,
+                 modified_date: datetime.datetime,
                  completed_date: datetime.datetime | None,
                  body: str | None,
                  remind_me_date: datetime.datetime | None,
@@ -50,7 +50,7 @@ class Reminder:
         self.uuid: str | None = uuid
         self.name: str = name
         self.created_date: datetime.datetime | None = created_date
-        self.modified_date: datetime.datetime | None = modified_date
+        self.modified_date: datetime.datetime = modified_date
         self.completed_date: datetime.datetime | None = completed_date
         self.body: str | None = body
         self.completed: bool = completed
@@ -114,7 +114,7 @@ class Reminder:
             body=comp['description'].to_ical().decode() if 'DESCRIPTION' in comp else None,
             remind_me_date=comp['TRIGGER'].dt if 'TRIGGER' in comp else None,
             due_date=comp['DUE'].dt if 'DUE' in comp else None,
-            all_day=True if comp['DUE'].dt.strftime("%H:%M:%S") == "00:00:00" else False,
+            all_day=True if 'DUE' in comp and comp['DUE'].dt.strftime("%H:%M:%S") == "00:00:00" else False,
             completed='COMPLETED' in comp
         )
 
@@ -135,7 +135,7 @@ class Reminder:
 
         return_code, stdout, stderr = (
             helpers.run_applescript(add_reminder_script,
-                                    self.uuid if self.uuid.startswith('x-coredata') else '',
+                                    self.uuid if self.uuid and self.uuid.startswith('x-coredata') else '',
                                     self.name,
                                     self.body if self.body is not None else '',
                                     'true' if self.completed else 'false',
@@ -185,21 +185,28 @@ class Reminder:
             return True, 'Remote reminder added: {}'.format(self.name)
         else:
             # Update existing remote task
-            if self.due_date.strftime("%H:%M:%S") == "00:00:00":
+            if not self.due_date:
+                due_date = None
+            elif self.due_date.strftime("%H:%M:%S") == "00:00:00":
                 due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
             else:
                 due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
 
-            if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":
-                # Alarm with no time
-                self.remind_me_date = self.remind_me_date.replace(hour=self.default_alarm_hour, minute=0)
-            alarm_trigger = DateUtil.convert('', self.remind_me_date, DateUtil.CALDAV_DATETIME)
+            if not self.remind_me_date:
+                alarm_trigger = None
+            else:
+                if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":
+                    # Alarm with no time
+                    self.remind_me_date = self.remind_me_date.replace(hour=self.default_alarm_hour, minute=0)
+                alarm_trigger = DateUtil.convert('', self.remind_me_date, DateUtil.CALDAV_DATETIME)
 
             remote.icalendar_component["uid"] = self.uuid
             remote.icalendar_component["summary"] = self.name
-            remote.icalendar_component["due"] = due_date
+            if due_date:
+                remote.icalendar_component["due"] = due_date
             remote.icalendar_component["status"] = 'COMPLETED' if self.completed else 'NEEDS-ACTION'
-            remote.icalendar_component["trigger"] = alarm_trigger
+            if alarm_trigger:
+                remote.icalendar_component["trigger"] = alarm_trigger
             if self.completed:
                 remote.icalendar_component["PERCENT-COMPLETE"] = "100"
                 remote.icalendar_component["COMPLETED"] = DateUtil.convert('', self.completed_date, DateUtil.CALDAV_DATETIME)
@@ -279,7 +286,7 @@ END:VCALENDAR
 """
         return True, ical_string
 
-    def _parse_due_date(self) -> tuple[bool, str]:
+    def _parse_due_date(self) -> tuple[bool, str] | tuple[bool, None]:
         """
         Parse this reminder's due date into iCal format.
 
@@ -287,9 +294,12 @@ END:VCALENDAR
 
             -success (:py:class:`bool`) - true if the reminder's due date is successfully parsed.
 
-            -data (:py:class:`str`) - error message on failure or the iCal string.
+            -data (:py:class:`str` | None) - error message on failure or the iCal string, or None if no due date.
 
         """
+        if self.due_date is None:
+            return True, None
+
         due_date = None
         try:
             if self.due_date.strftime("%H:%M:%S") == "00:00:00":
@@ -308,7 +318,7 @@ END:VCALENDAR
             return False, 'Unable to parse reminder due date for {0} ({1}): {2}'.format(self.due_date, self.name, e)
         return True, due_string
 
-    def _parse_alarm(self) -> tuple[bool, str]:
+    def _parse_alarm(self) -> tuple[bool, str] | tuple[bool, None]:
         """
         Parse this reminder's alarm date into iCal format.
 
@@ -316,9 +326,11 @@ END:VCALENDAR
 
             -success (:py:class:`bool`) - true if the reminder's alarm date is successfully parsed.
 
-            -data (:py:class:`str`) - error message on failure or the iCal string.
+            -data (:py:class:`str` | None) - error message on failure or the iCal string, or None if no remind me date.
 
         """
+        if self.remind_me_date is None:
+            return True, None
         alarm_trigger = None
         try:
             if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":

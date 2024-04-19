@@ -200,7 +200,7 @@ class ReminderContainer:
 
     @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
-                                 to_sync: List[str]) -> tuple[bool, str] | tuple[bool, List[ReminderContainer]]:
+                                 to_sync: List[str]) -> tuple[bool, str]:
         """
         Creates an association between local reminder lists and remote task calendars. Missing containers are created;
         for example, if the list *foo* is present locally, and ``sync`` is set to True, this method will check if the
@@ -218,7 +218,7 @@ class ReminderContainer:
 
             -success (:py:class:`bool`) - true if the containers are successfully linked.
 
-            -data (:py:class:`str` | :py:class`List[ReminderContainer]`) - error message on list of containers.
+            -data (:py:class:`str`) - error message on fail, or success message.
 
         """
 
@@ -403,7 +403,7 @@ class ReminderContainer:
                         return False, data
                     discovered_remote = [dc for dc in discovered_remote if dc.name != remote_name]
                     result['updated_remote_list'] = discovered_remote
-        return True, "Local container deleted."
+        return True, "Remote container deleted."
 
     @staticmethod
     def _delete_local_containers(removed_remote_containers: List[sqlite3.Row],
@@ -438,7 +438,7 @@ class ReminderContainer:
                         return False, data
                     discovered_local = [dc for dc in discovered_local if dc.name != local_name]
                     result['updated_local_list'] = discovered_local
-        return True, "Remote container deleted."
+        return True, "Local container deleted."
 
     @staticmethod
     def sync_container_deletions(discovered_local: List[LocalList], discovered_remote: List[RemoteCalendar],
@@ -494,6 +494,7 @@ class ReminderContainer:
         removed_local_containers = [ll for ll in saved_containers if ll['local_name'] not in current_local_containers]
         ReminderContainer._delete_remote_containers(removed_local_containers, discovered_remote, to_sync, result)
 
+        # Sync remote deletions to local
         current_remote_containers = [rc.name for rc in discovered_remote]
         removed_remote_containers = [rc for rc in saved_containers if
                                      rc['remote_name'] not in current_remote_containers]

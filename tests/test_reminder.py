@@ -1,10 +1,10 @@
 import os
 import json
-import keyring
-from decouple import config
 
 import pytest
 import caldav
+import keyring
+from decouple import config
 
 import taskbridge.helpers as helpers
 from taskbridge.reminders.model.reminder import Reminder
@@ -34,9 +34,11 @@ class TestReminder:
         reminder = Reminder.create_from_local(values)
         return reminder
 
+    # noinspection SpellCheckingInspection
     @staticmethod
     def __create_reminder_from_remote() -> Reminder:
         obj = caldav.CalendarObjectResource()
+        # noinspection PyUnresolvedReferences
         obj._set_data("""BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Nextcloud Tasks v0.15.0
@@ -73,12 +75,8 @@ END:VCALENDAR
         uuid = "x-apple-id://1234-5678-9012"
         name = "Test reminder"
         created_date = "Thursday, 18 April 2024 at 08:00:00"
-        completed = 'false'
-        due_date = "Thursday, 18 April 2024 at 18:00:00"
-        all_day = 'false'
         remind_me_date = "Thursday, 18 April 2024 at 18:00:00"
         modified_date = "Thursday, 18 April 2024 at 17:50:00"
-        completion = 'missing value'
         body = "Test reminder body."
         reminder = TestReminder.__create_reminder_from_local()
 
@@ -114,7 +112,7 @@ END:VCALENDAR
         success, data = reminder.upsert_local(container)
         assert success is True
 
-    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_upsert_remote(self):
         TestReminder.__connect_caldav()
         success, remote_calendars = ReminderContainer.load_caldav_calendars()
