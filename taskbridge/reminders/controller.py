@@ -1,7 +1,6 @@
 """
 This is the reminder synchronisation controller. It contains all methods required for reminder synchronisation. These are
-called
-by the GUI, but can be called separately if imported.
+called by the GUI, but can be called separately if imported.
 """
 from __future__ import annotations
 
