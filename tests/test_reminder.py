@@ -24,7 +24,7 @@ class TestReminder:
         created_date = "Thursday, 18 April 2024 at 08:00:00"
         completed = 'false'
         due_date = "Thursday, 18 April 2024 at 18:00:00"
-        all_day = 'false'
+        all_day = 'missing value'
         remind_me_date = "Thursday, 18 April 2024 at 18:00:00"
         modified_date = "Thursday, 18 April 2024 at 17:50:00"
         completion = 'missing value'
