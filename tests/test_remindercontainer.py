@@ -74,6 +74,25 @@ class TestReminderContainer:
         reminder = Reminder.create_from_remote(obj)
         return reminder
 
+    @staticmethod
+    def __get_sync_container() -> ReminderContainer:
+        TestReminderContainer.__connect_caldav()
+
+        # Fetch containers
+        success, data = ReminderContainer.load_local_lists()
+        if not success:
+            assert False, 'Could not load local lists {}'.format(data)
+        local_containers = data
+        success, data = ReminderContainer.load_caldav_calendars()
+        if not success:
+            assert False, 'Could not load remote calendars {}'.format(data)
+        remote_containers = data
+
+        # Associate containers and find the Sync container
+        ReminderContainer.create_linked_containers(local_containers, remote_containers, ['Sync'])
+        sync_container = next((c for c in ReminderContainer.CONTAINER_LIST if c.local_list.name == "Sync"))
+        return sync_container
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_caldav_calendars(self):
         TestReminderContainer.__connect_caldav()
@@ -421,21 +440,8 @@ class TestReminderContainer:
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test__delete_remote_reminders(self):
         helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
 
-        # Fetch containers
-        success, data = ReminderContainer.load_local_lists()
-        if not success:
-            assert False, 'Could not load local lists {}'.format(data)
-        discovered_local = data
-        success, data = ReminderContainer.load_caldav_calendars()
-        if not success:
-            assert False, 'Could not load remote calendars {}'.format(data)
-        discovered_remote = data
-
-        # Associate containers and find the Sync container
-        ReminderContainer.create_linked_containers(discovered_local, discovered_remote, ['Sync'])
-        sync_container = next((c for c in ReminderContainer.CONTAINER_LIST if c.local_list.name == "Sync"))
+        sync_container = TestReminderContainer.__get_sync_container()
 
         # Create the reminder which will be deleted
         to_delete = Reminder(None, "DELETE_ME", None, datetime.datetime.now(), None,
@@ -484,21 +490,8 @@ class TestReminderContainer:
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test__delete_local_reminders(self):
         helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
 
-        # Fetch containers
-        success, data = ReminderContainer.load_local_lists()
-        if not success:
-            assert False, 'Could not load local lists {}'.format(data)
-        discovered_local = data
-        success, data = ReminderContainer.load_caldav_calendars()
-        if not success:
-            assert False, 'Could not load remote calendars {}'.format(data)
-        discovered_remote = data
-
-        # Associate containers and find the Sync container
-        ReminderContainer.create_linked_containers(discovered_local, discovered_remote, ['Sync'])
-        sync_container = next((c for c in ReminderContainer.CONTAINER_LIST if c.local_list.name == "Sync"))
+        sync_container = TestReminderContainer.__get_sync_container()
 
         # Create the reminder which will be deleted
         to_delete = Reminder(None, "DELETE_ME", None, datetime.datetime.now(), None,
@@ -546,23 +539,212 @@ class TestReminderContainer:
         deleted_reminder = next((dr for dr in result['deleted_local_reminders'] if dr.name == to_delete.name), None)
         assert deleted_reminder is not None
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_get_saved_reminders(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
 
+        # Create a local reminder
+        to_save = Reminder(None, "SAVE_ME", None, datetime.datetime.now(), None,
+                           None, None, None)
+        success, data = to_save.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create local reminder.'
+
+        # Refresh the container with the new reminder and persist
+        sync_container.load_local_reminders()
+        sync_container.persist_reminders()
+
+        success, data = ReminderContainer.get_saved_reminders()
+        assert success is True, 'Failed to load saved reminders'
+
+        saved_reminder = next((r for r in data if r['local_name'] == 'SAVE_ME'), None)
+        assert saved_reminder is not None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminder_deletions(self):
-        assert False
+        helpers.DRY_RUN = False
 
+        sync_container = TestReminderContainer.__get_sync_container()
+
+        # Create the local reminder which will be deleted
+        to_delete_local = Reminder(None, "DELETE_ME_LOCAL", None, datetime.datetime.now(), None,
+                                   None, None, None)
+        success, data = to_delete_local.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create local reminder.'
+        to_delete_local.uuid = data
+        success, data = to_delete_local.upsert_remote(sync_container)
+        if not success:
+            assert False, 'Failed to create remote task.'
+
+        # Create the remote reminder which will be deleted
+        to_delete_remote = Reminder("1234-2222-0909", "DELETE_ME_REMOTE", None, datetime.datetime.now(),
+                                    None, None, None, None)
+        success, data = to_delete_remote.upsert_remote(sync_container)
+        if not success:
+            assert False, 'Failed to create remote reminder.'
+        success, data = to_delete_remote.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create remote task.'
+
+        # Refresh the container with the new reminders, sync, and persist
+        sync_container.load_local_reminders()
+        sync_container.load_remote_reminders()
+        success, data = sync_container.sync_reminders()
+        if not success:
+            assert False, 'Failed to sync reminders'
+        sync_container.persist_reminders()
+
+        # Get the new UUID of the remote reminder
+        synced_local = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
+        to_delete_remote.uuid = synced_local.uuid
+
+        # Delete the local reminder
+        delete_reminder_script = reminderscript.delete_reminder_script
+        return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, to_delete_local.uuid)
+        if return_code != 0:
+            assert False, 'Failed to delete local reminder: {}'.format(stderr)
+
+        # Delete the remote reminder
+        remote_object = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_delete_remote.uuid)
+        if len(remote_object) > 0:
+            remote_object[0].delete()
+
+        # Sync reminder deletions
+        sync_container.local_reminders.clear()
+        sync_container.remote_reminders.clear()
+        success, data = sync_container.sync_reminder_deletions()
+        if not success:
+            assert False, 'Failed to synchronise reminder deletions'
+
+        # Ensure the remote reminder is not present locally
+        sync_container.local_reminders.clear()
+        sync_container.load_local_reminders()
+        local_presence = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
+        assert local_presence is None
+
+        # Ensure the local reminder is not present remotely
+        sync_container.remote_reminders.clear()
+        sync_container.load_remote_reminders()
+        remote_presence = next((r for r in sync_container.remote_reminders if r.name == 'DELETE_ME_LOCAL'), None)
+        assert remote_presence is None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_reminders(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
 
+        # Create a local reminder
+        to_load = Reminder(None, "LOAD_ME", None, datetime.datetime.now(), None,
+                           None, None, None)
+        success, data = to_load.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create local reminder.'
+
+        # Load local reminders
+        sync_container.load_local_reminders()
+        local_loaded = next((r for r in sync_container.local_reminders if r.name == "LOAD_ME"), None)
+        assert local_loaded is not None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_remote_reminders(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
 
+        # Create a remote reminder
+        to_load = Reminder("1234-2222-0909", "LOAD_ME", None, datetime.datetime.now(),
+                           None, None, None, None)
+        success, data = to_load.upsert_remote(sync_container)
+        if not success:
+            assert False, 'Failed to create remote reminder.'
+
+        # Load remote reminders
+        sync_container.load_remote_reminders()
+        remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "LOAD_ME"), None)
+        assert remote_loaded is not None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_local_reminders_to_remote(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
 
+        # Create the local reminder
+        to_sync = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
+                           None, None, None)
+        success, data = to_sync.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create local reminder.'
+        to_sync.uuid = data
+
+        # Sync Local --> Remote
+        sync_container.load_local_reminders()
+        sync_container.load_remote_reminders()
+        result = {'remote_added': [], 'local_updated': []}
+        success, data = sync_container.sync_local_reminders_to_remote(result)
+        assert success is True, 'Failed to sync local reminders to remote.'
+        assert len(result['remote_added']) > 0, 'Failed to verify newly added reminder.'
+
+        # Get remote reminders
+        sync_container.load_remote_reminders()
+        remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
+        assert remote_loaded is not None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_remote_reminders_to_local(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
 
+        # Create the remote reminder
+        to_sync = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
+                           None, None, None, None)
+        success, data = to_sync.upsert_remote(sync_container)
+        if not success:
+            assert False, 'Failed to create remote reminder.'
+
+        # Sync Local <-- Remote
+        sync_container.load_local_reminders()
+        sync_container.load_remote_reminders()
+        result = {'local_added': []}
+        success, data = sync_container.sync_remote_reminders_to_local(result)
+        assert success is True, 'Failed to sync remote reminders to local.'
+        assert len(result['local_added']) > 0, 'Failed to verify newly added reminder.'
+
+        # Get local reminders
+        sync_container.load_local_reminders()
+        local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+        assert local_loaded is not None
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminders(self):
-        assert False
+        helpers.DRY_RUN = False
+        sync_container = TestReminderContainer.__get_sync_container()
+
+        # Create the local reminder
+        local_reminder = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
+                                  None, None, None)
+        success, data = local_reminder.upsert_local(sync_container)
+        if not success:
+            assert False, 'Failed to create local reminder.'
+        local_reminder.uuid = data
+
+        # Create the remote reminder
+        remote_reminder = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
+                                   None, None, None, None)
+        success, data = remote_reminder.upsert_remote(sync_container)
+        if not success:
+            assert False, 'Failed to create remote reminder.'
+
+        # Sync Reminders
+        sync_container.load_local_reminders()
+        sync_container.load_remote_reminders()
+        success, data = sync_container.sync_reminders()
+        assert success is True, 'Failed to sync reminders.'
+
+        # Verify results
+        sync_container.load_local_reminders()
+        local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+        assert local_loaded is not None, 'Failed to sync remote reminder to local.'
+        sync_container.load_remote_reminders()
+        remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
+        assert remote_loaded is not None, 'Failed to sync local reminder to remote.'

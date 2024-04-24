@@ -81,6 +81,10 @@ class Reminder:
 
         :return: a Reminder instance representing the content of the values given.
         """
+        values[4] = values[4].strip()
+        values[5] = values[5].strip()
+        values[6] = values[6].strip()
+        values[9] = values[9].strip()
         return Reminder(
             uuid=values[0],
             name=values[1],
@@ -88,9 +92,9 @@ class Reminder:
             modified_date=DateUtil.convert(DateUtil.APPLE_DATETIME, values[7].strip()),
             completed_date=DateUtil.convert(DateUtil.APPLE_DATETIME, values[7].strip()),
             body=values[9] if values[9] != 'missing value' else None,
-            remind_me_date=DateUtil.convert(DateUtil.APPLE_DATETIME, values[6].strip()),
-            due_date=DateUtil.convert(DateUtil.APPLE_DATETIME, values[4].strip()),
-            all_day=False if values[5] == "false" else True,
+            remind_me_date=None if values[6] == 'missing value' else DateUtil.convert(DateUtil.APPLE_DATETIME, values[6]),
+            due_date=None if values[4] == 'missing value' else DateUtil.convert(DateUtil.APPLE_DATETIME, values[4]),
+            all_day=False if values[5] == "missing value" else True,
             completed=False if values[3] == "false" else True
         )
 
