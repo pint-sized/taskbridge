@@ -155,7 +155,7 @@ class Reminder:
             # Set the UUID to that returned by AS
             if self.uuid is None:
                 self.uuid = stdout.strip()
-            return True, self.uuid
+            return True, stdout.strip()
         return False, "Failed to upsert local reminder {0}: {1}".format(self.name, stderr)
 
     def upsert_remote(self, container: model.ReminderContainer) -> tuple[bool, str]:
@@ -305,6 +305,7 @@ END:VCALENDAR
             return True, None
 
         due_date = None
+        due_string = None
         try:
             if self.due_date.strftime("%H:%M:%S") == "00:00:00":
                 ds = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
@@ -316,8 +317,6 @@ END:VCALENDAR
                     due_date = 'DATE-TIME:' + ds
             if due_date is not None:
                 due_string = "DUE;VALUE={due_date}".format(due_date=due_date)
-            else:
-                due_string = None
         except AttributeError as e:
             return False, 'Unable to parse reminder due date for {0} ({1}): {2}'.format(self.due_date, self.name, e)
         return True, due_string
@@ -336,6 +335,7 @@ END:VCALENDAR
         if self.remind_me_date is None:
             return True, None
         alarm_trigger = None
+        alarm_string = None
         try:
             if self.remind_me_date.strftime("%H:%M:%S") == "00:00:00":
                 # Alarm with no time
@@ -349,8 +349,6 @@ TRIGGER;VALUE={alarm_trigger}
 ACTION:DISPLAY
 DESCRIPTION:{summary}
 END:VALARM""".format(alarm_trigger=alarm_trigger, summary=self.name)
-            else:
-                alarm_string = None
         except AttributeError as e:
             return False, 'Unable to parse reminder remind me date for {0} ({1}): {2}'.format(self.remind_me_date, self.name,
                                                                                               e)

@@ -1,12 +1,15 @@
+import datetime
 import os
 import json
 
 import pytest
 import caldav
 import keyring
+from caldav.lib.error import AuthorizationError
 from decouple import config
 
 import taskbridge.helpers as helpers
+from taskbridge.reminders.model import reminderscript
 from taskbridge.reminders.model.reminder import Reminder
 from taskbridge.reminders.model.remindercontainer import ReminderContainer, LocalList, RemoteCalendar
 from taskbridge.reminders.controller import ReminderController
@@ -111,6 +114,18 @@ END:VCALENDAR
         reminder = TestReminder.__create_reminder_from_remote()
         success, data = reminder.upsert_local(container)
         assert success is True
+        local_uuid = data
+
+        # Test failure
+        values = ["x-coredata://invalid", "Invalid", 'invalid', None, 'missing value', 'missing value', 'missing value',
+                  "Thursday, 31 December 2999 at 17:50:00", False, '']
+        bad_reminder = Reminder.create_from_local(values)
+        success, data = bad_reminder.upsert_local(container)
+        assert success is False
+
+        # Clean Up
+        delete_reminder_script = reminderscript.delete_reminder_script
+        helpers.run_applescript(delete_reminder_script, local_uuid)
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_upsert_remote(self):
@@ -126,6 +141,35 @@ END:VCALENDAR
         success, data = reminder.upsert_remote(container)
         assert success is True
 
+        # Reminder with all-day due date, no time remind date and completed
+        reminder = TestReminder.__create_reminder_from_local()
+        reminder.due_date = datetime.datetime(2024, 12, 31, 0, 0, 0)
+        reminder.remind_me_date = datetime.datetime(2024, 12, 31, 0, 0, 0)
+        reminder.all_day = True
+        reminder.completed = True
+        reminder.completed_date = datetime.datetime(2024, 12, 31, 0, 0, 0)
+        success, data = reminder.upsert_remote(container)
+        assert success is True
+
+        # Update same reminder
+        success, data = reminder.upsert_remote(container)
+        assert success is True
+
+        # Test Failure 1 (new, invalid due date)
+        reminder2 = TestReminder.__create_reminder_from_local()
+        reminder2.name = "Invalid Reminder ABC"
+        reminder2.due_date = "INVALID"
+        success, ical_string = reminder2.upsert_remote(container)
+        assert success is False
+
+        # Clean Up
+        to_delete = container.remote_calendar.cal_obj.search(todo=True, uid=reminder.uuid)
+        if len(to_delete) > 0:
+            try:
+                to_delete[0].delete()
+            except AuthorizationError:
+                print('Warning, failed to delete remote item.')
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_update_uuid(self):
         TestReminder.__connect_caldav()
@@ -140,6 +184,19 @@ END:VCALENDAR
         assert success, 'Failed to upsert remote reminder.'
         reminder.update_uuid(container, "NEW-UUID-1234-5678")
         assert reminder.uuid == "NEW-UUID-1234-5678"
+
+        # Test Failure
+        reminder.uuid = "Invalid UUID"
+        success, data = reminder.update_uuid(container, "NEW UUID")
+        assert success is False
+
+        # Clean Up
+        to_delete = container.remote_calendar.cal_obj.search(todo=True, uid="NEW-UUID-1234-5678")
+        if len(to_delete) > 0:
+            try:
+                to_delete[0].delete()
+            except AuthorizationError:
+                print('Warning, failed to delete remote item.')
 
     def test_get_ical_string(self):
         reminder = TestReminder.__create_reminder_from_local()
@@ -163,3 +220,42 @@ END:VALARM
 END:VTODO
 END:VCALENDAR
 """
+
+        # Test 2 (Due date and remind date with no time, completed)
+        reminder2 = TestReminder.__create_reminder_from_local()
+        reminder2.due_date = datetime.datetime(2024, 12, 31)
+        reminder2.remind_me_date = datetime.datetime(2024, 12, 31)
+        reminder2.all_day = True
+        reminder2.completed = True
+        reminder2.completed_date = datetime.datetime(2024, 12, 31)
+        success, ical_string = reminder2.get_ical_string()
+        assert success is True
+
+        # Test 3 (No due date, No alarm)
+        reminder3 = TestReminder.__create_reminder_from_local()
+        reminder3.due_date = None
+        reminder2.remind_me_date = None
+        success, ical_string = reminder3.get_ical_string()
+        assert success is True
+
+        # Test failure 1 (invalid due date)
+        reminder4 = TestReminder.__create_reminder_from_local()
+        reminder4.due_date = "INVALID"
+        success, ical_string = reminder4.get_ical_string()
+        assert success is False
+
+        # Test failure 2 (invalid alarm date)
+        reminder5 = TestReminder.__create_reminder_from_local()
+        reminder5.remind_me_date = "INVALID"
+        success, ical_string = reminder5.get_ical_string()
+        assert success is False
+
+    def test___str__(self):
+        reminder = TestReminder.__create_reminder_from_local()
+        name = reminder.__str__()
+        assert name == "Test reminder"
+
+    def test___repr__(self):
+        reminder = TestReminder.__create_reminder_from_local()
+        name = reminder.__repr__()
+        assert name == "Test reminder"
