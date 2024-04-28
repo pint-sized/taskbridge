@@ -85,6 +85,7 @@ class TestReminderContainer:
 
     @staticmethod
     def __get_sync_container() -> ReminderContainer:
+        ReminderContainer.CONTAINER_LIST.clear()
         TestReminderContainer.__connect_caldav()
 
         # Fetch containers
@@ -1007,8 +1008,6 @@ class TestReminderContainer:
                     assert remote_loaded is not None, 'Failed to sync local reminder to remote.'
 
             # Clean Up
-            if run == 2:
-                print('zfdsfsd')
             sync_container.load_local_reminders()
             local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
             synced_local_uid = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)

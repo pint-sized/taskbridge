@@ -205,7 +205,7 @@ class ReminderContainer:
                         if not success or fail:
                             return False, data
             ReminderContainer(local_list, remote_calendar, should_sync)
-        return True, "Remote lists associated with local lists"
+        return (True, "Remote lists associated with local lists") if not fail else (False, '')
 
     @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
