@@ -3,6 +3,7 @@ import os
 import json
 import sqlite3
 from contextlib import closing
+from pathlib import Path
 
 import caldav
 import pytest
@@ -20,12 +21,12 @@ TEST_ENV = config('TEST_ENV', default='remote')
 
 
 class TestReminderContainer:
-
     CALDAV_CONNECTED: bool = False
 
     @staticmethod
-    def __connect_caldav():
-        if TestReminderContainer.CALDAV_CONNECTED:
+    def __connect_caldav(fail: bool = False):
+        if TestReminderContainer.CALDAV_CONNECTED and not fail:
+            TestReminderContainer.CALDAV_CONNECTED = False
             return
 
         conf_file = helpers.settings_folder() / 'conf.json'
@@ -37,7 +38,8 @@ class TestReminderContainer:
         ReminderController.CALDAV_USERNAME = settings['caldav_username']
         ReminderController.CALDAV_URL = settings['caldav_url']
         ReminderController.CALDAV_HEADERS = {}
-        ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD")
+        ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD") \
+            if not fail else 'bogus'
         ReminderController.TO_SYNC = settings['reminder_sync']
         ReminderController.connect_caldav()
         TestReminderContainer.CALDAV_CONNECTED = True
@@ -103,19 +105,29 @@ class TestReminderContainer:
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_caldav_calendars(self):
         TestReminderContainer.__connect_caldav()
-        remote_calendars = ReminderContainer.load_caldav_calendars()
+        success, remote_calendars = ReminderContainer.load_caldav_calendars()
+        assert success is True
         assert len(remote_calendars) > 0
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_lists(self):
-        local_lists = ReminderContainer.load_local_lists()
+        success, local_lists = ReminderContainer.load_local_lists()
+        assert success is True
         assert len(local_lists) > 0
+
+        # Fail to load local lists
+        success, local_lists = ReminderContainer.load_local_lists(True)
+        assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_count_local_completed(self):
         success, data = ReminderContainer.count_local_completed()
         assert success is True
         assert isinstance(data, int)
+
+        # Fail to count
+        success, data = ReminderContainer.count_local_completed(True)
+        assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_delete_local_completed(self):
@@ -158,6 +170,13 @@ class TestReminderContainer:
         not_synced_container = [c for c in assoc_containers if c.local_list.name == "do_not_sync_me"]
         assert len(not_synced_container) == 1
         assert not_synced_container[0].sync is False
+
+        # Fail
+        mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
+        mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
+        mock_sync = ['sync_me']
+        success, data = ReminderContainer.assoc_list_remote_local(mock_local, mock_remote, mock_sync, True)
+        assert success is False
 
         # Clean up
         ReminderContainer.CONTAINER_LIST.clear()
@@ -422,81 +441,97 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_container_deletions(self):
-        TestReminderContainer.__connect_caldav()
         helpers.DRY_RUN = False
+        TestReminderContainer.__connect_caldav()
+        helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
 
-        # Create containers to be deleted
-        delete_local = LocalList("DELETE_LOCAL")
-        success, data = delete_local.create()
-        if not success:
-            assert False, 'Could not create local list {}'.format(delete_local.name)
-        delete_remote = RemoteCalendar(calendar_name="DELETE_REMOTE")
-        success, data = delete_remote.create()
-        if not success:
-            assert False, 'Could not create remote calendar {}'.format(delete_remote.name)
+        for run in range(4):
+            fail = None
+            if run == 1:
+                # Fail to seed reminders
+                fail = 'fail_seed'
+            elif run == 2:
+                # Fail to retrieve containers
+                fail = 'fail_retrieve'
+            elif run == 3:
+                # Fail to delete container table
+                fail = 'fail_delete'
 
-        # Fetch current containers
-        success, data = ReminderContainer.load_local_lists()
-        if not success:
-            assert False, 'Could not load local lists {}'.format(data)
-        discovered_local = data
-        success, data = ReminderContainer.load_caldav_calendars()
-        if not success:
-            assert False, 'Could not load remote calendars {}'.format(data)
-        discovered_remote = data
+            # Create containers to be deleted
+            delete_local = LocalList("DELETE_LOCAL")
+            success, data = delete_local.create()
+            if not success:
+                assert False, 'Could not create local list {}'.format(delete_local.name)
+            delete_remote = RemoteCalendar(calendar_name="DELETE_REMOTE")
+            success, data = delete_remote.create()
+            if not success:
+                assert False, 'Could not create remote calendar {}'.format(delete_remote.name)
 
-        # Persist containers
-        to_sync = ['DELETE_LOCAL', 'DELETE_REMOTE']
-        success, data = ReminderContainer.create_linked_containers(discovered_local, discovered_remote, to_sync)
-        if not success:
-            assert False, 'Could not create linked containers'
+            # Fetch current containers
+            success, data = ReminderContainer.load_local_lists()
+            if not success:
+                assert False, 'Could not load local lists {}'.format(data)
+            discovered_local = data
+            success, data = ReminderContainer.load_caldav_calendars()
+            if not success:
+                assert False, 'Could not load remote calendars {}'.format(data)
+            discovered_remote = data
 
-        # Delete the containers
-        success, data = delete_local.delete()
-        if not success:
-            assert False, 'Could not delete local list {}'.format(delete_local.name)
-        success, data = delete_remote.delete()
-        if not success:
-            assert False, 'Could not delete remote calendar {}'.format(delete_remote.name)
+            # Persist containers
+            to_sync = ['DELETE_LOCAL', 'DELETE_REMOTE']
+            success, data = ReminderContainer.create_linked_containers(discovered_local, discovered_remote, to_sync)
+            if not success:
+                assert False, 'Could not create linked containers'
 
-        # Fetch current containers
-        success, data = ReminderContainer.load_local_lists()
-        if not success:
-            assert False, 'Could not load local lists {}'.format(data)
-        discovered_local = data
-        success, data = ReminderContainer.load_caldav_calendars()
-        if not success:
-            assert False, 'Could not load remote calendars {}'.format(data)
-        discovered_remote = data
+            # Delete the containers
+            success, data = delete_local.delete()
+            if not success:
+                assert False, 'Could not delete local list {}'.format(delete_local.name)
+            success, data = delete_remote.delete()
+            if not success:
+                assert False, 'Could not delete remote calendar {}'.format(delete_remote.name)
 
-        # Synchronise the deletion
-        ReminderContainer.sync_container_deletions(discovered_local, discovered_remote, to_sync)
+            # Fetch current containers
+            success, data = ReminderContainer.load_local_lists()
+            if not success:
+                assert False, 'Could not load local lists {}'.format(data)
+            discovered_local = data
+            success, data = ReminderContainer.load_caldav_calendars()
+            if not success:
+                assert False, 'Could not load remote calendars {}'.format(data)
+            discovered_remote = data
 
-        # Ensure the containers have been deleted
-        success, data = ReminderContainer.load_local_lists()
-        if not success:
-            assert False, 'Could not load local lists {}'.format(data)
-        local_lists = data
-        success, data = ReminderContainer.load_caldav_calendars()
-        if not success:
-            assert False, 'Could not load remote calendars {}'.format(data)
-        remote_calendars = data
-        local_presence = next((lst for lst in local_lists if lst.name == "DELETE_LOCAL"), None)
-        remote_presence = next((cal for cal in remote_calendars if cal.name == "DELETE_REMOTE"), None)
-        assert local_presence is None
-        assert remote_presence is None
+            # Synchronise the deletion
+            success, data = ReminderContainer.sync_container_deletions(discovered_local, discovered_remote, to_sync, fail)
+            if run > 0:
+                assert success is False
+            else:
+                assert success is True
+                # Ensure the containers have been deleted
+                success, data = ReminderContainer.load_local_lists()
+                if not success:
+                    assert False, 'Could not load local lists {}'.format(data)
+                local_lists = data
+                success, data = ReminderContainer.load_caldav_calendars()
+                if not success:
+                    assert False, 'Could not load remote calendars {}'.format(data)
+                remote_calendars = data
+                local_presence = next((lst for lst in local_lists if lst.name == "DELETE_LOCAL"), None)
+                remote_presence = next((cal for cal in remote_calendars if cal.name == "DELETE_REMOTE"), None)
+                assert local_presence is None
+                assert remote_presence is None
 
-        # Clean Up
-        ReminderContainer.CONTAINER_LIST.clear()
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    sql_delete_containers = "DELETE FROM tb_container"
-                    cursor.execute(sql_delete_containers)
-                    connection.commit()
-        except sqlite3.OperationalError as e:
-            print(e)
+            # Clean Up
+            ReminderContainer.CONTAINER_LIST.clear()
+            try:
+                with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                    connection.row_factory = sqlite3.Row
+                    with closing(connection.cursor()) as cursor:
+                        sql_delete_containers = "DELETE FROM tb_container"
+                        cursor.execute(sql_delete_containers)
+                        connection.commit()
+            except sqlite3.OperationalError as e:
+                print(e)
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test__delete_remote_reminders(self):
@@ -541,12 +576,16 @@ class TestReminderContainer:
         # Synchronise the deletion
         result = {'deleted_remote_reminders': []}
         success, data = ReminderContainer._delete_remote_reminders(container_saved_local, sync_container, result)
-        if not success:
-            assert False, 'Failed to delete remote reminder: {}'.format(data)
+        assert success is True
 
         # Ensure the locally deleted reminder has been deleted remotely
         deleted_reminder = next((dr for dr in result['deleted_remote_reminders'] if dr.name == to_delete.name), None)
         assert deleted_reminder is not None
+
+        # Fail to delete
+        to_delete.uuid = "BOGUS"
+        success, data = ReminderContainer._delete_remote_reminders(container_saved_local, sync_container, result)
+        assert success is False
 
         # Clean Up
         ReminderContainer.CONTAINER_LIST.clear()
@@ -605,12 +644,15 @@ class TestReminderContainer:
         # Synchronise the deletion
         result = {'deleted_local_reminders': []}
         success, data = ReminderContainer._delete_local_reminders(container_saved_remote, sync_container, result)
-        if not success:
-            assert False, 'Failed to delete local reminder: {}'.format(data)
+        assert success is True
 
         # Ensure the remotely deleted reminder has been deleted locally
         deleted_reminder = next((dr for dr in result['deleted_local_reminders'] if dr.name == to_delete.name), None)
         assert deleted_reminder is not None
+
+        # Fail
+        success, data = ReminderContainer._delete_local_reminders(container_saved_remote, sync_container, result, True)
+        assert success is False
 
         # Clean Up
         ReminderContainer.CONTAINER_LIST.clear()
@@ -664,83 +706,95 @@ class TestReminderContainer:
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminder_deletions(self):
         helpers.DRY_RUN = False
+        TestReminderContainer.__connect_caldav()
+        helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
 
-        sync_container = TestReminderContainer.__get_sync_container()
+        tests = [None, 'fail_seed', 'fail_load_local', 'fail_load_remote', 'fail_get_saved', 'fail_db']
+        for run in range(6):
+            fail = tests[run]
 
-        # Create the local reminder which will be deleted
-        to_delete_local = Reminder(None, "DELETE_ME_LOCAL", None, datetime.datetime.now(), None,
-                                   None, None, None)
-        success, data = to_delete_local.upsert_local(sync_container)
-        if not success:
-            assert False, 'Failed to create local reminder.'
-        to_delete_local.uuid = data
-        success, data = to_delete_local.upsert_remote(sync_container)
-        if not success:
-            assert False, 'Failed to create remote task.'
+            sync_container = TestReminderContainer.__get_sync_container()
 
-        # Create the remote reminder which will be deleted
-        to_delete_remote = Reminder("1234-2222-0909", "DELETE_ME_REMOTE", None, datetime.datetime.now(),
-                                    None, None, None, None)
-        success, data = to_delete_remote.upsert_remote(sync_container)
-        if not success:
-            assert False, 'Failed to create remote reminder.'
-        success, data = to_delete_remote.upsert_local(sync_container)
-        if not success:
-            assert False, 'Failed to create remote task.'
+            # Create the local reminder which will be deleted
+            to_delete_local = Reminder(None, "DELETE_ME_LOCAL", None, datetime.datetime.now(), None,
+                                       None, None, None)
+            success, data = to_delete_local.upsert_local(sync_container)
+            if not success:
+                assert False, 'Failed to create local reminder.'
+            to_delete_local.uuid = data
+            success, data = to_delete_local.upsert_remote(sync_container)
+            if not success:
+                assert False, 'Failed to create remote task.'
 
-        # Refresh the container with the new reminders, sync, and persist
-        sync_container.load_local_reminders()
-        sync_container.load_remote_reminders()
-        success, data = sync_container.sync_reminders()
-        if not success:
-            assert False, 'Failed to sync reminders'
-        sync_container.persist_reminders()
+            # Create the remote reminder which will be deleted
+            to_delete_remote = Reminder(helpers.get_uuid(), "DELETE_ME_REMOTE", None, datetime.datetime.now(),
+                                        None, None, None, None)
+            success, data = to_delete_remote.upsert_remote(sync_container)
+            if not success:
+                assert False, 'Failed to create remote reminder.'
+            success, data = to_delete_remote.upsert_local(sync_container)
+            if not success:
+                assert False, 'Failed to create remote task.'
 
-        # Get the new UUID of the remote reminder
-        synced_local = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
-        to_delete_remote.uuid = synced_local.uuid
+            # Refresh the container with the new reminders, sync, and persist
+            sync_container.load_local_reminders()
+            sync_container.load_remote_reminders()
+            success, data = sync_container.sync_reminders()
+            if not success:
+                assert False, 'Failed to sync reminders'
+            sync_container.persist_reminders()
 
-        # Delete the local reminder
-        delete_reminder_script = reminderscript.delete_reminder_script
-        return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, to_delete_local.uuid)
-        if return_code != 0:
-            assert False, 'Failed to delete local reminder: {}'.format(stderr)
+            # Get the new UUID of the remote reminder
+            synced_local = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
+            to_delete_remote.uuid = synced_local.uuid
 
-        # Delete the remote reminder
-        remote_object = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_delete_remote.uuid)
-        if len(remote_object) > 0:
-            remote_object[0].delete()
+            # Delete the local reminder
+            delete_reminder_script = reminderscript.delete_reminder_script
+            return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, to_delete_local.uuid)
+            if return_code != 0:
+                assert False, 'Failed to delete local reminder: {}'.format(stderr)
 
-        # Sync reminder deletions
-        sync_container.local_reminders.clear()
-        sync_container.remote_reminders.clear()
-        success, data = sync_container.sync_reminder_deletions()
-        if not success:
-            assert False, 'Failed to synchronise reminder deletions'
+            # Delete the remote reminder
+            remote_object = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_delete_remote.uuid)
+            if len(remote_object) > 0:
+                remote_object[0].delete()
 
-        # Ensure the remote reminder is not present locally
-        sync_container.local_reminders.clear()
-        sync_container.load_local_reminders()
-        local_presence = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
-        assert local_presence is None
+            # Sync reminder deletions
+            sync_container.local_reminders.clear()
+            sync_container.remote_reminders.clear()
+            success, data = sync_container.sync_reminder_deletions(fail)
+            if run > 0:
+                assert success is False
+            else:
+                assert success is True
+                # Ensure the remote reminder is not present locally
+                sync_container.local_reminders.clear()
+                sync_container.load_local_reminders()
+                local_presence = next((r for r in sync_container.local_reminders if r.name == 'DELETE_ME_REMOTE'), None)
+                assert local_presence is None
 
-        # Ensure the local reminder is not present remotely
-        sync_container.remote_reminders.clear()
-        sync_container.load_remote_reminders()
-        remote_presence = next((r for r in sync_container.remote_reminders if r.name == 'DELETE_ME_LOCAL'), None)
-        assert remote_presence is None
+                # Ensure the local reminder is not present remotely
+                sync_container.remote_reminders.clear()
+                sync_container.load_remote_reminders()
+                remote_presence = next((r for r in sync_container.remote_reminders if r.name == 'DELETE_ME_LOCAL'), None)
+                assert remote_presence is None
 
-        # Clean Up
-        ReminderContainer.CONTAINER_LIST.clear()
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    sql_delete_containers = "DELETE FROM tb_reminder"
-                    cursor.execute(sql_delete_containers)
-                    connection.commit()
-        except sqlite3.OperationalError as e:
-            print(e)
+            # Clean Up
+            delete_reminder_script = reminderscript.delete_reminder_script
+            helpers.run_applescript(delete_reminder_script, synced_local.uuid)
+            remote_object = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_delete_remote.uuid)
+            if len(remote_object) > 0:
+                remote_object[0].delete()
+            ReminderContainer.CONTAINER_LIST.clear()
+            try:
+                with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                    connection.row_factory = sqlite3.Row
+                    with closing(connection.cursor()) as cursor:
+                        sql_delete_containers = "DELETE FROM tb_reminder"
+                        cursor.execute(sql_delete_containers)
+                        connection.commit()
+            except sqlite3.OperationalError as e:
+                print(e)
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_reminders(self):
@@ -755,15 +809,25 @@ class TestReminderContainer:
             assert False, 'Failed to create local reminder.'
         local_uuid = data
 
-        # Load local reminders
-        sync_container.load_local_reminders()
-        local_loaded = next((r for r in sync_container.local_reminders if r.name == "LOAD_ME"), None)
-        assert local_loaded is not None
+        fail = None
+        for run in range(3):
+            if run == 1:
+                fail = "fail_load"
+            elif run == 2:
+                fail = "fail_psv"
 
-        # Clean Up
-        ReminderContainer.CONTAINER_LIST.clear()
-        delete_reminder_script = reminderscript.delete_reminder_script
-        helpers.run_applescript(delete_reminder_script, local_uuid)
+            # Load local reminders
+            success, data = sync_container.load_local_reminders(fail)
+            if run > 0:
+                assert success is False
+            else:
+                local_loaded = next((r for r in sync_container.local_reminders if r.name == "LOAD_ME"), None)
+                assert local_loaded is not None
+
+            # Clean Up
+            ReminderContainer.CONTAINER_LIST.clear()
+            delete_reminder_script = reminderscript.delete_reminder_script
+            helpers.run_applescript(delete_reminder_script, local_uuid)
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_remote_reminders(self):
@@ -796,122 +860,247 @@ class TestReminderContainer:
         helpers.DRY_RUN = False
         sync_container = TestReminderContainer.__get_sync_container()
 
-        # Create the local reminder
-        to_sync = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
-                           None, None, None)
-        success, data = to_sync.upsert_local(sync_container)
-        if not success:
-            assert False, 'Failed to create local reminder.'
-        to_sync.uuid = data
+        fail = None
+        for run in range(3):
+            if run == 1:
+                fail = "fail_upsert_remote"
+            elif run == 2:
+                fail = "local_older"
 
-        # Sync Local --> Remote
-        sync_container.load_local_reminders()
-        sync_container.load_remote_reminders()
-        result = {'remote_added': [], 'remote_updated': []}
-        success, data = sync_container.sync_local_reminders_to_remote(result)
-        assert success is True, 'Failed to sync local reminders to remote.'
-        assert len(result['remote_added']) > 0, 'Failed to verify newly added reminder.'
+            # Create the local reminder
+            to_sync = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
+                               None, None, None)
+            success, data = to_sync.upsert_local(sync_container)
+            assert success is True
+            to_sync.uuid = data
 
-        # Get remote reminders
-        sync_container.load_remote_reminders()
-        remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
-        assert remote_loaded is not None
+            # Sync Local --> Remote
+            sync_container.load_local_reminders()
+            sync_container.load_remote_reminders()
+            result = {'remote_added': [], 'remote_updated': [], 'local_updated': []}
+            success, data = sync_container.sync_local_reminders_to_remote(result, fail)
+            if run == 1:
+                assert success is False
+            else:
+                assert success is True
 
-        # Clean Up
-        to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_sync.uuid)
-        if len(to_delete) > 0:
-            try:
-                to_delete[0].delete()
-            except AuthorizationError:
-                print('Warning, failed to delete remote item.')
-        delete_reminder_script = reminderscript.delete_reminder_script
-        helpers.run_applescript(delete_reminder_script, to_sync.uuid)
-        ReminderContainer.CONTAINER_LIST.clear()
+                if run == 0:
+                    assert len(result['remote_added']) > 0, 'Failed to verify newly added reminder.'
+                elif run == 2:
+                    assert len(result['local_updated']) > 0, 'Failed to verify updated reminder.'
+
+                # Get remote reminders
+                sync_container.load_remote_reminders()
+                remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
+                assert remote_loaded is not None
+
+            # Clean Up
+            to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_sync.uuid)
+            if len(to_delete) > 0:
+                try:
+                    to_delete[0].delete()
+                except AuthorizationError:
+                    print('Warning, failed to delete remote item.')
+            delete_reminder_script = reminderscript.delete_reminder_script
+            helpers.run_applescript(delete_reminder_script, to_sync.uuid)
+            ReminderContainer.CONTAINER_LIST.clear()
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_remote_reminders_to_local(self):
         helpers.DRY_RUN = False
         sync_container = TestReminderContainer.__get_sync_container()
 
-        # Create the remote reminder
-        to_sync = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
-                           None, None, None, None)
-        success, data = to_sync.upsert_remote(sync_container)
-        if not success:
-            assert False, 'Failed to create remote reminder.'
+        fail = None
+        for run in range(3):
+            if run == 1:
+                fail = "fail_upsert"
+            elif run == 2:
+                fail = "fail_uuid"
 
-        # Sync Local <-- Remote
-        sync_container.load_local_reminders()
-        sync_container.load_remote_reminders()
-        result = {'local_added': []}
-        success, data = sync_container.sync_remote_reminders_to_local(result)
-        assert success is True, 'Failed to sync remote reminders to local.'
-        assert len(result['local_added']) > 0, 'Failed to verify newly added reminder.'
+            # Create the remote reminder
+            to_sync = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
+                               None, None, None, None)
+            success, data = to_sync.upsert_remote(sync_container)
+            if not success:
+                assert False, 'Failed to create remote reminder.'
 
-        # Get local reminders
-        sync_container.load_local_reminders()
-        local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
-        assert local_loaded is not None
+            # Sync Local <-- Remote
+            sync_container.load_local_reminders()
+            sync_container.load_remote_reminders()
+            result = {'local_added': []}
+            success, data = sync_container.sync_remote_reminders_to_local(result, fail)
+            if run > 0:
+                assert success is False
+            else:
+                assert success is True, 'Failed to sync remote reminders to local.'
+                assert len(result['local_added']) > 0, 'Failed to verify newly added reminder.'
 
-        # Clean Up
-        to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid="1234-2222-0909")
-        if len(to_delete) > 0:
-            try:
-                to_delete[0].delete()
-            except AuthorizationError:
-                print('Warning, failed to delete remote item.')
-        delete_reminder_script = reminderscript.delete_reminder_script
-        helpers.run_applescript(delete_reminder_script, local_loaded.uuid)
-        ReminderContainer.CONTAINER_LIST.clear()
+            # Get local reminders
+            sync_container.load_local_reminders()
+            local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+            if run == 0:
+                assert local_loaded is not None
+            delete_reminder_script = reminderscript.delete_reminder_script
+            helpers.run_applescript(delete_reminder_script, local_loaded.uuid)
+
+            # Clean Up
+            sync_container.local_reminders.clear()
+            sync_container.remote_reminders.clear()
+            if local_loaded:
+                to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=local_loaded.uuid)
+                if len(to_delete) > 0:
+                    try:
+                        to_delete[0].delete()
+                    except AuthorizationError:
+                        print('Warning, failed to delete remote item.')
+            ReminderContainer.CONTAINER_LIST.clear()
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminders(self):
         helpers.DRY_RUN = False
         sync_container = TestReminderContainer.__get_sync_container()
 
-        # Create the local reminder
-        local_reminder = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
-                                  None, None, None)
-        success, data = local_reminder.upsert_local(sync_container)
-        if not success:
-            assert False, 'Failed to create local reminder.'
-        local_reminder.uuid = data
+        fail = None
+        for run in range(4):
+            if run == 1:
+                fail = "no_sync"
+            elif run == 2:
+                fail = "fail_upsert_remote"
+            elif run == 3:
+                fail = "fail_upsert"
 
-        # Create the remote reminder
-        remote_reminder = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
-                                   None, None, None, None)
-        success, data = remote_reminder.upsert_remote(sync_container)
-        if not success:
-            assert False, 'Failed to create remote reminder.'
+            # Create the local reminder
+            local_reminder = Reminder(None, "SYNC_ME_LOCAL", None, datetime.datetime.now(), None,
+                                      None, None, None)
+            success, data = local_reminder.upsert_local(sync_container)
+            if not success:
+                assert False, 'Failed to create local reminder.'
+            local_reminder.uuid = data
 
-        # Sync Reminders
-        sync_container.load_local_reminders()
-        sync_container.load_remote_reminders()
-        success, data = sync_container.sync_reminders()
-        assert success is True, 'Failed to sync reminders.'
+            # Create the remote reminder
+            remote_reminder = Reminder("1234-2222-0909", "SYNC_ME_REMOTE", None, datetime.datetime.now(),
+                                       None, None, None, None)
+            success, data = remote_reminder.upsert_remote(sync_container)
+            assert success is True
 
-        # Verify results
-        sync_container.load_local_reminders()
-        local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
-        assert local_loaded is not None, 'Failed to sync remote reminder to local.'
-        sync_container.load_remote_reminders()
-        remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
-        assert remote_loaded is not None, 'Failed to sync local reminder to remote.'
+            # Sync Reminders
+            sync_container.load_local_reminders()
+            sync_container.load_remote_reminders()
+            sync_container.sync = not fail == "no_sync"
+            success, data = sync_container.sync_reminders(fail)
+            if run > 1:
+                assert success is False
+            else:
+                assert success is True
 
-        # Clean Up
-        to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid="1234-2222-0909")
-        if len(to_delete) > 0:
-            try:
-                to_delete[0].delete()
-            except AuthorizationError:
-                print('Warning, failed to delete remote item.')
-        to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=local_reminder.uuid)
-        if len(to_delete) > 0:
-            try:
-                to_delete[0].delete()
-            except AuthorizationError:
-                print('Warning, failed to delete remote item.')
-        delete_reminder_script = reminderscript.delete_reminder_script
-        helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
-        helpers.run_applescript(delete_reminder_script, local_loaded.uuid)
+                if fail == "no_sync":
+                    assert data == "Container Sync is set to NO SYNC so skipped"
+
+                # Verify results
+                sync_container.load_local_reminders()
+                local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+                if sync_container.sync:
+                    assert local_loaded is not None, 'Failed to sync remote reminder to local.'
+                sync_container.load_remote_reminders()
+                remote_loaded = next((r for r in sync_container.remote_reminders if r.name == "SYNC_ME_LOCAL"), None)
+                if sync_container.sync:
+                    assert remote_loaded is not None, 'Failed to sync local reminder to remote.'
+
+            # Clean Up
+            if run == 2:
+                print('zfdsfsd')
+            sync_container.load_local_reminders()
+            local_loaded = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+            synced_local_uid = next((r for r in sync_container.local_reminders if r.name == "SYNC_ME_REMOTE"), None)
+            if synced_local_uid is not None:
+                to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=synced_local_uid.uuid)
+                if len(to_delete) > 0:
+                    try:
+                        to_delete[0].delete()
+                    except AuthorizationError:
+                        print('Warning, failed to delete remote item.')
+            to_delete = sync_container.remote_calendar.cal_obj.search(todo=True, uid=local_reminder.uuid)
+            if len(to_delete) > 0:
+                try:
+                    to_delete[0].delete()
+                except AuthorizationError:
+                    print('Warning, failed to delete remote item.')
+            delete_reminder_script = reminderscript.delete_reminder_script
+            helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
+            if local_loaded is not None:
+                helpers.run_applescript(delete_reminder_script, local_loaded.uuid)
+            sync_container.local_reminders.clear()
+            sync_container.remote_reminders.clear()
+            ReminderContainer.CONTAINER_LIST.clear()
+
+    def test___str__(self):
+        sync_container = TestReminderContainer.__get_sync_container()
+        desc = sync_container.__str__()
+        assert desc == "<Local: Sync, Remote: Sync, Sync: True>"
+
+    def test___repr__(self):
+        sync_container = TestReminderContainer.__get_sync_container()
+        desc = sync_container.__str__()
+        assert desc == "<Local: Sync, Remote: Sync, Sync: True>"
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
+    def test_disconnected_caldav(self):
+        helpers.DRY_RUN = False
+        TestReminderContainer.__connect_caldav(True)
         ReminderContainer.CONTAINER_LIST.clear()
+
+        # Fail to load remote calendars
+        success, data = ReminderContainer.load_caldav_calendars()
+        assert success is False
+
+        # Fail to associate local with remote
+        mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
+        mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
+        mock_sync = ['sync_me']
+        success, data = ReminderContainer.assoc_list_local_remote(mock_local, mock_remote, mock_sync)
+        assert success is True
+
+        # Fail to delete remote container
+        to_delete = LocalList('DELETE_ME')
+        to_keep = LocalList('KEEP_ME')
+        removed_remote_containers = [{'remote_name': 'NON_EXISTENT'}]
+        removed_local_containers = []
+        discovered_local = [to_delete, to_keep]
+        to_sync = ['DELETE_ME', 'KEEP_ME', 'NON_EXISTENT']
+        result = {'updated_local_list': []}
+        # noinspection PyTypeChecker
+        success, data = ReminderContainer._delete_local_containers(removed_remote_containers, removed_local_containers,
+                                                                   discovered_local, to_sync, result)
+        assert success is False
+
+        # Fail to delete local container
+        to_delete = LocalList('DELETE_ME')
+        to_keep = LocalList('KEEP_ME')
+        removed_remote_containers = [{'remote_name': 'NON_EXISTENT'}]
+        removed_local_containers = []
+        discovered_local = [to_delete, to_keep]
+        to_sync = ['DELETE_ME', 'KEEP_ME', 'NON_EXISTENT']
+        result = {'updated_local_list': []}
+        # noinspection PyTypeChecker
+        success, data = ReminderContainer._delete_local_containers(removed_remote_containers, removed_local_containers,
+                                                                   discovered_local, to_sync, result, True)
+        assert success is False
+
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
+    def test_unavailable_db(self):
+        helpers.DATA_LOCATION = Path("/")
+
+        success, data = ReminderContainer.seed_container_table()
+        assert success is False
+
+        success, data = ReminderContainer.seed_reminder_table()
+        assert success is False
+
+        success, data = ReminderContainer.persist_reminders()
+        assert success is False
+
+        success, data = ReminderContainer.persist_containers()
+        assert success is False
+
+        success, data = ReminderContainer.get_saved_reminders()
+        assert success is False

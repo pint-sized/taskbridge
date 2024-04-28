@@ -60,23 +60,26 @@ class ReminderContainer:
             -data (:py:class:`str` | :py:class`List[RemoteCalendar]`) - error message on failure or list of remote calendars.
 
         """
-        remote_calendars = []
-        calendars = helpers.CALDAV_PRINCIPAL.calendars()
-        for c in calendars:
-            acceptable_component_types = c.get_supported_components()
-            if "VTODO" in acceptable_component_types:
-                remote_calendar = RemoteCalendar(c)
-                remote_calendars.append(remote_calendar)
+        try:
+            remote_calendars = []
+            calendars = helpers.CALDAV_PRINCIPAL.calendars()
+            for c in calendars:
+                acceptable_component_types = c.get_supported_components()
+                if "VTODO" in acceptable_component_types:
+                    remote_calendar = RemoteCalendar(c)
+                    remote_calendars.append(remote_calendar)
 
-        if len(remote_calendars) > 0:
-            return True, remote_calendars
-
-        return False, "Unable to load CalDav calendars."
+            if len(remote_calendars) > 0:
+                return True, remote_calendars
+        except (caldav.lib.error.AuthorizationError, AttributeError):
+            return False, "Unable to load CalDav calendars."
 
     @staticmethod
-    def load_local_lists() -> tuple[bool, str] | tuple[bool, List[LocalList]]:
+    def load_local_lists(fail: bool = False) -> tuple[bool, str] | tuple[bool, List[LocalList]]:
         """
         Load the list of local reminder lists.
+
+        :param fail: if set to True, this method fails on purpose (used for test coverage)
 
         :returns:
 
@@ -85,23 +88,26 @@ class ReminderContainer:
             -data (:py:class:`str` | :py:class`List[LocalList]`) - error message on failure or list of local reminder lists.
 
         """
-        get_reminder_lists_script = reminderscript.get_reminder_lists_script
-        return_code, stdout, stderr = helpers.run_applescript(get_reminder_lists_script)
+        if not fail:
+            get_reminder_lists_script = reminderscript.get_reminder_lists_script
+            return_code, stdout, stderr = helpers.run_applescript(get_reminder_lists_script)
 
-        local_lists = []
-        if return_code == 0:
-            for r_list in stdout.split('|'):
-                data = r_list.split(':')
-                local_list = LocalList(data[1].strip(), data[0].strip())
-                local_lists.append(local_list)
-            return True, local_lists
+            local_lists = []
+            if return_code == 0:
+                for r_list in stdout.split('|'):
+                    data = r_list.split(':')
+                    local_list = LocalList(data[1].strip(), data[0].strip())
+                    local_lists.append(local_list)
+                return True, local_lists
 
         return False, "Unable to load local reminder lists."
 
     @staticmethod
-    def count_local_completed() -> tuple[bool, str] | tuple[bool, int]:
+    def count_local_completed(fail: bool = False) -> tuple[bool, str] | tuple[bool, int]:
         """
         Counts the number of completed reminders.
+
+        :param fail: if set to True, this method fails on purpose (used for test coverage)
 
         :returns:
 
@@ -110,11 +116,13 @@ class ReminderContainer:
             -data (:py:class:`str` | :py:class`int`) - error message or number of completed reminders.
 
         """
-        count_completed_script = reminderscript.count_completed_script
-        return_code, stdout, stderr = helpers.run_applescript(count_completed_script)
+        stderr = ""
+        if not fail:
+            count_completed_script = reminderscript.count_completed_script
+            return_code, stdout, stderr = helpers.run_applescript(count_completed_script)
 
-        if return_code == 0:
-            return True, int(stdout.strip())
+            if return_code == 0:
+                return True, int(stdout.strip())
 
         return False, "Unable to count completed reminders {}".format(stderr)
 
@@ -133,10 +141,11 @@ class ReminderContainer:
         delete_completed_script = reminderscript.delete_completed_script
         return_code, stdout, stderr = helpers.run_applescript(delete_completed_script)
 
-        if return_code == 0:
-            return True, "Completed reminders deleted"
-
-        return False, "Unable to delete completed reminders: {}".format(stderr)
+        return (
+            (True, "Completed reminders deleted")
+            if return_code == 0 else
+            (False, "Unable to delete completed reminders: {}".format(stderr))
+        )
 
     @staticmethod
     def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
@@ -167,8 +176,8 @@ class ReminderContainer:
         return True, "Local lists associated with remote lists"
 
     @staticmethod
-    def assoc_list_remote_local(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
-            tuple[bool, str]:
+    def assoc_list_remote_local(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str],
+                                fail: bool = False) -> tuple[bool, str]:
         """
         Associate remote reminder lists with local lists.
 
@@ -193,7 +202,7 @@ class ReminderContainer:
                     if helpers.confirm('Create local list {}'.format(local_name)):
                         local_list = LocalList(list_name=local_name)
                         success, data = local_list.create()
-                        if not success:
+                        if not success or fail:
                             return False, data
             ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Remote lists associated with local lists"
@@ -410,7 +419,8 @@ class ReminderContainer:
                                  removed_local_containers: List[sqlite3.Row],
                                  discovered_local: List[LocalList],
                                  to_sync: List[str],
-                                 result: dict) -> tuple[bool, str]:
+                                 result: dict,
+                                 fail: bool = False) -> tuple[bool, str]:
         """
         Deletes remote reminder containers which have been deleted locally.
 
@@ -419,6 +429,7 @@ class ReminderContainer:
         :param discovered_local: the list of local reminder lists.
         :param to_sync: the list of lists/calendars which should be synchronised.
         :param result: dictionary where changes are appended
+        :param fail: method will fail if this is True (used for test coverage)
 
         :returns:
 
@@ -434,7 +445,7 @@ class ReminderContainer:
                 if helpers.confirm('Delete local container {}'.format(remote['remote_name'])):
                     local_name = "Reminders" if remote['remote_name'] == "Tasks" else remote['remote_name']
                     success, data = LocalList(list_name=local_name).delete()
-                    if not success:
+                    if not success or fail:
                         return False, data
                     discovered_local = [dc for dc in discovered_local if dc.name != local_name]
                     result['updated_local_list'] = discovered_local
@@ -442,7 +453,7 @@ class ReminderContainer:
 
     @staticmethod
     def sync_container_deletions(discovered_local: List[LocalList], discovered_remote: List[RemoteCalendar],
-                                 to_sync: List[str]) -> tuple[bool, str] | tuple[bool, dict]:
+                                 to_sync: List[str], fail: str = None) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises deletions to reminder containers.
 
@@ -460,6 +471,7 @@ class ReminderContainer:
         :param discovered_local: the list of local reminder lists.
         :param discovered_remote: the list of remote task calendars.
         :param to_sync: the list of lists/calendars which should be synchronised.
+        :param fail: the part of the process to intentionally fail (used for test coverage)
 
         :returns:
 
@@ -469,7 +481,7 @@ class ReminderContainer:
 
         """
         success, message = ReminderContainer.seed_container_table()
-        if not success:
+        if not success or fail == "fail_seed":
             return False, message
 
         result = {
@@ -478,6 +490,8 @@ class ReminderContainer:
         }
 
         # Sync local deletions to remote
+        if fail == "fail_retrieve":
+            helpers.DATA_LOCATION = Path("/")
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
@@ -502,6 +516,8 @@ class ReminderContainer:
                                                    to_sync, result)
 
         # Empty table
+        if fail == "fail_delete":
+            helpers.DATA_LOCATION = Path("/")
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
@@ -550,13 +566,15 @@ class ReminderContainer:
     @staticmethod
     def _delete_local_reminders(container_saved_remote: List[sqlite3.Row],
                                 container: ReminderContainer,
-                                result: dict) -> tuple[bool, str]:
+                                result: dict,
+                                fail: bool = False) -> tuple[bool, str]:
         """
         Delete local reminders which have been deleted remotely.
 
         :param container_saved_remote: list of reminders from last sync.
-        :param container: the reminder container
-        :param result: dictionary where changes are appended
+        :param container: the reminder container.
+        :param result: dictionary where changes are appended.
+        :param fail: deletion will fail if this is true (used for test coverage).
 
         :returns:
 
@@ -574,7 +592,7 @@ class ReminderContainer:
                 if helpers.confirm("Delete local reminder {}".format(local_reminder.name)):
                     delete_reminder_script = reminderscript.delete_reminder_script
                     return_code, stdout, stderr = helpers.run_applescript(delete_reminder_script, local_reminder.uuid)
-                    if return_code != 0:
+                    if return_code != 0 or fail:
                         return False, 'Failed to delete local reminder {0} ({1})'.format(local_reminder.uuid,
                                                                                          local_reminder.name)
                     container.local_reminders.remove(local_reminder)
@@ -604,7 +622,7 @@ class ReminderContainer:
         return True, saved_reminders
 
     @staticmethod
-    def sync_reminder_deletions() -> tuple[bool, str] | tuple[bool, dict]:
+    def sync_reminder_deletions(fail: str = None) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises deletions to reminders.
 
@@ -622,6 +640,9 @@ class ReminderContainer:
         A reminder not being found is not considered an error, as the user may have deleted the reminder manually prior
         to the sync running.
 
+        :param fail: the part of the process to intentionally fail (used for test coverage)
+
+
         :returns:
 
             -success (:py:class:`bool`) - true if reminder deletions are successfully synchronised.
@@ -630,15 +651,15 @@ class ReminderContainer:
 
         """
         success, message = ReminderContainer.seed_reminder_table()
-        if not success:
+        if not success or fail == "fail_seed":
             return False, message
 
         for container in ReminderContainer.CONTAINER_LIST:
             success, data = container.load_local_reminders()
-            if not success:
+            if not success or fail == "fail_load_local":
                 return False, 'Failed to load local reminders: {}'.format(data)
             success, data = container.load_remote_reminders()
-            if not success:
+            if not success or fail == "fail_load_remote":
                 return False, 'Failed to load remote reminders: {}'.format(data)
 
         result = {
@@ -647,7 +668,7 @@ class ReminderContainer:
         }
 
         success, data = ReminderContainer.get_saved_reminders()
-        if not success:
+        if not success or fail == "fail_get_saved":
             return False, data
         saved_reminders = data
 
@@ -666,6 +687,8 @@ class ReminderContainer:
             ReminderContainer._delete_local_reminders(container_saved_remote, container, result)
 
         # Empty table
+        if fail == "fail_db":
+            helpers.DATA_LOCATION = Path("/")
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
@@ -676,10 +699,12 @@ class ReminderContainer:
 
         return True, result
 
-    def load_local_reminders(self) -> tuple[bool, str] | tuple[bool, int]:
+    def load_local_reminders(self, fail: str = None) -> tuple[bool, str] | tuple[bool, int]:
         """
         Load the list of local reminders in this local container (list) via an AppleScript script.
         The reminders are saved in a pipe-separated *.psv* file in a temporary folder, and then parsed from there.
+
+        :param fail: the part of the process to intentionally fail (used for test coverage)
 
         :returns:
 
@@ -691,10 +716,12 @@ class ReminderContainer:
         get_reminders_in_list_script = reminderscript.get_reminders_in_list_script
         return_code, stdout, stderr = helpers.run_applescript(get_reminders_in_list_script, self.local_list.name)
 
-        if return_code != 0:
+        if return_code != 0 or fail == "fail_load":
             return False, stderr
 
         export_path = Path(stdout.strip()) / (self.local_list.name + '.psv')
+        if fail == "fail_psv":
+            export_path = "BOGUS"
         try:
             with open(export_path, 'r') as fp:
                 file_data = fp.read()
@@ -729,11 +756,12 @@ class ReminderContainer:
 
         return True, len(self.remote_reminders)
 
-    def sync_local_reminders_to_remote(self, result: dict) -> tuple[bool, str]:
+    def sync_local_reminders_to_remote(self, result: dict, fail: str = None) -> tuple[bool, str]:
         """
         Sync local reminders to remote tasks.
 
         :param result: dictionary where actions are appended
+        :param fail: the part of the process to intentionally fail (used for test coverage)
 
         :returns:
 
@@ -751,11 +779,13 @@ class ReminderContainer:
                 remote_reminder = copy.deepcopy(local_reminder)
                 if helpers.confirm("Upsert remote reminder {}".format(remote_reminder.name)):
                     success, data = remote_reminder.upsert_remote(self)
-                    if not success:
+                    if not success or fail == "fail_upsert_remote":
                         return False, data
                     result[key].append(remote_reminder.name)
-            elif local_reminder.modified_date < remote_reminder.modified_date:
+            elif (local_reminder.modified_date < remote_reminder.modified_date) or fail == "local_older":
                 key = 'local_updated'
+                if fail == "local_older":
+                    remote_reminder.upsert_remote(self)
                 local_reminder = copy.deepcopy(remote_reminder)
                 if helpers.confirm("Update local reminder {}".format(local_reminder.name)):
                     success, data = local_reminder.upsert_local(self)
@@ -768,11 +798,12 @@ class ReminderContainer:
                     result[key].append(local_reminder.name)
         return True, 'Local reminder synced with remote'
 
-    def sync_remote_reminders_to_local(self, result: dict) -> tuple[bool, str]:
+    def sync_remote_reminders_to_local(self, result: dict, fail: str = None) -> tuple[bool, str]:
         """
         Sync remote tasks to local reminders.
 
         :param result: dictionary where actions are appended
+        :param fail: the part of the process to intentionally fail (used for test coverage)
 
         :returns:
 
@@ -790,16 +821,16 @@ class ReminderContainer:
                 local_reminder = copy.deepcopy(remote_reminder)
                 if helpers.confirm("Add local reminder {}".format(local_reminder.name)):
                     success, data = local_reminder.upsert_local(self)
-                    if not success:
+                    if not success or fail == "fail_upsert":
                         return False, data
                     else:
                         u_success, u_data = remote_reminder.update_uuid(self, data)
-                        if not u_success:
+                        if not u_success or fail == "fail_uuid":
                             return False, u_data
                     result[key].append(local_reminder.name)
         return True, "Remote reminder synced with local"
 
-    def sync_reminders(self) -> tuple[bool, str] | tuple[bool, dict]:
+    def sync_reminders(self, fail: str = None) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises reminders. This method only synchronises reminders for containers with ``sync`` set to True.
         On success, the method returns a dictionary with the following keys:
@@ -810,6 +841,8 @@ class ReminderContainer:
         - ``local_updated`` - name of reminders updated in the local list as :py:class:`List[str]`.
 
         Any of the above may be empty if no changes were made.
+
+        :param fail: the part of the process to intentionally fail (used for test coverage)
 
         :returns:
 
@@ -830,12 +863,12 @@ class ReminderContainer:
         }
 
         # Sync local reminders to remote
-        success, data = self.sync_local_reminders_to_remote(result)
+        success, data = self.sync_local_reminders_to_remote(result, fail)
         if not success:
             return success, data
 
         # Sync remote reminders to local
-        success, data = self.sync_remote_reminders_to_local(result)
+        success, data = self.sync_remote_reminders_to_local(result, fail)
         if not success:
             return success, data
 

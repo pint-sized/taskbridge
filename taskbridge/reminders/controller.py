@@ -8,6 +8,7 @@ import logging
 from typing import List
 
 import caldav
+from caldav.lib.error import AuthorizationError
 
 from taskbridge import helpers
 from taskbridge.reminders.model.remindercontainer import ReminderContainer
@@ -66,14 +67,17 @@ class ReminderController:
             -data (:py:class:`str`) - success message.
 
         """
-        client = caldav.DAVClient(
-            url=ReminderController.CALDAV_URL,
-            username=ReminderController.CALDAV_USERNAME,
-            password=ReminderController.CALDAV_PASSWORD,
-            headers=ReminderController.CALDAV_HEADERS,
-        )
-        helpers.CALDAV_PRINCIPAL = client.principal()
-        return True, "Successfully connected to CalDav."
+        try:
+            client = caldav.DAVClient(
+                url=ReminderController.CALDAV_URL,
+                username=ReminderController.CALDAV_USERNAME,
+                password=ReminderController.CALDAV_PASSWORD,
+                headers=ReminderController.CALDAV_HEADERS,
+            )
+            helpers.CALDAV_PRINCIPAL = client.principal()
+            return True, "Successfully connected to CalDav."
+        except caldav.lib.error.AuthorizationError:
+            return False, "Failed to connect to CalDAV."
 
     @staticmethod
     def fetch_remote_reminders() -> tuple[bool, str]:
