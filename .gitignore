@@ -234,3 +234,6 @@ fabric.properties
 
 # OS Stuff
 .DS_Store
+
+# Local Test
+tests/conf.json

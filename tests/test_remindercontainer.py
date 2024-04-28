@@ -24,12 +24,15 @@ class TestReminderContainer:
     CALDAV_CONNECTED: bool = False
 
     @staticmethod
-    def __connect_caldav(fail: bool = False):
+    def __connect_caldav(fail: bool = False, local_caldav: bool = True):
         if TestReminderContainer.CALDAV_CONNECTED and not fail:
             TestReminderContainer.CALDAV_CONNECTED = False
             return
 
-        conf_file = helpers.settings_folder() / 'conf.json'
+        if local_caldav:
+            conf_file = os.getcwd() + "/conf.json"
+        else:
+            conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
             assert False, "Failed to load configuration file."
         with open(helpers.settings_folder() / 'conf.json', 'r') as fp:
@@ -38,8 +41,14 @@ class TestReminderContainer:
         ReminderController.CALDAV_USERNAME = settings['caldav_username']
         ReminderController.CALDAV_URL = settings['caldav_url']
         ReminderController.CALDAV_HEADERS = {}
-        ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD") \
-            if not fail else 'bogus'
+
+        if fail:
+            ReminderContainer.CALDAV_PASSWORD = 'bogus'
+        elif local_caldav:
+            ReminderContainer.CALDAV_PASSWORD = config('LOCAL_CALDAV_PASSWORD')
+        else:
+            ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD")
+
         ReminderController.TO_SYNC = settings['reminder_sync']
         ReminderController.connect_caldav()
         TestReminderContainer.CALDAV_CONNECTED = True
@@ -1032,11 +1041,13 @@ class TestReminderContainer:
             sync_container.remote_reminders.clear()
             ReminderContainer.CONTAINER_LIST.clear()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test___str__(self):
         sync_container = TestReminderContainer.__get_sync_container()
         desc = sync_container.__str__()
         assert desc == "<Local: Sync, Remote: Sync, Sync: True>"
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test___repr__(self):
         sync_container = TestReminderContainer.__get_sync_container()
         desc = sync_container.__str__()
