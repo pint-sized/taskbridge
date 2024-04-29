@@ -24,18 +24,19 @@ class TestReminderContainer:
     CALDAV_CONNECTED: bool = False
 
     @staticmethod
-    def __connect_caldav(fail: bool = False, local_caldav: bool = True):
+    def __connect_caldav(fail: bool = False, test_caldav: bool = True):
         if TestReminderContainer.CALDAV_CONNECTED and not fail:
             TestReminderContainer.CALDAV_CONNECTED = False
             return
 
-        if local_caldav:
+        if test_caldav:
             conf_file = os.getcwd() + "/conf.json"
         else:
             conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
             assert False, "Failed to load configuration file."
-        with open(helpers.settings_folder() / 'conf.json', 'r') as fp:
+
+        with open(conf_file, 'r') as fp:
             settings = json.load(fp)
 
         ReminderController.CALDAV_USERNAME = settings['caldav_username']
@@ -43,9 +44,9 @@ class TestReminderContainer:
         ReminderController.CALDAV_HEADERS = {}
 
         if fail:
-            ReminderContainer.CALDAV_PASSWORD = 'bogus'
-        elif local_caldav:
-            ReminderContainer.CALDAV_PASSWORD = config('LOCAL_CALDAV_PASSWORD')
+            ReminderController.CALDAV_PASSWORD = 'bogus'
+        elif test_caldav:
+            ReminderController.CALDAV_PASSWORD = config('TEST_CALDAV_PASSWORD')
         else:
             ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD")
 
