@@ -26,15 +26,18 @@ class TestReminderContainer:
     @staticmethod
     def __connect_caldav(fail: bool = False, test_caldav: bool = True):
         if TestReminderContainer.CALDAV_CONNECTED and not fail:
-            TestReminderContainer.CALDAV_CONNECTED = False
             return
 
+        if fail:
+            helpers.CALDAV_PRINCIPAL = None
+            TestReminderContainer.CALDAV_CONNECTED = False
+
         if test_caldav:
-            conf_file = os.getcwd() + "/conf.json"
+            conf_file = Path(os.path.abspath(os.path.dirname(__file__))) / "conf.json"
         else:
             conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
-            assert False, "Failed to load configuration file."
+            assert False, "Failed to load configuration file at {}".format(conf_file)
 
         with open(conf_file, 'r') as fp:
             settings = json.load(fp)
@@ -70,6 +73,12 @@ class TestReminderContainer:
         values = [uuid, name, created_date, completed, due_date, all_day, remind_me_date, modified_date, completion, body]
         reminder = Reminder.create_from_local(values)
         return reminder
+
+    @staticmethod
+    def __reset_state() -> None:
+        helpers.DRY_RUN = False
+        TestReminderContainer.__connect_caldav()
+        helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
 
     # noinspection SpellCheckingInspection
     @staticmethod
@@ -115,13 +124,15 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_caldav_calendars(self):
-        TestReminderContainer.__connect_caldav()
+        TestReminderContainer.__reset_state()
         success, remote_calendars = ReminderContainer.load_caldav_calendars()
         assert success is True
         assert len(remote_calendars) > 0
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_lists(self):
+        TestReminderContainer.__reset_state()
+
         success, local_lists = ReminderContainer.load_local_lists()
         assert success is True
         assert len(local_lists) > 0
@@ -132,6 +143,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_count_local_completed(self):
+        TestReminderContainer.__reset_state()
+
         success, data = ReminderContainer.count_local_completed()
         assert success is True
         assert isinstance(data, int)
@@ -142,12 +155,16 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_delete_local_completed(self):
+        TestReminderContainer.__reset_state()
+
         success, data = ReminderContainer.delete_local_completed()
         assert success is True
         success, count = ReminderContainer.count_local_completed()
         assert count == 0
 
     def test_assoc_list_local_remote(self):
+        TestReminderContainer.__reset_state()
+
         mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
         mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
         mock_sync = ['sync_me']
@@ -167,6 +184,8 @@ class TestReminderContainer:
         ReminderContainer.CONTAINER_LIST.clear()
 
     def test_assoc_list_remote_local(self):
+        TestReminderContainer.__reset_state()
+
         mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
         mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
         mock_sync = ['sync_me']
@@ -194,8 +213,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_create_linked_containers(self):
-        helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
+        TestReminderContainer.__reset_state()
+
         mock_local = [LocalList("sync_me"),
                       LocalList("do_not_sync_me"),
                       LocalList("Reminders"),
@@ -242,6 +261,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_seed_container_table(self):
+        TestReminderContainer.__reset_state()
+
         ReminderContainer.seed_container_table()
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
@@ -264,6 +285,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_persist_containers(self):
+        TestReminderContainer.__reset_state()
+
         ReminderContainer(LocalList("sync_me"), RemoteCalendar(calendar_name="sync_me"), True)
         ReminderContainer(LocalList("do_not_sync_me"), RemoteCalendar(calendar_name="do_not_sync_me"), False)
         ReminderContainer.persist_containers()
@@ -301,6 +324,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_seed_reminder_table(self):
+        TestReminderContainer.__reset_state()
+
         ReminderContainer.seed_reminder_table()
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
@@ -324,6 +349,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_persist_reminders(self):
+        TestReminderContainer.__reset_state()
+
         container = ReminderContainer(LocalList("sync_me"), RemoteCalendar(calendar_name="sync_me"), True)
         local_reminder = Reminder("local_uuid", "local_name", None, datetime.datetime.now(),
                                   None, None, None, None, False)
@@ -368,8 +395,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test__delete_remote_containers(self):
-        helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
+        TestReminderContainer.__reset_state()
 
         # Create a remote container
         to_delete = RemoteCalendar(calendar_name='DELETE_ME')
@@ -410,7 +436,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test__delete_local_containers(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
 
         # Create a local container
         to_delete = LocalList('DELETE_ME')
@@ -452,9 +478,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_container_deletions(self):
-        helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
-        helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
+        TestReminderContainer.__reset_state()
 
         for run in range(4):
             fail = None
@@ -533,6 +557,7 @@ class TestReminderContainer:
                 assert remote_presence is None
 
             # Clean Up
+            TestReminderContainer.__reset_state()
             ReminderContainer.CONTAINER_LIST.clear()
             try:
                 with closing(sqlite3.connect(helpers.db_folder())) as connection:
@@ -546,7 +571,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test__delete_remote_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
 
         sync_container = TestReminderContainer.__get_sync_container()
 
@@ -612,7 +637,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test__delete_local_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
 
         sync_container = TestReminderContainer.__get_sync_container()
 
@@ -679,7 +704,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_get_saved_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         # Create a local reminder
@@ -716,9 +742,7 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminder_deletions(self):
-        helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav()
-        helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
+        TestReminderContainer.__reset_state()
 
         tests = [None, 'fail_seed', 'fail_load_local', 'fail_load_remote', 'fail_get_saved', 'fail_db']
         for run in range(6):
@@ -745,7 +769,7 @@ class TestReminderContainer:
                 assert False, 'Failed to create remote reminder.'
             success, data = to_delete_remote.upsert_local(sync_container)
             if not success:
-                assert False, 'Failed to create remote task.'
+                assert False, 'Failed to create local task.'
 
             # Refresh the container with the new reminders, sync, and persist
             sync_container.load_local_reminders()
@@ -791,6 +815,7 @@ class TestReminderContainer:
                 assert remote_presence is None
 
             # Clean Up
+            TestReminderContainer.__reset_state()
             delete_reminder_script = reminderscript.delete_reminder_script
             helpers.run_applescript(delete_reminder_script, synced_local.uuid)
             remote_object = sync_container.remote_calendar.cal_obj.search(todo=True, uid=to_delete_remote.uuid)
@@ -809,7 +834,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         # Create a local reminder
@@ -842,7 +868,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires CalDAV credentials")
     def test_load_remote_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         # Create a remote reminder
@@ -868,7 +895,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_local_reminders_to_remote(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         fail = None
@@ -918,7 +946,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_remote_reminders_to_local(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         fail = None
@@ -968,7 +997,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_sync_reminders(self):
-        helpers.DRY_RUN = False
+        TestReminderContainer.__reset_state()
+
         sync_container = TestReminderContainer.__get_sync_container()
 
         fail = None
@@ -1056,8 +1086,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_disconnected_caldav(self):
-        helpers.DRY_RUN = False
-        TestReminderContainer.__connect_caldav(True)
+        TestReminderContainer.__reset_state()
+        TestReminderContainer.__connect_caldav(fail=True)
         ReminderContainer.CONTAINER_LIST.clear()
 
         # Fail to load remote calendars
@@ -1099,6 +1129,8 @@ class TestReminderContainer:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and CalDAV credentials")
     def test_unavailable_db(self):
+        TestReminderContainer.__reset_state()
+
         helpers.DATA_LOCATION = Path("/")
 
         success, data = ReminderContainer.seed_container_table()

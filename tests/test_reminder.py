@@ -1,6 +1,7 @@
 import datetime
 import os
 import json
+from pathlib import Path
 
 import pytest
 import caldav
@@ -19,6 +20,7 @@ TEST_ENV = config('TEST_ENV', default='remote')
 
 
 class TestReminder:
+    CALDAV_CONNECTED: bool = False
 
     @staticmethod
     def __create_reminder_from_local() -> Reminder:
@@ -60,19 +62,35 @@ END:VCALENDAR
         return reminder
 
     @staticmethod
-    def __connect_caldav():
-        conf_file = helpers.settings_folder() / 'conf.json'
+    def __connect_caldav(fail: bool = False, test_caldav: bool = True):
+        if TestReminder.CALDAV_CONNECTED and not fail:
+            TestReminder.CALDAV_CONNECTED = False
+            return
+
+        if test_caldav:
+            conf_file = Path(os.path.abspath(os.path.dirname(__file__))) / "conf.json"
+        else:
+            conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
-            assert False, "Failed to load configuration file."
-        with open(helpers.settings_folder() / 'conf.json', 'r') as fp:
+            assert False, "Failed to load configuration file at {}".format(conf_file)
+
+        with open(conf_file, 'r') as fp:
             settings = json.load(fp)
 
         ReminderController.CALDAV_USERNAME = settings['caldav_username']
         ReminderController.CALDAV_URL = settings['caldav_url']
         ReminderController.CALDAV_HEADERS = {}
-        ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD")
+
+        if fail:
+            ReminderController.CALDAV_PASSWORD = 'bogus'
+        elif test_caldav:
+            ReminderController.CALDAV_PASSWORD = config('TEST_CALDAV_PASSWORD')
+        else:
+            ReminderController.CALDAV_PASSWORD = keyring.get_password("TaskBridge", "CALDAV-PWD")
+
         ReminderController.TO_SYNC = settings['reminder_sync']
         ReminderController.connect_caldav()
+        TestReminder.CALDAV_CONNECTED = True
 
     def test_create_from_local(self):
         uuid = "x-apple-id://1234-5678-9012"

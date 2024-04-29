@@ -492,6 +492,8 @@ class ReminderContainer:
         # Sync local deletions to remote
         if fail == "fail_retrieve":
             helpers.DATA_LOCATION = Path("/")
+        else:
+            helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
@@ -518,6 +520,8 @@ class ReminderContainer:
         # Empty table
         if fail == "fail_delete":
             helpers.DATA_LOCATION = Path("/")
+        else:
+            helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
@@ -655,10 +659,16 @@ class ReminderContainer:
             return False, message
 
         for container in ReminderContainer.CONTAINER_LIST:
+            if not container.sync:
+                continue
             success, data = container.load_local_reminders()
             if not success or fail == "fail_load_local":
                 return False, 'Failed to load local reminders: {}'.format(data)
-            success, data = container.load_remote_reminders()
+            if not fail == "fail_load_remote":
+                success, data = container.load_remote_reminders()
+            else:
+                success = False
+                data = "Explicitly set to fail to load reminders"
             if not success or fail == "fail_load_remote":
                 return False, 'Failed to load remote reminders: {}'.format(data)
 
@@ -689,6 +699,8 @@ class ReminderContainer:
         # Empty table
         if fail == "fail_db":
             helpers.DATA_LOCATION = Path("/")
+        else:
+            helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
                 connection.row_factory = sqlite3.Row
