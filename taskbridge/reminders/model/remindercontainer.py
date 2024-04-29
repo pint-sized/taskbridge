@@ -71,8 +71,8 @@ class ReminderContainer:
 
             if len(remote_calendars) > 0:
                 return True, remote_calendars
-        except (caldav.lib.error.AuthorizationError, AttributeError):
-            return False, "Unable to load CalDav calendars."
+        except (caldav.lib.error.AuthorizationError, AttributeError) as e:
+            return False, "Unable to load CalDav calendars: {}".format(e)
 
     @staticmethod
     def load_local_lists(fail: bool = False) -> tuple[bool, str] | tuple[bool, List[LocalList]]:
@@ -148,14 +148,14 @@ class ReminderContainer:
         )
 
     @staticmethod
-    def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str], fail: bool = False) -> tuple[bool, str]:
+    def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
+            tuple[bool, str]:
         """
         Associate local reminder lists with remote lists.
 
         :param local_lists: discovered local lists
         :param remote_calendars: discovered remote calendars
         :param to_sync: list of containers to keep in sync
-        :param fail: if set to true, this method will fail (used for test coverage)
 
         :returns:
 
@@ -172,13 +172,9 @@ class ReminderContainer:
                 remote_calendar = RemoteCalendar(calendar_name=remote_name)
                 if should_sync:
                     if helpers.confirm('Create remote calendar {}'.format(remote_name)):
-                        remote_calendar = RemoteCalendar(calendar_name=remote_name)
-                        if not fail:
-                            success, data = remote_calendar.create()
-                            if not success:
-                                return False, data
-                        else:
-                            return False, 'Explicitly set to fail.'
+                        success, data = remote_calendar.create()
+                        if not success:
+                            return False, data
             ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Local lists associated with remote lists"
 
@@ -191,7 +187,7 @@ class ReminderContainer:
         :param local_lists: discovered local lists
         :param remote_calendars: discovered remote calendars
         :param to_sync: list of containers to keep in sync
-        :param fail: if set to true, this method will fail (used for test coverage)
+        :param fail: set this to True to fail this task (used for test coverage)
 
         :returns:
 
@@ -213,14 +209,14 @@ class ReminderContainer:
                 if should_sync:
                     if helpers.confirm('Create local list {}'.format(local_name)):
                         local_list = LocalList(list_name=local_name)
-                        if not fail:
-                            success, data = local_list.create()
-                            if not success:
-                                return False, data
-                        else:
-                            return False, 'Explicitly set to fail.'
+                        try:
+                            if fail:
+                                raise AttributeError("Explicitly set to fail")
+                            local_list.create()
+                        except AttributeError as e:
+                            return False, e.__str__()
             ReminderContainer(local_list, remote_calendar, should_sync)
-        return (True, "Remote lists associated with local lists") if not fail else (False, '')
+        return True, "Remote lists associated with local lists"
 
     @staticmethod
     def create_linked_containers(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar],
@@ -520,7 +516,7 @@ class ReminderContainer:
         except sqlite3.OperationalError as e:
             return False, 'Error retrieving containers from table: {}'.format(e)
 
-        if not len(saved_containers) > 0:
+        if not len(saved_containers) > 0 or fail == "fail_already_deleted":
             return True, result
 
         current_local_containers = [ll.name for ll in discovered_local]
@@ -699,7 +695,7 @@ class ReminderContainer:
             return False, data
         saved_reminders = data
 
-        if not len(saved_reminders) > 0:
+        if not len(saved_reminders) > 0 or fail == "fail_already_deleted":
             return True, result
 
         for container in ReminderContainer.CONTAINER_LIST:
@@ -811,18 +807,19 @@ class ReminderContainer:
                     if not success or fail == "fail_upsert_remote":
                         return False, data
                     result[key].append(remote_reminder.name)
-            elif (local_reminder.modified_date < remote_reminder.modified_date) or fail == "local_older":
+            elif (local_reminder.modified_date < remote_reminder.modified_date) or fail in ["local_older", "fail_upsert_local",
+                                                                                            "fail_update_uuid"]:
                 key = 'local_updated'
-                if fail == "local_older":
+                if fail in ["local_older", "fail_upsert_local", "fail_update_uuid"]:
                     remote_reminder.upsert_remote(self)
                 local_reminder = copy.deepcopy(remote_reminder)
                 if helpers.confirm("Update local reminder {}".format(local_reminder.name)):
                     success, data = local_reminder.upsert_local(self)
-                    if not success:
+                    if not success or fail == "fail_upsert_local":
                         return False, data
                     else:
                         u_success, u_data = remote_reminder.update_uuid(self, data)
-                        if not u_success:
+                        if not u_success or fail == "fail_update_uuid":
                             return False, u_data
                     result[key].append(local_reminder.name)
         return True, 'Local reminder synced with remote'
@@ -949,12 +946,14 @@ class RemoteCalendar:
             -data (:py:class:`str`) - error message on failure or success message.
 
         """
-        cal_obj = helpers.CALDAV_PRINCIPAL.make_calendar(self.name)
-        if isinstance(cal_obj, caldav.Calendar):
-            self.id = cal_obj.id
-            self.cal_obj = cal_obj
-            return True, "Created remote calendar {}".format(self.name)
-        return False, "Failed to create remote calendar {}".format(self.name)
+        try:
+            cal_obj = helpers.CALDAV_PRINCIPAL.make_calendar(self.name)
+            if isinstance(cal_obj, caldav.Calendar):
+                self.id = cal_obj.id
+                self.cal_obj = cal_obj
+                return True, "Created remote calendar {}".format(self.name)
+        except AttributeError:
+            return False, "Failed to create remote calendar {}".format(self.name)
 
     def delete(self) -> tuple[bool, str]:
         """
@@ -970,7 +969,7 @@ class RemoteCalendar:
         try:
             cal = helpers.CALDAV_PRINCIPAL.calendar(name=self.name)
             cal.delete()
-        except error.DeleteError as e:
+        except (error.DeleteError, AttributeError) as e:
             return False, 'Failed to delete remote calendar {0}: {1}'.format(self.name, e)
         except error.NotFoundError as e:
             return False, 'Failed to find remote calendar to delete {0}: {1}'.format(self.name, e)
@@ -998,9 +997,11 @@ class LocalList:
         self.id: str = list_id
         self.name: str = list_name
 
-    def create(self) -> tuple[bool, str]:
+    def create(self, fail: bool = False) -> tuple[bool, str]:
         """
         Creates the local list using AppleScript.
+
+        :param fail: set this to True to fail this method (used for test coverage)
 
         :returns:
 
@@ -1011,6 +1012,8 @@ class LocalList:
         """
         create_reminder_list_script = reminderscript.create_reminder_list_script
         return_code, stdout, stderr = helpers.run_applescript(create_reminder_list_script, self.name)
+        if fail:
+            return_code = 1
         if return_code == 0:
             self.id = stdout
             return True, "Created local list {}".format(self.name)

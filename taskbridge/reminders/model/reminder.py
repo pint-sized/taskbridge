@@ -189,12 +189,15 @@ class Reminder:
             return True, 'Remote reminder added: {}'.format(self.name)
         else:
             # Update existing remote task
-            if not self.due_date:
-                due_date = None
-            elif self.due_date.strftime("%H:%M:%S") == "00:00:00":
-                due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
-            else:
-                due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
+            try:
+                if not self.due_date:
+                    due_date = None
+                elif self.due_date.strftime("%H:%M:%S") == "00:00:00":
+                    due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
+                else:
+                    due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
+            except AttributeError:
+                return False, "Invalid due date."
 
             if not self.remind_me_date:
                 alarm_trigger = None

@@ -153,6 +153,7 @@ END:VCALENDAR
             assert False, "Failed to load remote calendars."
         remote_calendar = next((rc for rc in remote_calendars if rc.name == "Sync"), None)
 
+        # Typical Reminder
         local_list = LocalList("Sync")
         container = ReminderContainer(local_list, remote_calendar, True)
         reminder = TestReminder.__create_reminder_from_local()
@@ -173,23 +174,28 @@ END:VCALENDAR
         success, data = reminder.upsert_remote(container)
         assert success is True
 
-        # Update same reminder with different due date
-        reminder.due_date = datetime.datetime(2024, 12, 31, 19, 30, 25)
-        success, data = reminder.upsert_remote(container)
+        # Test changing due date
+        reminder2 = TestReminder.__create_reminder_from_local()
+        reminder2.name = "SECOND TEST"
+        success, data = reminder2.upsert_remote(container)
+        assert success is True
+        reminder2.due_date = datetime.datetime(2024, 12, 31, 19, 30, 25)
+        success, data = reminder2.upsert_remote(container)
         assert success is True
 
         # Test Failure 1 (new, invalid due date)
-        reminder2 = TestReminder.__create_reminder_from_local()
-        reminder2.name = "Invalid Reminder ABC"
-        reminder2.due_date = "INVALID"
-        success, ical_string = reminder2.upsert_remote(container)
+        reminder3 = TestReminder.__create_reminder_from_local()
+        reminder3.name = "Invalid Reminder ABC"
+        reminder3.due_date = "INVALID"
+        success, ical_string = reminder3.upsert_remote(container)
         assert success is False
 
         # Clean Up
         to_delete = container.remote_calendar.cal_obj.search(todo=True, uid=reminder.uuid)
         if len(to_delete) > 0:
             try:
-                to_delete[0].delete()
+                for kill in to_delete:
+                    kill.delete()
             except AuthorizationError:
                 print('Warning, failed to delete remote item.')
 
