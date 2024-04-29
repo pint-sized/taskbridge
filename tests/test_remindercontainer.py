@@ -163,7 +163,7 @@ class TestReminderContainer:
         assert count == 0
 
     def test_assoc_list_local_remote(self):
-        TestReminderContainer.__reset_state()
+        helpers.DRY_RUN = False
 
         mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
         mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
@@ -180,11 +180,18 @@ class TestReminderContainer:
         assert len(not_synced_container) == 1
         assert not_synced_container[0].sync is False
 
+        # Test Fail
+        mock_local = [LocalList("sync_me")]
+        mock_remote = []
+        ReminderContainer.CONTAINER_LIST.clear()
+        success, data = ReminderContainer.assoc_list_local_remote(mock_local, mock_remote, mock_sync, True)
+        assert success is False
+
         # Clean up
         ReminderContainer.CONTAINER_LIST.clear()
 
     def test_assoc_list_remote_local(self):
-        TestReminderContainer.__reset_state()
+        helpers.DRY_RUN = False
 
         mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
         mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
@@ -202,8 +209,8 @@ class TestReminderContainer:
         assert not_synced_container[0].sync is False
 
         # Fail
-        mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
-        mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
+        mock_local = []
+        mock_remote = [RemoteCalendar(calendar_name="sync_me")]
         mock_sync = ['sync_me']
         success, data = ReminderContainer.assoc_list_remote_local(mock_local, mock_remote, mock_sync, True)
         assert success is False
@@ -429,6 +436,12 @@ class TestReminderContainer:
         # Check the results are properly updated
         deleted_calendar = next((c for c in result['updated_remote_list'] if c.name == 'DELETE_ME'), None)
         assert deleted_calendar is None
+
+        # Fail
+        # noinspection PyTypeChecker
+        success, data = ReminderContainer._delete_remote_containers(removed_local_containers, discovered_remote, to_sync,
+                                                                    result, True)
+        assert success is False
 
         # Clean Up
         ReminderContainer.CONTAINER_LIST.clear()

@@ -173,6 +173,11 @@ END:VCALENDAR
         success, data = reminder.upsert_remote(container)
         assert success is True
 
+        # Update same reminder with different due date
+        reminder.due_date = datetime.datetime(2024, 12, 31, 19, 30, 25)
+        success, data = reminder.upsert_remote(container)
+        assert success is True
+
         # Test Failure 1 (new, invalid due date)
         reminder2 = TestReminder.__create_reminder_from_local()
         reminder2.name = "Invalid Reminder ABC"

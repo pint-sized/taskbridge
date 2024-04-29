@@ -148,10 +148,14 @@ class ReminderContainer:
         )
 
     @staticmethod
-    def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str]) -> \
-            tuple[bool, str]:
+    def assoc_list_local_remote(local_lists: List[LocalList], remote_calendars: List[RemoteCalendar], to_sync: List[str], fail: bool = False) -> tuple[bool, str]:
         """
         Associate local reminder lists with remote lists.
+
+        :param local_lists: discovered local lists
+        :param remote_calendars: discovered remote calendars
+        :param to_sync: list of containers to keep in sync
+        :param fail: if set to true, this method will fail (used for test coverage)
 
         :returns:
 
@@ -169,9 +173,12 @@ class ReminderContainer:
                 if should_sync:
                     if helpers.confirm('Create remote calendar {}'.format(remote_name)):
                         remote_calendar = RemoteCalendar(calendar_name=remote_name)
-                        success, data = remote_calendar.create()
-                        if not success:
-                            return False, data
+                        if not fail:
+                            success, data = remote_calendar.create()
+                            if not success:
+                                return False, data
+                        else:
+                            return False, 'Explicitly set to fail.'
             ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Local lists associated with remote lists"
 
@@ -180,6 +187,11 @@ class ReminderContainer:
                                 fail: bool = False) -> tuple[bool, str]:
         """
         Associate remote reminder lists with local lists.
+
+        :param local_lists: discovered local lists
+        :param remote_calendars: discovered remote calendars
+        :param to_sync: list of containers to keep in sync
+        :param fail: if set to true, this method will fail (used for test coverage)
 
         :returns:
 
@@ -201,9 +213,12 @@ class ReminderContainer:
                 if should_sync:
                     if helpers.confirm('Create local list {}'.format(local_name)):
                         local_list = LocalList(list_name=local_name)
-                        success, data = local_list.create()
-                        if not success or fail:
-                            return False, data
+                        if not fail:
+                            success, data = local_list.create()
+                            if not success:
+                                return False, data
+                        else:
+                            return False, 'Explicitly set to fail.'
             ReminderContainer(local_list, remote_calendar, should_sync)
         return (True, "Remote lists associated with local lists") if not fail else (False, '')
 
@@ -386,7 +401,8 @@ class ReminderContainer:
     def _delete_remote_containers(removed_local_containers: List[sqlite3.Row],
                                   discovered_remote: List[RemoteCalendar],
                                   to_sync: List[str],
-                                  result: dict) -> tuple[bool, str]:
+                                  result: dict,
+                                  fail: bool = False) -> tuple[bool, str]:
         """
         Deletes remote reminder containers which have been deleted locally.
 
@@ -394,6 +410,7 @@ class ReminderContainer:
         :param discovered_remote: the list of remote task calendars.
         :param to_sync: the list of lists/calendars which should be synchronised.
         :param result: dictionary where changes are appended
+        :param fail: method will fail if this is True (used for test coverage)
 
         :returns:
 
@@ -408,7 +425,7 @@ class ReminderContainer:
                 if helpers.confirm('Delete remote container {}'.format(local['local_name'])):
                     remote_name = "Tasks" if local['local_name'] == "Reminders" else local['local_name']
                     success, data = RemoteCalendar(calendar_name=remote_name).delete()
-                    if not success:
+                    if not success or fail:
                         return False, data
                     discovered_remote = [dc for dc in discovered_remote if dc.name != remote_name]
                     result['updated_remote_list'] = discovered_remote
@@ -950,11 +967,13 @@ class RemoteCalendar:
             -data (:py:class:`str`) - error message on failure or success message.
 
         """
-        cal = helpers.CALDAV_PRINCIPAL.calendar(name=self.name)
         try:
+            cal = helpers.CALDAV_PRINCIPAL.calendar(name=self.name)
             cal.delete()
         except error.DeleteError as e:
             return False, 'Failed to delete remote calendar {0}: {1}'.format(self.name, e)
+        except error.NotFoundError as e:
+            return False, 'Failed to find remote calendar to delete {0}: {1}'.format(self.name, e)
         return True, 'Remote calendar {} deleted'.format(self.name)
 
     def __str__(self):
