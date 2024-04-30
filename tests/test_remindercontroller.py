@@ -7,52 +7,7 @@ from taskbridge.reminders.model.remindercontainer import LocalList, RemoteCalend
 
 
 class TestReminderController:
-    # CALDAV_STATE = None
     CONTAINER_BASE = 'taskbridge.reminders.model.remindercontainer'
-
-    # @staticmethod
-    # def __connect_caldav():
-    #     if TestReminderController.CALDAV_STATE == 'valid':
-    #         return True
-    #     elif TestReminderController.CALDAV_STATE is None:
-    #         TestReminderController.__setup_caldav()
-    #
-    #     success, data = ReminderController.connect_caldav()
-    #     assert success is True
-    #     TestReminderController.CALDAV_STATE = 'valid'
-    #     return True
-    #
-    # @staticmethod
-    # def __invalidate_caldav():
-    #     if TestReminderController.CALDAV_STATE == 'invalid':
-    #         return True
-    #     elif TestReminderController.CALDAV_STATE is None:
-    #         TestReminderController.__setup_caldav()
-    #
-    #     helpers.CALDAV_PRINCIPAL = None
-    #     ReminderController.CALDAV_PASSWORD = 'bogus'
-    #     success, data = ReminderController.connect_caldav()
-    #     assert success is False
-    #     TestReminderController.CALDAV_STATE = 'invalid'
-    #     return True
-    #
-    # @staticmethod
-    # def __setup_caldav(test_caldav: bool = True):
-    #     if test_caldav:
-    #         conf_file = Path(os.path.abspath(os.path.dirname(__file__))) / "conf.json"
-    #     else:
-    #         conf_file = helpers.settings_folder() / 'conf.json'
-    #     if not os.path.exists(conf_file):
-    #         assert False, "Failed to load configuration file at {}".format(conf_file)
-    #
-    #     with open(conf_file, 'r') as fp:
-    #         settings = json.load(fp)
-    #
-    #     ReminderController.CALDAV_USERNAME = settings['caldav_username']
-    #     ReminderController.CALDAV_URL = settings['caldav_url']
-    #     ReminderController.CALDAV_HEADERS = {}
-    #     ReminderController.CALDAV_PASSWORD = config('TEST_CALDAV_PASSWORD') if test_caldav else keyring.get_password(
-    #         "TaskBridge", "CALDAV-PWD")
 
     def test_fetch_local_reminders(self):
         succeed = True
@@ -220,6 +175,11 @@ class TestReminderController:
             succeed = False
             success, data = ReminderController.sync_reminders()
             assert success is False
+
+            # Corner case - no reminders in list
+            MockReminderContainer.CONTAINER_LIST.clear()
+            success, data = ReminderController.sync_reminders()
+            assert success is True
 
     def test_sync_reminders_to_db(self):
         succeed = True
