@@ -185,9 +185,17 @@ END:VCALENDAR
 
         # Test Failure 1 (new, invalid due date)
         reminder3 = TestReminder.__create_reminder_from_local()
+        reminder3.uuid = "1234567890"
         reminder3.name = "Invalid Reminder ABC"
         reminder3.due_date = "INVALID"
         success, ical_string = reminder3.upsert_remote(container)
+        assert success is False
+
+        # Test Failure 2 (existing, invalid due date)
+        reminder4 = TestReminder.__create_reminder_from_local()
+        reminder4.name = "Invalid Reminder ABC"
+        reminder4.due_date = "INVALID"
+        success, ical_string = reminder4.upsert_remote(container)
         assert success is False
 
         # Clean Up

@@ -198,6 +198,8 @@ class ReminderController:
             -data (:py:class:`str` | :py:class:`dict`) - error message on failure, or :py:class:`dict` with results as above.
 
         """
+        if len(ReminderContainer.CONTAINER_LIST) == 0:
+            return True, {}
         data = None
         for container in ReminderContainer.CONTAINER_LIST:
             success, data = container.sync_reminders()
