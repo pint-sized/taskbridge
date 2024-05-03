@@ -19,7 +19,7 @@ from markdownify import markdownify as md
 
 DATA_LOCATION: Path = Path.home() / "Library" / "Application Support" / "TaskBridge"  #: Location where application data is
 # stored.
-DRY_RUN: bool = True  #: If set to true, the user will have to confirm any change made by TaskBridge.
+DRY_RUN: bool = False  #: If set to true, the user will have to confirm any change made by TaskBridge.
 CALDAV_PRINCIPAL: Principal | None = None
 
 

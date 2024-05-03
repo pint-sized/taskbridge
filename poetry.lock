@@ -635,13 +635,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "keyring"
-version = "25.1.0"
+version = "25.2.0"
 description = "Store and access your passwords safely."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "keyring-25.1.0-py3-none-any.whl", hash = "sha256:26fc12e6a329d61d24aa47b22a7c5c3f35753df7d8f2860973cf94f4e1fb3427"},
-    {file = "keyring-25.1.0.tar.gz", hash = "sha256:7230ea690525133f6ad536a9b5def74a4bd52642abe594761028fc044d7c7893"},
+    {file = "keyring-25.2.0-py3-none-any.whl", hash = "sha256:19f17d40335444aab84b19a0d16a77ec0758a9c384e3446ae2ed8bd6d53b67a5"},
+    {file = "keyring-25.2.0.tar.gz", hash = "sha256:7045f367268ce42dba44745050164b431e46f6e92f99ef2937dfadaef368d8cf"},
 ]
 
 [package.dependencies]
@@ -656,7 +656,7 @@ SecretStorage = {version = ">=3.2", markers = "sys_platform == \"linux\""}
 [package.extras]
 completion = ["shtab (>=1.1.0)"]
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
+testing = ["pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [[package]]
 name = "lxml"
@@ -757,7 +757,6 @@ files = [
     {file = "lxml-5.2.1-cp37-cp37m-musllinux_1_2_x86_64.whl", hash = "sha256:9e2addd2d1866fe112bc6f80117bcc6bc25191c5ed1bfbcf9f1386a884252ae8"},
     {file = "lxml-5.2.1-cp37-cp37m-win32.whl", hash = "sha256:f51969bac61441fd31f028d7b3b45962f3ecebf691a510495e5d2cd8c8092dbd"},
     {file = "lxml-5.2.1-cp37-cp37m-win_amd64.whl", hash = "sha256:b0b58fbfa1bf7367dde8a557994e3b1637294be6cf2169810375caf8571a085c"},
-    {file = "lxml-5.2.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3e183c6e3298a2ed5af9d7a356ea823bccaab4ec2349dc9ed83999fd289d14d5"},
     {file = "lxml-5.2.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:804f74efe22b6a227306dd890eecc4f8c59ff25ca35f1f14e7482bbce96ef10b"},
     {file = "lxml-5.2.1-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:08802f0c56ed150cc6885ae0788a321b73505d2263ee56dad84d200cab11c07a"},
     {file = "lxml-5.2.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0f8c09ed18ecb4ebf23e02b8e7a22a05d6411911e6fabef3a36e4f371f4f2585"},
@@ -1072,19 +1071,19 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pyqt6"
-version = "6.6.1"
+version = "6.7.0"
 description = "Python bindings for the Qt cross platform application toolkit"
 optional = false
-python-versions = ">=3.6.1"
+python-versions = ">=3.8"
 files = [
-    {file = "PyQt6-6.6.1-cp38-abi3-macosx_10_14_universal2.whl", hash = "sha256:6b43878d0bbbcf8b7de165d305ec0cb87113c8930c92de748a11c473a6db5085"},
-    {file = "PyQt6-6.6.1-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:5aa0e833cb5a79b93813f8181d9f145517dd5a46f4374544bcd1e93a8beec537"},
-    {file = "PyQt6-6.6.1-cp38-abi3-win_amd64.whl", hash = "sha256:03a656d5dc5ac31b6a9ad200f7f4f7ef49fa00ad7ce7a991b9bb691617141d12"},
-    {file = "PyQt6-6.6.1.tar.gz", hash = "sha256:9f158aa29d205142c56f0f35d07784b8df0be28378d20a97bcda8bd64ffd0379"},
+    {file = "PyQt6-6.7.0-cp38-abi3-macosx_10_14_universal2.whl", hash = "sha256:919ffb01020ece42209228bf94b4f2c156a6b77cc5a69a90a05e358b0333750b"},
+    {file = "PyQt6-6.7.0-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:e294f025f94493ee12b66efd6893fab309c9063172bb8a5b184f84dfc1ebcc49"},
+    {file = "PyQt6-6.7.0-cp38-abi3-win_amd64.whl", hash = "sha256:9d8865fb6357dba032002c4554a9648e88f2b4706c929cc51fba58edafad91fc"},
+    {file = "PyQt6-6.7.0.tar.gz", hash = "sha256:3d31b2c59dc378ee26e16586d9469842483588142fc377280aad22aaf2fa6235"},
 ]
 
 [package.dependencies]
-PyQt6-Qt6 = ">=6.6.0"
+PyQt6-Qt6 = ">=6.7.0,<6.8.0"
 PyQt6-sip = ">=13.6,<14"
 
 [[package]]
@@ -1132,13 +1131,13 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "8.1.1"
+version = "8.2.0"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytest-8.1.1-py3-none-any.whl", hash = "sha256:2a8386cfc11fa9d2c50ee7b2a57e7d898ef90470a7a34c4b949ff59662bb78b7"},
-    {file = "pytest-8.1.1.tar.gz", hash = "sha256:ac978141a75948948817d360297b7aae0fcb9d6ff6bc9ec6d514b85d5a65c044"},
+    {file = "pytest-8.2.0-py3-none-any.whl", hash = "sha256:1733f0620f6cda4095bbf0d9ff8022486e91892245bb9e7d5542c018f612f233"},
+    {file = "pytest-8.2.0.tar.gz", hash = "sha256:d507d4482197eac0ba2bae2e9babf0672eb333017bcedaa5fb1a3d42c1174b3f"},
 ]
 
 [package.dependencies]
@@ -1146,11 +1145,11 @@ colorama = {version = "*", markers = "sys_platform == \"win32\""}
 exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 iniconfig = "*"
 packaging = "*"
-pluggy = ">=1.4,<2.0"
+pluggy = ">=1.5,<2.0"
 tomli = {version = ">=1", markers = "python_version < \"3.11\""}
 
 [package.extras]
-testing = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
 name = "python-dateutil"

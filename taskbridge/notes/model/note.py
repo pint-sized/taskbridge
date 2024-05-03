@@ -207,12 +207,12 @@ class Note:
             -data (:py:class:`str`) - success message, or error message on failure.
 
         """
-        temp_file_name = helpers.temp_folder() / (self.name + '.html')
         try:
+            temp_file_name = helpers.temp_folder() / (self.name + '.html')
             with open(temp_file_name, 'w') as fp:
                 fp.write(self.body_html)
                 fp.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             return False, 'Failed to export data for local note {0}: {1}'.format(self.name, e)
 
         create_note_script = notescript.create_note_script
@@ -235,12 +235,12 @@ class Note:
             -data (:py:class:`str`) - success message, or error message on failure.
 
         """
-        temp_file_name = helpers.temp_folder() / (self.name + '.html')
         try:
+            temp_file_name = helpers.temp_folder() / (self.name + '.html')
             with open(temp_file_name, 'w') as fp:
                 fp.write(self.body_html)
                 fp.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             return False, 'Failed to export data for local note {0}: {1}'.format(self.name, e)
 
         update_note_script = notescript.update_note_script
@@ -279,7 +279,7 @@ class Note:
             attachment.remote_location = att_path / attachment.uuid
             try:
                 shutil.copy2(attachment.staged_location, attachment.remote_location)
-            except FileNotFoundError:
+            except (FileNotFoundError, TypeError):
                 return False, 'Failed to read attachment {}'.format(attachment.staged_location)
 
         return True, 'Remote note {} created.'.format(remote_path / filename)

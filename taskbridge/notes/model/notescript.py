@@ -22,8 +22,8 @@ tell application "Notes"
         set stagedContent to nId & "~~" & nName & "~~" & nCreation & "~~" & nModified
         set stagedContent to stagedContent & "\n" & attachmentList & "\n" & nBody
         tell application "Finder"
-            set accessRef to (open for access file ((path to temporary items folder as text) & "taskbridge:notesync:" &
-            folder_name & ":" & nName & ".staged") with write permission)
+            set aPath to "taskbridge:notesync:" & folder_name & ":" & nName & ".staged"
+            set accessRef to (open for access file ((path to temporary items folder as text) & aPath) with write permission)
             try
                 set eof accessRef to 0
                 write stagedContent to accessRef as «class utf8»
