@@ -4,11 +4,12 @@ import pathlib
 import shutil
 from pathlib import Path
 
+import pytest
 from decouple import config
 
 from taskbridge import helpers
 from taskbridge.notes.model import notescript
-from taskbridge.notes.model.note import Note, Attachment
+from taskbridge.notes.model.note import Note
 from taskbridge.notes.model.notefolder import LocalNoteFolder, NoteFolder
 
 TEST_ENV = config('TEST_ENV', default='remote')
@@ -68,7 +69,7 @@ That was a ladybird
 """
 
     @staticmethod
-    def __create_note_from_local() -> Note:
+    def _create_note_from_local() -> Note:
         staged_location = TestNote.TMP_FOLDER / 'testnote1.staged'
         with open(staged_location, 'w') as fp:
             fp.write(TestNote.MOCK_TESTNOTE1_STAGED)
@@ -76,7 +77,7 @@ That was a ladybird
         return Note.create_from_local(TestNote.MOCK_TESTNOTE1_STAGED, TestNote.TMP_FOLDER)
 
     @staticmethod
-    def __create_note_from_remote() -> Note:
+    def _create_note_from_remote() -> Note:
         remote_content = """testnote2
 
 This is a remote note. 
@@ -96,7 +97,7 @@ That was a ladybird"""
         return Note.create_from_remote(remote_content, remote_location, remote_file_name)
 
     @staticmethod
-    def __clean_artefacts():
+    def _clean_artefacts():
         tmp_local = TestNote.TMP_FOLDER / 'testnote1.staged'
         if os.path.isfile(tmp_local):
             os.remove(tmp_local)
@@ -105,8 +106,9 @@ That was a ladybird"""
         if os.path.isdir(tmp_remote):
             shutil.rmtree(tmp_remote)
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_create_from_local(self):
-        new_note = TestNote.__create_note_from_local()
+        new_note = TestNote._create_note_from_local()
         assert new_note.created_date == datetime.datetime(2024, 3, 29, 15, 59, 24)
         assert new_note.modified_date == datetime.datetime(2024, 4, 5, 8, 14, 1)
         assert new_note.name == 'testnote1'
@@ -135,10 +137,11 @@ This is line 2 from iCloud.</div>
         assert new_note.body_markdown == body_markdown
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_create_from_remote(self):
-        new_note = TestNote.__create_note_from_remote()
+        new_note = TestNote._create_note_from_remote()
         assert new_note.created_date.date() == datetime.datetime.now().date()
         assert new_note.modified_date.date() == datetime.datetime.now().date()
         assert new_note.name == 'testnote2'
@@ -155,10 +158,11 @@ This is line 2 from iCloud.</div>
         assert new_note.body_markdown == TestNote.MOCK_TESTNOTE2_MD
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_staged_to_markdown(self):
-        new_note = TestNote.__create_note_from_local()
+        new_note = TestNote._create_note_from_local()
         staged_lines = TestNote.MOCK_TESTNOTE1_STAGED.splitlines()
         attachment_end = staged_lines.index("~~END_ATTACHMENTS~~")
         parsed_attachments = new_note.attachments
@@ -174,10 +178,11 @@ This is line 2 from iCloud.</div>
         assert 'ladybird.jpg' not in md
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_markdown_to_html(self):
-        new_note = TestNote.__create_note_from_remote()
+        new_note = TestNote._create_note_from_remote()
         remote_lines = TestNote.MOCK_TESTNOTE2_MD.splitlines()
         attachments = new_note.attachments
         html = Note.markdown_to_html(remote_lines, attachments)
@@ -185,10 +190,11 @@ This is line 2 from iCloud.</div>
         assert html == TestNote.MOCK_TESTNOTE2_HTML
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_create_local(self):
-        new_note = TestNote.__create_note_from_local()
+        new_note = TestNote._create_note_from_local()
 
         # Success
         success, data = new_note.create_local('Sync')
@@ -212,12 +218,13 @@ This is line 2 from iCloud.</div>
         assert success is False
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
         delete_note_script = notescript.delete_note_script
         helpers.run_applescript(delete_note_script, "Sync", "testnote1")
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_update_local(self):
-        new_note = TestNote.__create_note_from_local()
+        new_note = TestNote._create_note_from_local()
         success, data = new_note.create_local('Sync')
         assert success is True
 
@@ -237,12 +244,13 @@ This is line 2 from iCloud.</div>
         assert success is False
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
         delete_note_script = notescript.delete_note_script
         helpers.run_applescript(delete_note_script, "Sync", "testnote1")
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_upsert_remote(self):
-        new_note = TestNote.__create_note_from_remote()
+        new_note = TestNote._create_note_from_remote()
         new_note.attachments[0].staged_location = Path(TestNote.TMP_FOLDER / "Sync" / ".attachments.295" / "ladybird.jpg")
 
         # Success
@@ -254,10 +262,18 @@ This is line 2 from iCloud.</div>
         assert success is False
 
         # Fail - Remote attachment doesn't exist
-        new_note = TestNote.__create_note_from_remote()
+        new_note = TestNote._create_note_from_remote()
         success, data = new_note.upsert_remote(TestNote.TMP_FOLDER / "Sync")
         assert success is False
 
         # Clean up
-        TestNote.__clean_artefacts()
+        TestNote._clean_artefacts()
 
+    @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
+    def test___str__(self):
+        new_note = TestNote._create_note_from_local()
+        name = new_note.__str__()
+        assert name == new_note.name
+
+        # Clean up
+        TestNote._clean_artefacts()

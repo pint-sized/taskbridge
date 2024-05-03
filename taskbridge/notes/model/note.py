@@ -327,6 +327,7 @@ class Attachment:
         Saves a Base64 image attachment to a file.
 
         :param file_path: the path where to save the image *excluding file name*.
+
         :returns:
 
             -success (:py:class:`bool`) - true if the note is successfully created.
@@ -335,9 +336,9 @@ class Attachment:
 
         """
         img_data_b64 = self.b64_data.split('base64,')[1].encode()
-        file_path.mkdir(parents=True, exist_ok=True)
         staged_path = file_path / self.uuid
         try:
+            file_path.mkdir(parents=True, exist_ok=True)
             with open(staged_path, 'wb') as fp:
                 fp.write(base64.decodebytes(img_data_b64))
                 self.staged_location = staged_path
@@ -391,7 +392,7 @@ class Attachment:
                 attachment.uuid = helpers.get_uuid() + f_ext
                 attachment.save_image_to_file(dest_folder)
                 image_index += 1
-            elif f_ext == '':
+            elif f_ext == '' and not attachment.url == '':
                 attachment.file_type = Attachment.TYPE_LINK
             else:
                 attachment.file_type = Attachment.TYPE_UNSUPPORTED
