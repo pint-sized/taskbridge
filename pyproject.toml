@@ -56,3 +56,8 @@ build-backend = "poetry.core.masonry.api"
 name = "TaskBridge"
 script = "taskbridge/gui/app.py"
 build-type = "standalone"
+
+[tool.coverage.run]
+omit = [
+    "/tests/*",
+]

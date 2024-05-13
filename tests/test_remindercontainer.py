@@ -197,7 +197,7 @@ class TestReminderContainer:
         helpers.DRY_RUN = False
 
         mock_local = [LocalList("sync_me"), LocalList("do_not_sync_me")]
-        mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me")]
+        mock_remote = [RemoteCalendar(calendar_name="sync_me"), RemoteCalendar(calendar_name="do_not_sync_me"), None]
         mock_sync = ['sync_me']
         success, data = ReminderContainer.assoc_list_remote_local(mock_local, mock_remote, mock_sync)
         assert success is True
