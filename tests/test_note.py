@@ -15,25 +15,26 @@ from taskbridge.notes.model.notefolder import LocalNoteFolder, NoteFolder
 TEST_ENV = config('TEST_ENV', default='remote')
 
 
-def setup_module():
-    with open('resources/mock_testnote1_staged.staged') as fp:
-        TestNote.MOCK_TESTNOTE1_STAGED = fp.read()
-    with open('resources/mock_testnote1_md.md') as fp:
-        TestNote.MOCK_TESTNOTE1_MD = fp.read()
-    with open('resources/mock_testnote2_html.html') as fp:
-        TestNote.MOCK_TESTNOTE2_HTML = fp.read()
-    with open('resources/mock_testnote2_md.md') as fp:
-        TestNote.MOCK_TESTNOTE2_MD = fp.read()
-
-
 # noinspection SpellCheckingInspection
 class TestNote:
     TMP_FOLDER = Path("/tmp")
-
+    RES_DIR = Path()
     MOCK_TESTNOTE1_STAGED = ''
     MOCK_TESTNOTE1_MD = ''
     MOCK_TESTNOTE2_HTML = ''
     MOCK_TESTNOTE2_MD = ''
+
+    @classmethod
+    def setup_class(cls):
+        TestNote.RES_DIR = pathlib.Path(__file__).parent.resolve() / 'resources'
+        with open(TestNote.RES_DIR / 'mock_testnote1_staged.staged') as fp:
+            TestNote.MOCK_TESTNOTE1_STAGED = fp.read()
+        with open(TestNote.RES_DIR / 'mock_testnote1_md.md') as fp:
+            TestNote.MOCK_TESTNOTE1_MD = fp.read()
+        with open(TestNote.RES_DIR / 'mock_testnote2_html.html') as fp:
+            TestNote.MOCK_TESTNOTE2_HTML = fp.read()
+        with open(TestNote.RES_DIR / 'mock_testnote2_md.md') as fp:
+            TestNote.MOCK_TESTNOTE2_MD = fp.read()
 
     @staticmethod
     def _create_note_from_local() -> Note:
@@ -54,7 +55,7 @@ This is a remote note.
   
 That was a ladybird"""
         remote_file_name = "testnote2.md"
-        test_location = Path("resources/.attachments.295")
+        test_location = TestNote.RES_DIR / '.attachments.295'
         remote_location = Path("/tmp/Sync")
         pathlib.Path(remote_location / ".attachments.295").mkdir(parents=True, exist_ok=True)
         with open(remote_location / remote_file_name, 'w') as fp:
@@ -80,12 +81,12 @@ That was a ladybird"""
         assert new_note.modified_date == datetime.datetime(2024, 4, 5, 8, 14, 1)
         assert new_note.name == 'testnote1'
         assert new_note.uuid is not None
-        with open('resources/mock_testnote1_html.html') as fp:
+        with open(TestNote.RES_DIR / 'mock_testnote1_html.html') as fp:
             body_html = fp.read()
         assert new_note.body_html == body_html
         assert len(new_note.attachments) == 1
         attachment = new_note.attachments[0]
-        with open('resources/attachment_1_b64.b64') as fp:
+        with open(TestNote.RES_DIR / 'attachment_1_b64.b64') as fp:
             b64_data = fp.read()
         assert attachment.b64_data == b64_data
         assert attachment.file_name is not None
@@ -109,7 +110,7 @@ That was a ladybird"""
         assert new_note.body_html == body_html
         assert len(new_note.attachments) == 1
         attachment = new_note.attachments[0]
-        with open('resources/attachment_2_b64.b64') as fp:
+        with open(TestNote.RES_DIR / 'attachment_2_b64.b64') as fp:
             b64_data = fp.read()
         assert attachment.b64_data == b64_data
         assert attachment.file_name == ".attachments.295/ladybird.jpg"

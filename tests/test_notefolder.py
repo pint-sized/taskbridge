@@ -21,8 +21,8 @@ class TestNoteFolder:
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_notes(self):
+        # Success
         sync_folder = TestNoteFolder.__get_sync_folder()
-
         success, data = sync_folder.load_local_notes()
         assert success is True
         assert isinstance(data, int)

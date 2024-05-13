@@ -32,7 +32,7 @@ class TestAttachment:
     @staticmethod
     def __create_remote_attachment():
         pathlib.Path(TestAttachment.TEMP_FOLDER / ".attachments.295").mkdir(parents=True, exist_ok=True)
-        shutil.copy(Path("resources/.attachments.295") / "ladybird.jpg", TestAttachment.TEMP_FOLDER / ".attachments.295/")
+        shutil.copy(TestNote.RES_DIR / '.attachments.295' / "ladybird.jpg", TestAttachment.TEMP_FOLDER / ".attachments.295/")
         return Attachment(
             Attachment.TYPE_IMAGE,
             "ladybird.jpg",

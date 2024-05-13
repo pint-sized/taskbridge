@@ -33,7 +33,7 @@ class ReminderContainer:
     #: List of all found reminder containers
     CONTAINER_LIST: List[ReminderContainer] = []
 
-    def __init__(self, local_list: LocalList, remote_calendar: RemoteCalendar, sync: bool):
+    def __init__(self, local_list: LocalList | None, remote_calendar: RemoteCalendar | None, sync: bool):
         """
         Create a new reminder container.
 
@@ -41,8 +41,8 @@ class ReminderContainer:
         :param remote_calendar: the remote calendar containing the remote tasks.
         :param sync: True if the local list and remote calendar should be synchronised.
         """
-        self.local_list: LocalList = local_list
-        self.remote_calendar: RemoteCalendar = remote_calendar
+        self.local_list: LocalList | None = local_list
+        self.remote_calendar: RemoteCalendar | None = remote_calendar
         self.sync: bool = sync
         self.local_reminders: List[model.Reminder] = []
         self.remote_reminders: List[model.Reminder] = []
@@ -168,13 +168,11 @@ class ReminderContainer:
             should_sync = local_list.name in to_sync
             remote_name = "Tasks" if local_list.name == "Reminders" else local_list.name
             remote_calendar = next((rc for rc in remote_calendars if rc.name == remote_name), None)
-            if remote_calendar is None:
+            if remote_calendar is None and should_sync and helpers.confirm('Create remote calendar {}'.format(remote_name)):
                 remote_calendar = RemoteCalendar(calendar_name=remote_name)
-                if should_sync:
-                    if helpers.confirm('Create remote calendar {}'.format(remote_name)):
-                        success, data = remote_calendar.create()
-                        if not success:
-                            return False, data
+                success, data = remote_calendar.create()
+                if not success:
+                    return False, data
             ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Local lists associated with remote lists"
 
@@ -197,24 +195,24 @@ class ReminderContainer:
 
         """
         for remote_calendar in remote_calendars:
-            synced_remote_calendars = [cont.remote_calendar for cont in ReminderContainer.CONTAINER_LIST]
+            synced_remote_calendars = [cont.remote_calendar for cont in ReminderContainer.CONTAINER_LIST if
+                                       cont.remote_calendar is not None]
+            if remote_calendar is None:
+                continue
             if remote_calendar.name in [rc.name for rc in synced_remote_calendars]:
                 continue
 
             should_sync = remote_calendar.name in to_sync
             local_name = "Reminders" if remote_calendar.name == "Tasks" else remote_calendar.name
             local_list = next((ll for ll in local_lists if ll.name == local_name), None)
-            if local_list is None:
+            if local_list is None and should_sync and helpers.confirm('Create local list {}'.format(local_name)):
                 local_list = LocalList(list_name=local_name)
-                if should_sync:
-                    if helpers.confirm('Create local list {}'.format(local_name)):
-                        local_list = LocalList(list_name=local_name)
-                        try:
-                            if fail:
-                                raise AttributeError("Explicitly set to fail")
-                            local_list.create()
-                        except AttributeError as e:
-                            return False, e.__str__()
+                try:
+                    if fail:
+                        raise AttributeError("Explicitly set to fail")
+                    local_list.create()
+                except AttributeError as e:
+                    return False, e.__str__()
             ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Remote lists associated with local lists"
 
@@ -294,7 +292,7 @@ class ReminderContainer:
         for container in ReminderContainer.CONTAINER_LIST:
             containers.append((
                 container.local_list.name,
-                container.remote_calendar.name,
+                container.remote_calendar.name if container.remote_calendar else '',
                 1 if container.sync else 0
             ))
 
@@ -757,7 +755,7 @@ class ReminderContainer:
             ReminderContainer._delete_local_reminders(container_saved_remote, container, result)
 
         # Empty table
-        success, data = ReminderContainer.__empty_reminder_table()
+        success, data = ReminderContainer.__empty_reminder_table(fail)
         if not success:
             return success, data
 
@@ -949,7 +947,7 @@ class ReminderContainer:
     def __repr__(self):
         return "<Local: {local}, Remote: {remote}, Sync: {sync}>".format(
             local=self.local_list.name,
-            remote=self.remote_calendar.name,
+            remote=self.remote_calendar.name if self.remote_calendar else '',
             sync=self.sync
         )
 
