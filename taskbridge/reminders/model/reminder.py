@@ -132,7 +132,7 @@ class Reminder:
 
             -success (:py:class:`bool`) - true if the reminder is successfully upserted.
 
-            -data (:py:class:`str`) - error message on failure, or note's UUID.
+            -data (:py:class:`str`) - error message on failure, or reminder's UUID.
 
         """
         add_reminder_script = reminderscript.add_reminder_script
@@ -158,6 +158,46 @@ class Reminder:
             return True, stdout.strip()
         return False, "Failed to upsert local reminder {0}: {1}".format(self.name, stderr)
 
+    def __get_tasks_in_caldav(self, container: model.ReminderContainer) -> caldav.CalendarObjectResource | None:
+        """
+        Fetch an existing remote task in CalDav
+
+        :param container: The parameter to search
+
+        :return: the task in CalDAV matching this tasks UUID/name, or None.
+        """
+
+        remote = None
+        tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, uid=self.uuid)
+        if len(tasks_in_caldav) == 0:
+            tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, summary=self.name)
+
+        if len(tasks_in_caldav) > 0:
+            remote = tasks_in_caldav[0]
+        return remote
+
+    def __get_task_due_date(self) -> tuple[bool, str]:
+        """
+        Get the due date for this task in string format
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if the due date is successfully retrieved.
+
+            -data (:py:class:`str`) - error message on failure, or task due date.
+
+        """
+        try:
+            if not self.due_date:
+                due_date = None
+            elif self.due_date.strftime("%H:%M:%S") == "00:00:00":
+                due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
+            else:
+                due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
+        except AttributeError:
+            return False, "Invalid due date."
+        return True, due_date
+
     def upsert_remote(self, container: model.ReminderContainer) -> tuple[bool, str]:
         """
         Creates or updates a remote reminder.
@@ -171,13 +211,7 @@ class Reminder:
             -data (:py:class:`str`) - error message on failure or success message.
 
         """
-        remote = None
-        tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, uid=self.uuid)
-        if len(tasks_in_caldav) == 0:
-            tasks_in_caldav = container.remote_calendar.cal_obj.search(todo=True, summary=self.name)
-
-        if len(tasks_in_caldav) > 0:
-            remote = tasks_in_caldav[0]
+        remote = self.__get_tasks_in_caldav(container)
 
         if remote is None:
             # Add new remote task
@@ -189,15 +223,7 @@ class Reminder:
             return True, 'Remote reminder added: {}'.format(self.name)
         else:
             # Update existing remote task
-            try:
-                if not self.due_date:
-                    due_date = None
-                elif self.due_date.strftime("%H:%M:%S") == "00:00:00":
-                    due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATE)
-                else:
-                    due_date = DateUtil.convert('', self.due_date, DateUtil.CALDAV_DATETIME)
-            except AttributeError:
-                return False, "Invalid due date."
+            due_date = self.__get_task_due_date()
 
             if not self.remind_me_date:
                 alarm_trigger = None

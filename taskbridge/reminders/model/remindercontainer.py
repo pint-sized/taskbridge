@@ -639,6 +639,60 @@ class ReminderContainer:
         return True, saved_reminders
 
     @staticmethod
+    def __get_current_reminders(container: ReminderContainer, fail: str) -> tuple[bool, str]:
+        """
+        Get the current local and remote reminders for this container
+
+        :param container: the container to fetch reminders for.
+        :param fail: the part of the process to intentionally fail (used for test coverage).
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if both local and remote reminders are loaded successfully.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        success, data = container.load_local_reminders()
+        if not success or fail == "fail_load_local":
+            return False, 'Failed to load local reminders: {}'.format(data)
+        if not fail == "fail_load_remote":
+            success, data = container.load_remote_reminders()
+        else:
+            success = False
+            data = "Explicitly set to fail to load reminders"
+        if not success or fail == "fail_load_remote":
+            return False, 'Failed to load remote reminders: {}'.format(data)
+        return success, "Current reminders loaded."
+
+    @staticmethod
+    def __empty_reminder_table(fail: str) -> tuple[bool, str]:
+        """
+        Empties the reminder table
+
+        :param fail: the part of the process to intentionally fail (used for test coverage).
+
+        :returns:
+
+            -success (:py:class:`bool`) - true if reminder table is successfully emptied.
+
+            -data (:py:class:`str`) - error message on failure or success message.
+
+        """
+        if fail == "fail_db":
+            helpers.DATA_LOCATION = Path("/")
+        else:
+            helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
+        try:
+            with closing(sqlite3.connect(helpers.db_folder())) as connection:
+                connection.row_factory = sqlite3.Row
+                with closing(connection.cursor()) as cursor:
+                    cursor.execute("DELETE FROM tb_reminder")
+        except sqlite3.OperationalError as e:
+            return False, 'Error deleting reminder table: {}'.format(e)
+        return True, "Reminder table emptied."
+
+    @staticmethod
     def sync_reminder_deletions(fail: str = None) -> tuple[bool, str] | tuple[bool, dict]:
         """
         Synchronises deletions to reminders.
@@ -674,16 +728,9 @@ class ReminderContainer:
         for container in ReminderContainer.CONTAINER_LIST:
             if not container.sync:
                 continue
-            success, data = container.load_local_reminders()
-            if not success or fail == "fail_load_local":
-                return False, 'Failed to load local reminders: {}'.format(data)
-            if not fail == "fail_load_remote":
-                success, data = container.load_remote_reminders()
-            else:
-                success = False
-                data = "Explicitly set to fail to load reminders"
-            if not success or fail == "fail_load_remote":
-                return False, 'Failed to load remote reminders: {}'.format(data)
+            success, data = ReminderContainer.__get_current_reminders(container, fail)
+            if not success:
+                return success, data
 
         result = {
             'deleted_local_reminders': [],
@@ -710,17 +757,9 @@ class ReminderContainer:
             ReminderContainer._delete_local_reminders(container_saved_remote, container, result)
 
         # Empty table
-        if fail == "fail_db":
-            helpers.DATA_LOCATION = Path("/")
-        else:
-            helpers.DATA_LOCATION = Path.home() / "Library" / "Application Support" / "TaskBridge"
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    cursor.execute("DELETE FROM tb_reminder")
-        except sqlite3.OperationalError as e:
-            return False, 'Error deleting reminder table: {}'.format(e)
+        success, data = ReminderContainer.__empty_reminder_table()
+        if not success:
+            return success, data
 
         return True, result
 
@@ -748,7 +787,7 @@ class ReminderContainer:
         if fail == "fail_psv":
             export_path = "BOGUS"
         try:
-            with open(export_path, 'r') as fp:
+            with open(export_path) as fp:
                 file_data = fp.read()
                 fp.close()
         except FileNotFoundError as e:

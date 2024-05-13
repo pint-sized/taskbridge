@@ -1,3 +1,7 @@
+"""
+AppleScripts for Apple Reminders.
+"""
+
 #: Get the list of local reminder lists.
 get_reminder_lists_script = '''tell application "Reminders"
     set output to ""

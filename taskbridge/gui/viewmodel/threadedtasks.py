@@ -337,8 +337,14 @@ def run_continuously(interval=1) -> threading.Event():
     cease_continuous_run = threading.Event()
 
     class ScheduleThread(threading.Thread):
+        """
+        Class to run continuous tasks
+        """
         @classmethod
         def run(cls):
+            """
+            Keep tasks running until cancelled
+            """
             while not cease_continuous_run.is_set():
                 schedule.run_pending()
                 time.sleep(interval)

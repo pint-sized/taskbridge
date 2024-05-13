@@ -61,7 +61,7 @@ class Note:
         Creates a Note instance from a staged file exported locally.
 
         :param staged_content: the content of the staged file.
-        :param staged_location: the location of the staged file, used for adding attachments to a ``/.attachments`` directory.
+        :param staged_location: the location of the staged file, used for adding attachments to a ``/.attachments`` dir.
         :return: a Note instance representing the content of the staged file.
         """
         staged_lines = staged_content.splitlines()
@@ -179,7 +179,8 @@ class Note:
         """
         html = ""
         remote_lines.pop(0)  # First line is note name
-        image_list = [attachment for attachment in attachments if attachment and attachment.file_type == Attachment.TYPE_IMAGE]
+        image_list = [attachment for attachment in attachments if
+                      attachment and attachment.file_type == Attachment.TYPE_IMAGE]
         image_index = 0
         for idx in range(len(remote_lines)):
             line = remote_lines[idx]
@@ -303,7 +304,8 @@ class Attachment:
     _SUPPORTED_IMAGE_TYPES = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.apng',
                               '.avif', '.bmp', '.ico', '.tiff', '.svg']
 
-    def __init__(self, file_type: int = '', file_name: str = '', url: str = '', b64_data: str | None = None, uuid: str = ''):
+    def __init__(self, file_type: int = '', file_name: str = '', url: str = '', b64_data: str | None = None,
+                 uuid: str = ''):
         """
         Creates a new instance of Attachment.
 
@@ -455,7 +457,7 @@ class Attachment:
         """
         try:
             with open(url, "rb") as fp:
-                encoded_string = base64.b64encode(fp.read()).decode('utf-8')
+                encoded_string = base64.b64encode(fp.read()).decode()
                 return encoded_string if encoded_string != '' else None
         except FileNotFoundError:
             return None

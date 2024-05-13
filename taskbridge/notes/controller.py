@@ -43,7 +43,8 @@ class NoteController:
             logging.critical(error)
             return False, error
         NoteController.LOCAL_NOTE_FOLDERS = data
-        debug_msg = 'Found local notes folders: {}'.format([str(folder) for folder in NoteController.LOCAL_NOTE_FOLDERS])
+        debug_msg = 'Found local notes folders: {}'.format(
+            [str(folder) for folder in NoteController.LOCAL_NOTE_FOLDERS])
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -65,7 +66,8 @@ class NoteController:
             logging.critical(error)
             return False, error
         NoteController.REMOTE_NOTE_FOLDERS = data
-        debug_msg = 'Found remote notes folders: {}'.format([str(folder) for folder in NoteController.REMOTE_NOTE_FOLDERS])
+        debug_msg = 'Found remote notes folders: {}'.format(
+            [str(folder) for folder in NoteController.REMOTE_NOTE_FOLDERS])
         logging.debug(debug_msg)
         return True, debug_msg
 
@@ -81,7 +83,8 @@ class NoteController:
             -data (:py:class:`str`) - error message on failure, or success message.
 
         """
-        success, data = NoteFolder.sync_folder_deletions(NoteController.LOCAL_NOTE_FOLDERS, NoteController.REMOTE_NOTE_FOLDERS)
+        success, data = NoteFolder.sync_folder_deletions(NoteController.LOCAL_NOTE_FOLDERS,
+                                                         NoteController.REMOTE_NOTE_FOLDERS)
         if not success:
             error = 'Failed to sync folder deletions {}'.format(data)
             logging.critical(error)
@@ -99,8 +102,8 @@ class NoteController:
 
             -success (:py:class:`bool`) - true if the folders are successfully associated.
 
-            -data (:py:class:`str` | :py:class:`List[NoteFolder]`) - error message on failure, or list of associations on
-            success.
+            -data (:py:class:`str` | :py:class:`List[NoteFolder]`) - error message on failure, or list of associations
+            on success.
 
         """
         NoteFolder.reset_list()
@@ -134,8 +137,9 @@ class NoteController:
             error = 'Failed to synchronise note deletions {}'.format(data)
             logging.critical(error)
             return False, error
-        debug_msg = ("Deleted notes synchronisation:: Deleted Local: {} | Deleted Remote: {} | Remote Not Found: {} | Local "
-                     "Not Found: {}").format(
+        debug_msg = (
+            "Deleted notes synchronisation:: Deleted Local: {} | Deleted Remote: {} | Remote Not Found: {} | Local "
+            "Not Found: {}").format(
             ','.join(data['local_deleted'] if 'local_deleted' in data else ['No local notes deleted']),
             ','.join(data['remote_deleted'] if 'remote_deleted' in data else ['No remote notes deleted']),
             ','.join(data['remote_not_found'] if 'remote_not_found' in data else ['All remote notes found']),
@@ -160,7 +164,8 @@ class NoteController:
 
             -success (:py:class:`bool`) - true if notes are successfully synchronised.
 
-            -data (:py:class:`str` | :py:class:`dict`) - error message on failure, or :py:class:`dict` with results as above.
+            -data (:py:class:`str` | :py:class:`dict`) - error message on failure, or :py:class:`dict` with results as
+            above.
 
         """
         data = None
@@ -171,8 +176,9 @@ class NoteController:
                 logging.critical(error)
                 return False, error
 
-        debug_msg = ("Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {"
-                     "}").format(
+        debug_msg = (
+            "Notes synchronisation:: Remote Added: {} | Remote Updated: {} | Local Added: {} | Local Updated: {"
+            "}").format(
             ','.join(data['remote_added'] if 'remote_added' in data else ['No remote notes added']),
             ','.join(data['remote_updated'] if 'remote_updated' in data else ['No remote notes updated']),
             ','.join(data['local_added'] if 'local_added' in data else ['No local notes added']),

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Main Code" pattern="(file[TaskBridge]:taskbridge/reminders//*||file[TaskBridge]:taskbridge/notes//*||file:taskbridge/gui/__init__.py||file:taskbridge/gui/TaskBridge.py||file[TaskBridge]:taskbridge/gui/viewmodel//*)&amp;&amp;!file:taskbridge/gui/viewmodel/ui_mainwindow.py&amp;&amp;!file:taskbridge/gui/viewmodel/ui_aboutwindow.py&amp;&amp;!file[TaskBridge]:tests/*" />
+</component>

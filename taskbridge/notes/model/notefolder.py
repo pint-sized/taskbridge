@@ -607,8 +607,9 @@ class NoteFolder:
         return True, "Remote folder deletions synchronised."
 
     @staticmethod
-    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> tuple[
-            bool, str]:
+    def sync_folder_deletions(discovered_local: List[LocalNoteFolder], discovered_remote: List[RemoteNoteFolder]) -> \
+            tuple[
+                bool, str]:
         """
         Synchronises deletions to folders.
 
@@ -880,6 +881,9 @@ class NoteFolder:
 
     @staticmethod
     def reset_list():
+        """
+        Reset the folder list to empty.
+        """
         NoteFolder.FOLDER_LIST.clear()
 
 

@@ -8,7 +8,7 @@ import logging
 from typing import List
 
 import caldav
-from caldav.lib.error import AuthorizationError
+
 
 from taskbridge import helpers
 from taskbridge.reminders.model.remindercontainer import ReminderContainer
@@ -55,6 +55,7 @@ class ReminderController:
         logging.debug(debug_msg)
         return True, debug_msg
 
+    # noinspection PyUnresolvedReferences
     @staticmethod
     def connect_caldav() -> tuple[bool, str]:
         """

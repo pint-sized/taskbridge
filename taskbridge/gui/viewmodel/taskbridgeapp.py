@@ -39,7 +39,7 @@ class TaskBridgeApp(QMainWindow):
 
     - ``sync_notes`` - if '1', notes are synchronised and corresponding configuration is enabled.
     - ``sync_reminders`` - if '1', reminders are synchronised and corresponding configuration is enabled.
-    - ``remote_notes_folder`` - path to the remote notes folder.
+    - ``remote_notes_folder`` - path to the remote note folder.
     - ``associations`` - dictionary which contains list of notes to be synced bidirectionally in ``bi_directional`` and
     others in ``local_to_remote`` and ``remote_to_local`` respectively.
     - ``prune_reminders`` - if '1', completed reminders are deleted before synchronisation.
@@ -132,7 +132,7 @@ class TaskBridgeApp(QMainWindow):
         conf_file = helpers.settings_folder() / 'conf.json'
         if not os.path.exists(conf_file):
             return
-        with open(helpers.settings_folder() / 'conf.json', 'r') as fp:
+        with open(helpers.settings_folder() / 'conf.json') as fp:
             TaskBridgeApp.SETTINGS = json.load(fp)
 
     @staticmethod
@@ -211,8 +211,8 @@ class TaskBridgeApp(QMainWindow):
         """
         if (what == 'reminders' and not self.ui.cb_reminder_autoprune.isChecked) and not silent:
             title = "Enable Completed Reminder Pruning?"
-            message = ("You have not selected to automatically prune completed reminders. This can significantly slow the "
-                       "sync process. Do you want to enable automatic completed reminders pruning?")
+            message = ("You have not selected to automatically prune completed reminders. This can significantly slow "
+                       "the sync process. Do you want to enable automatic completed reminders pruning?")
             action = TaskBridgeApp._ask_question(title, message)
             if action == QMessageBox.StandardButton.Yes:
                 self.ui.cb_reminder_autoprune.setChecked(True)
@@ -366,7 +366,8 @@ class TaskBridgeApp(QMainWindow):
         # Tabbing out of username with a NextCloud server automatically populates the reminder path
         if (widget == self.ui.txt_reminder_username and self.ui.txt_reminder_username.text() and
                 self.ui.rb_server_nextcloud.isChecked()):
-            self.ui.txt_reminder_path.setText('/remote.php/dav/calendars/{}'.format(self.ui.txt_reminder_username.text()))
+            self.ui.txt_reminder_path.setText(
+                '/remote.php/dav/calendars/{}'.format(self.ui.txt_reminder_username.text()))
 
         # Tabbing out of the password field triggers the login button being enabled
         if event.type() == QEvent.Type.KeyRelease and widget == self.ui.txt_reminder_password:
@@ -587,7 +588,7 @@ class TaskBridgeApp(QMainWindow):
 
     def handle_folder_browse(self) -> None:
         """
-        Shows the folder chooser dialog for selecting the remote notes folder.
+        Shows the folder chooser dialog for selecting the remote note folder.
         """
         remote_notes_folder = QFileDialog.getExistingDirectory(None, 'Select Remote Notes Folder')
         TaskBridgeApp.SETTINGS['remote_notes_folder'] = remote_notes_folder
@@ -684,7 +685,8 @@ class TaskBridgeApp(QMainWindow):
             cbox = ReminderCheckbox(name, TaskBridgeApp.SETTINGS['reminder_sync'])
             self.ui.tbl_reminders.insertRow(row)
             self.ui.tbl_reminders.setItem(row, 0, QTableWidgetItem(name))
-            self.ui.tbl_reminders.setItem(row, 1, QTableWidgetItem(location_icon, None, QTableWidgetItem.ItemType.UserType))
+            self.ui.tbl_reminders.setItem(row, 1,
+                                          QTableWidgetItem(location_icon, None, QTableWidgetItem.ItemType.UserType))
             self.ui.tbl_reminders.setItem(row, 2, cbox)
 
     def apply_reminders_settings(self) -> None:
@@ -1009,7 +1011,7 @@ class TaskBridgeApp(QMainWindow):
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':
             current_time = datetime.datetime.now()
-            next_sync = current_time + datetime.timedelta(0, TaskBridgeApp.SETTINGS['autosync_interval'])
+            next_sync = current_time + datetime.timedelta(seconds=TaskBridgeApp.SETTINGS['autosync_interval'])
             self.ui.lbl_sync_status.setText('Synchronisation completed at {0}. Next Sync at {1}.'.format(
                 current_time.strftime('%H:%M:%S'),
                 next_sync.strftime('%H:%M:%S')
