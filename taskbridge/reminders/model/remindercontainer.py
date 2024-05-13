@@ -291,7 +291,7 @@ class ReminderContainer:
         containers = []
         for container in ReminderContainer.CONTAINER_LIST:
             containers.append((
-                container.local_list.name,
+                container.local_list.name if container.local_list else '',
                 container.remote_calendar.name if container.remote_calendar else '',
                 1 if container.sync else 0
             ))
@@ -744,6 +744,8 @@ class ReminderContainer:
             return True, result
 
         for container in ReminderContainer.CONTAINER_LIST:
+            if container.local_list is None or container.remote_calendar is None:
+                continue
             container_saved_local = [r for r in saved_reminders if r['local_container'] == container.local_list.name]
             container_saved_remote = [r for r in saved_reminders if
                                       r['remote_container'] == container.remote_calendar.name]

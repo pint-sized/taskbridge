@@ -223,7 +223,10 @@ class Reminder:
             return True, 'Remote reminder added: {}'.format(self.name)
         else:
             # Update existing remote task
-            due_date = self.__get_task_due_date()
+            success, data = self.__get_task_due_date()
+            if not success:
+                return success, data
+            due_date = data
 
             if not self.remind_me_date:
                 alarm_trigger = None
