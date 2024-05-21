@@ -3,6 +3,7 @@ import os
 import pathlib
 import shutil
 from pathlib import Path
+from unittest import mock
 
 import pytest
 from decouple import config
@@ -23,6 +24,7 @@ class TestNote:
     MOCK_TESTNOTE1_MD = ''
     MOCK_TESTNOTE2_HTML = ''
     MOCK_TESTNOTE2_MD = ''
+    MOCK_SIMPLENOTE_STAGED = ''
 
     @classmethod
     def setup_class(cls):
@@ -35,6 +37,8 @@ class TestNote:
             TestNote.MOCK_TESTNOTE2_HTML = fp.read()
         with open(TestNote.RES_DIR / 'mock_testnote2_md.md') as fp:
             TestNote.MOCK_TESTNOTE2_MD = fp.read()
+        with open(TestNote.RES_DIR / 'mock_simplenote_staged.staged') as fp:
+            TestNote.MOCK_SIMPLENOTE_STAGED = fp.read()
 
     @staticmethod
     def _create_note_from_local() -> Note:
@@ -75,6 +79,14 @@ That was a ladybird"""
             shutil.rmtree(tmp_remote)
         if os.path.isdir("/tmp/.attachments"):
             shutil.rmtree("/tmp/.attachments")
+
+    def test_create_simple_note(self):
+        staged_location = TestNote.TMP_FOLDER / 'simplenote.staged'
+        with open(staged_location, 'w') as fp:
+            fp.write(TestNote.MOCK_SIMPLENOTE_STAGED)
+
+        note = Note.create_from_local(TestNote.MOCK_SIMPLENOTE_STAGED, TestNote.TMP_FOLDER)
+        assert note.name == "simplenote"
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_create_from_local(self):
@@ -200,12 +212,22 @@ That was a ladybird"""
         success, data = new_note.update_local('Bogus')
         assert success is False
 
-        # Fail - Fail top export note to HTML
+        # Fail - Fail to export note to HTML
         data_location = helpers.DATA_LOCATION
         helpers.DATA_LOCATION = Path('/bogus')
         success, data = new_note.create_local('Sync')
         helpers.DATA_LOCATION = data_location
         assert success is False
+
+        # Fail - OSError
+
+        # noinspection PyUnusedLocal
+        def mock_open(name, mode=None, buffering=None):
+            raise OSError
+
+        with mock.patch('builtins.open', mock_open):
+            success, data = new_note.update_local('Sync')
+            assert success is False
 
         # Clean up
         TestNote._clean_artefacts()

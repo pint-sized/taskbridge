@@ -148,7 +148,7 @@ class NoteFolder:
                     return False, i_data
                 result[key].append(remote.name)
                 return True, i_data
-            return True, ''
+        return True, ''
 
     def sync_remote_note_to_local(self, local: Note, remote: Note, result: dict) -> tuple[bool, str]:
         """
@@ -642,13 +642,11 @@ class NoteFolder:
         NoteFolder.sync_remote_deletions(discovered_remote)
 
         # Empty Table
-        try:
-            with closing(sqlite3.connect(helpers.db_folder())) as connection:
-                connection.row_factory = sqlite3.Row
-                with closing(connection.cursor()) as cursor:
-                    cursor.execute("DELETE FROM tb_folder")
-        except sqlite3.OperationalError as e:
-            return False, 'Error deleting folder table: {}'.format(e)
+
+        with closing(sqlite3.connect(helpers.db_folder())) as connection:
+            connection.row_factory = sqlite3.Row
+            with closing(connection.cursor()) as cursor:
+                cursor.execute("DELETE FROM tb_folder")
 
         return True, 'Folder deletions synchronised'
 

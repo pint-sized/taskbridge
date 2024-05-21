@@ -265,6 +265,7 @@ end tell"""
         remote_note.create_local("Test")
         remote_note.modified_date = datetime.datetime.now()
         test_folder = TestNoteFolder.__get_test_folder()
+        test_folder.sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
         test_folder.local_notes.append(local_note)
         test_folder.remote_notes.append(remote_note)
         result = {
@@ -346,6 +347,21 @@ end tell"""
         with mock.patch('taskbridge.notes.model.notefolder.NoteFolder.persist_notes', mock_persist_notes):
             success, data = test_folder.sync_notes()
             assert success is False
+
+    def test___str(self):
+        test_folder = TestNoteFolder.__get_test_folder()
+
+        test_folder.sync_direction = NoteFolder.SYNC_BOTH
+        assert test_folder.__str__() == "Local: Test <> Remote: Test : Sync: LOCAL <--> REMOTE"
+
+        test_folder.sync_direction = NoteFolder.SYNC_LOCAL_TO_REMOTE
+        assert test_folder.__str__() == "Local: Test <> Remote: Test : Sync: LOCAL --> REMOTE"
+
+        test_folder.sync_direction = NoteFolder.SYNC_REMOTE_TO_LOCAL
+        assert test_folder.__str__() == "Local: Test <> Remote: Test : Sync: LOCAL <-- REMOTE"
+
+        test_folder.sync_direction = NoteFolder.SYNC_NONE
+        assert test_folder.__str__() == "Local: Test <> Remote: Test : Sync: NO SYNC"
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud")
     def test_load_local_folders(self):
@@ -509,12 +525,22 @@ end tell"""
         assert nf_remote_only is not None
         assert nf_remote_only.sync_direction == NoteFolder.SYNC_NONE
 
+        # Fail to persist
+
+        def mock_persist_folders():
+            return False, "Fail"
+
+        with mock.patch("taskbridge.notes.model.notefolder.NoteFolder.persist_folders", mock_persist_folders):
+            success, data = NoteFolder.create_linked_folders(local_folders, remote_folders, remote_location, associations)
+            assert success is False
+
         # Clean up
         delete_folder_script = notescript.delete_folder_script
         helpers.run_applescript(delete_folder_script, 'RemoteToLocal')
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_seed_folder_table(self):
+        # Success
         NoteFolder.seed_folder_table()
         try:
             with closing(sqlite3.connect(helpers.db_folder())) as connection:
@@ -534,6 +560,20 @@ end tell"""
                         assert col['name'] in columns
         except sqlite3.OperationalError as e:
             assert False, repr(e)
+
+        # Fail
+
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.seed_folder_table()
+            assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_persist_folders(self):
@@ -573,6 +613,19 @@ end tell"""
         except sqlite3.OperationalError as e:
             print(e)
 
+        # Fail
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.persist_folders()
+            assert success is False
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_sync_bidirectional_local_deletions(self):
         NoteFolder.FOLDER_LIST.clear()
@@ -607,6 +660,29 @@ end tell"""
         assert 'folder_bi' not in dirs
         assert 'local_to_remote' not in dirs
 
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.sync_bidirectional_local_deletions(discovered_local)
+            assert success is False
+
+        # Fail - Deletion error
+
+        # noinspection PyUnusedLocal
+        def mock_delete(stuff):
+            return False, "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.RemoteNoteFolder.delete', mock_delete):
+            success, data = NoteFolder.sync_bidirectional_local_deletions(discovered_local)
+            assert success is False
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_sync_remote_deletions(self):
         NoteFolder.FOLDER_LIST.clear()
@@ -634,6 +710,29 @@ end tell"""
         success, folders = NoteFolder.load_local_folders()
         deleted_folder = next((f for f in folders if f.name == "remote_to_local"), None)
         assert deleted_folder is None
+
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.sync_remote_deletions(discovered_remote)
+            assert success is False
+
+        # Fail - Deletion error
+
+        # noinspection PyUnusedLocal
+        def mock_delete(stuff):
+            return False, "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.LocalNoteFolder.delete', mock_delete):
+            success, data = NoteFolder.sync_remote_deletions(discovered_remote)
+            assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_sync_folder_deletions(self):
@@ -683,6 +782,14 @@ end tell"""
         deleted_folder = next((f for f in folders if f.name == "remote_to_local"), None)
         assert deleted_folder is None
 
+        # Fail - seed failed
+        def mock_seed_folder_table():
+            return False, 'Fail'
+
+        with mock.patch('taskbridge.notes.model.notefolder.NoteFolder.seed_folder_table', mock_seed_folder_table):
+            success, data = NoteFolder.sync_folder_deletions(discovered_local, discovered_remote)
+            assert success is False
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_seed_note_table(self):
         NoteFolder.seed_note_table()
@@ -704,6 +811,19 @@ end tell"""
                         assert col['name'] in columns
         except sqlite3.OperationalError as e:
             assert False, repr(e)
+
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.seed_note_table()
+            assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_persist_notes(self):
@@ -751,6 +871,19 @@ end tell"""
         except sqlite3.OperationalError as e:
             print(e)
 
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.persist_notes()
+            assert success is False
+
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_delete_local_notes(self):
         NoteFolder.FOLDER_LIST.clear()
@@ -763,6 +896,8 @@ end tell"""
         pathlib.Path("/tmp/Test").mkdir(parents=True, exist_ok=True)
         note.upsert_remote(Path("/tmp/Test"))
         test_folder.remote_notes.append(note)
+        note_not_found = Note(name="NotFound", created_date=datetime.datetime.now(), modified_date=datetime.datetime.now())
+        test_folder.remote_notes.append(note_not_found)
 
         # Persist the note
         NoteFolder.persist_notes()
@@ -770,6 +905,7 @@ end tell"""
         # Delete the remote note
         Path.unlink(Path("/tmp/Test/testnote2.md"))
         test_folder.remote_notes.remove(note)
+        test_folder.remote_notes.remove(note_not_found)
 
         # Sync the deletion
         result = {
@@ -779,7 +915,20 @@ end tell"""
         success, data = NoteFolder.delete_local_notes(test_folder, result)
         assert success is True
         assert 'testnote2' in result['local_deleted']
-        assert len(result['local_not_found']) == 0
+        assert 'NotFound' in result['local_not_found']
+
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.delete_local_notes(test_folder, result)
+            assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_delete_remote_notes(self):
@@ -794,6 +943,8 @@ end tell"""
         note.upsert_remote(Path("/tmp/Test/Test"))
         test_folder.local_notes.append(note)
         test_folder.remote_notes.append(note)
+        note_not_found = Note(name="NotFound", created_date=datetime.datetime.now(), modified_date=datetime.datetime.now())
+        test_folder.local_notes.append(note_not_found)
 
         # Persist the note
         NoteFolder.persist_notes()
@@ -802,6 +953,7 @@ end tell"""
         delete_note_script = notescript.delete_note_script
         helpers.run_applescript(delete_note_script, "Test", "testnote2")
         test_folder.local_notes.remove(note)
+        test_folder.local_notes.remove(note_not_found)
 
         # Sync the deletion
         result = {
@@ -811,13 +963,31 @@ end tell"""
         success, data = NoteFolder.delete_remote_notes(test_folder, Path("/tmp/Test"), result)
         assert success is True
         assert 'testnote2' in result['remote_deleted']
-        assert len(result['remote_not_found']) == 0
+        assert 'NotFound' in result['remote_not_found']
+
+        # Fail - SQL Error
+        class MockSqlite3:
+            def connect(self):
+                raise MockSqlite3.OperationalError
+
+            class OperationalError(BaseException):
+                def __repr__(self):
+                    return "Fail"
+
+        with mock.patch('taskbridge.notes.model.notefolder.sqlite3', MockSqlite3):
+            success, data = NoteFolder.delete_remote_notes(test_folder, Path("/tmp/Test"), result)
+            assert success is False
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires Mac system with iCloud and local filesystem.")
     def test_sync_note_deletions(self):
         NoteFolder.FOLDER_LIST.clear()
         TestNoteFolder.__reset_test_folder(create_notes=False)
         test_folder = TestNoteFolder.__get_test_folder()
+
+        # Create a folder which shouldn't be synced
+        lf = LocalNoteFolder('BOGUS')
+        rf = RemoteNoteFolder(TestNoteFolder.TMP_FOLDER / 'BOGUS', 'BOGUS')
+        NoteFolder(lf, rf, NoteFolder.SYNC_NONE)
 
         # Create the local note
         note_local = TestNoteFolder.__create_local_note()
@@ -854,6 +1024,33 @@ end tell"""
         assert 'testnote2' in result['remote_deleted']
         assert len(result['local_not_found']) == 0
         assert len(result['remote_not_found']) == 0
+
+        # Fail seeding
+        def mock_seed_note_table():
+            return False, 'Fail'
+
+        with mock.patch('taskbridge.notes.model.notefolder.NoteFolder.seed_note_table', mock_seed_note_table):
+            success, data = NoteFolder.sync_note_deletions(Path("/tmp/Test"))
+            assert success is False
+
+        # Fail to load local notes
+
+        # noinspection PyUnusedLocal
+        def mock_load_local_notes(inst):
+            return False, 'Fail'
+        with mock.patch('taskbridge.notes.model.notefolder.NoteFolder.load_local_notes', mock_load_local_notes):
+            success, data = NoteFolder.sync_note_deletions(Path("/tmp/Test"))
+            assert success is False
+
+        # Fail to load remote notes
+
+        # noinspection PyUnusedLocal
+        def mock_load_remote_notes(inst):
+            return False, 'Fail'
+
+        with mock.patch('taskbridge.notes.model.notefolder.NoteFolder.load_remote_notes', mock_load_remote_notes):
+            success, data = NoteFolder.sync_note_deletions(Path("/tmp/Test"))
+            assert success is False
 
     def test_reset_list(self):
         NoteFolder.FOLDER_LIST.append(NoteFolder(None, None, NoteFolder.SYNC_NONE))
