@@ -18,6 +18,7 @@ class TestReminderController:
         with mock.patch('{}.ReminderContainer.load_local_lists'.format(TestReminderController.CONTAINER_BASE),
                         mock_load_local_lists):
             # Success
+
             succeed = True
             success, data = ReminderController.fetch_local_reminders()
             assert success is True
