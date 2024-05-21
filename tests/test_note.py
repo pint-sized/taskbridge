@@ -73,6 +73,8 @@ That was a ladybird"""
         tmp_remote = TestNote.TMP_FOLDER / "Sync/"
         if os.path.isdir(tmp_remote):
             shutil.rmtree(tmp_remote)
+        if os.path.isdir("/tmp/.attachments"):
+            shutil.rmtree("/tmp/.attachments")
 
     @pytest.mark.skipif(TEST_ENV != 'local', reason="Requires local filesystem.")
     def test_create_from_local(self):
@@ -226,6 +228,10 @@ That was a ladybird"""
 
         # Fail - Remote attachment doesn't exist
         new_note = TestNote._create_note_from_remote()
+        if os.path.isdir("/tmp/Sync/.attachments"):
+            shutil.rmtree("/tmp/Sync/.attachments")
+        if os.path.isdir("/tmp/Sync/.attachments.295"):
+            shutil.rmtree("/tmp/Sync/.attachments.295")
         success, data = new_note.upsert_remote(TestNote.TMP_FOLDER / "Sync")
         assert success is False
 
