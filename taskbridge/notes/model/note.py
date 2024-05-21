@@ -279,7 +279,7 @@ class Note:
             Path(att_path).mkdir(parents=True, exist_ok=True)
             attachment.remote_location = att_path / attachment.uuid
             try:
-                shutil.copy2(attachment.staged_location, attachment.remote_location)
+                shutil.copy2(attachment.url, attachment.remote_location)
             except (FileNotFoundError, TypeError):
                 return False, 'Failed to read attachment {}'.format(attachment.staged_location)
 

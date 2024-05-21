@@ -136,7 +136,7 @@ class NoteFolder:
 
             -success (:py:class:`bool`) - true if notes are successfully synchronised.
 
-            -data (:py:class:`str`) - error message on failure, or success message.
+            -data (:py:class:`str`) - error message on failure, or dictionary of changes.
 
         """
         if remote is None or local.modified_date > remote.modified_date:
@@ -174,7 +174,6 @@ class NoteFolder:
                     return False, i_data
                 result[key].append(local.name)
                 return True, i_data
-            return True, 'Note synchronised'
         return True, 'Sync skipped since local note has been modified.'
 
     def sync_local_to_remote(self, result: dict) -> tuple[bool, str]:
@@ -403,8 +402,10 @@ class NoteFolder:
             # Check if the remote folder should not be synced and already has a counterpart
             if existing_association is None:
                 existing_association = next(
-                    (f for f in NoteFolder.FOLDER_LIST if
-                     f.local_folder.name == remote_folder.name and f.sync_direction == NoteFolder.SYNC_NONE),
+                    (f for f in NoteFolder.FOLDER_LIST
+                     if f.local_folder is not None
+                     and f.local_folder.name == remote_folder.name
+                     and f.sync_direction == NoteFolder.SYNC_NONE),
                     None)
 
             if existing_association is not None:
@@ -741,7 +742,7 @@ class NoteFolder:
     @staticmethod
     def delete_local_notes(folder: NoteFolder, result: dict):
         """
-        Delete notes from remote which were deleted locally.
+        Delete notes from local which were deleted remotely.
 
         :param folder: the folder data.
         :param result: dictionary where results are appended.
