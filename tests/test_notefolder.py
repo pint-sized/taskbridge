@@ -157,6 +157,12 @@ end tell"""
         def mock_upsert_remote(inst, remote_path):
             return False, 'Fail'
 
+        # Remote is newer
+        remote_note = copy.deepcopy(local_note)
+        remote_note.modified_date = datetime.datetime.now()
+        success, data = test_folder.sync_local_note_to_remote(local_note, remote_note, result)
+        assert success is True
+
         # Fail
         with mock.patch('taskbridge.notes.model.note.Note.upsert_remote', mock_upsert_remote):
             success, data = test_folder.sync_local_note_to_remote(local_note, None, result)
