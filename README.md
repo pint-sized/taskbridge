@@ -2,7 +2,7 @@
 
 Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - and keep them in sync!
 
-[![Documentation Status](https://readthedocs.org/projects/taskbridge/badge/?version=latest)](https://taskbridge.readthedocs.io/en/latest/?badge=latest) ![example workflow](https://github.com/pint-sized/taskbridge/actions/workflows/python-app.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/taskbridge/badge/?version=latest)](https://taskbridge.readthedocs.io/en/latest/?badge=latest) ![example workflow](https://github.com/pint-sized/taskbridge/actions/workflows/python-app.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/pint-sized/taskbridge/badge.svg)](https://coveralls.io/github/pint-sized/taskbridge)
 
 Apple Notes & Reminders are great apps... as long as you're using them in the Apple ecosystem. If you need access to your 
 data from Windows, Linux or an Android device, you're stuck using web apps. TaskBridge is an attempt at solving this

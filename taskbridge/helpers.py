@@ -163,7 +163,6 @@ class DateUtil:
                         return datetime.strptime(obj, DateUtil.APPLE_DATETIME_ALT)
                     except ValueError:
                         return False
-                return False
         if required_format == '':
             return obj
         else:
