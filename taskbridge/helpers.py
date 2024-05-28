@@ -153,6 +153,7 @@ class DateUtil:
         object.
         :param obj: what to convert from. Can either be a string, or a :py:class:`datetime` object.
         :param required_format: the format required if the required output is of type :py:class:`str`.
+
         """
         if isinstance(obj, str):
             try:

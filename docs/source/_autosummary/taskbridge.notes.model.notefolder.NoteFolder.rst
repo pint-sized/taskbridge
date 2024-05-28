@@ -1,4 +1,4 @@
-taskbridge.notes.model.notefolder.NoteFolder
+﻿taskbridge.notes.model.notefolder.NoteFolder
 ============================================
 
 .. currentmodule:: taskbridge.notes.model.notefolder
@@ -16,7 +16,11 @@ taskbridge.notes.model.notefolder.NoteFolder
    .. autosummary::
       :nosignatures:
    
+      ~NoteFolder.assoc_local_remote
+      ~NoteFolder.assoc_remote_local
       ~NoteFolder.create_linked_folders
+      ~NoteFolder.delete_local_notes
+      ~NoteFolder.delete_remote_notes
       ~NoteFolder.load_local_folders
       ~NoteFolder.load_local_notes
       ~NoteFolder.load_remote_folders
@@ -26,9 +30,15 @@ taskbridge.notes.model.notefolder.NoteFolder
       ~NoteFolder.reset_list
       ~NoteFolder.seed_folder_table
       ~NoteFolder.seed_note_table
+      ~NoteFolder.sync_bidirectional_local_deletions
       ~NoteFolder.sync_folder_deletions
+      ~NoteFolder.sync_local_note_to_remote
+      ~NoteFolder.sync_local_to_remote
       ~NoteFolder.sync_note_deletions
       ~NoteFolder.sync_notes
+      ~NoteFolder.sync_remote_deletions
+      ~NoteFolder.sync_remote_note_to_local
+      ~NoteFolder.sync_remote_to_local
    
    
 

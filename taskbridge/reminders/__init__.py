@@ -6,6 +6,7 @@ This is the model package for the reminder-syncing part of TaskBridge. Here, you
 and the ``LocalList``  and ``RemoteCalendar`` classes that represent a local reminder list and remote task calendar
 respectively.
 - ``reminderscript.py`` - Contains a list of AppleScript scripts for managing local reminders.
+
 """
 
 from . import model

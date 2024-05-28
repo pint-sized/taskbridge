@@ -22,6 +22,10 @@ from taskbridge.reminders.model import reminderscript
 
 
 class TaskBridgeCli:
+    """
+    Defines the functionality of the TaskBridge CLI.
+    """
+
     SETTINGS = {
         'sync_notes': '0',
         'remote_notes_folder': '',
@@ -378,6 +382,10 @@ class TaskBridgeCli:
 
 
 def main():
+    """
+    Defines arguments accepted by the CLI.
+    """
+
     parser = argparse.ArgumentParser(
         prog="TaskBridge CLI",
         description="Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - and keep them in sync!",

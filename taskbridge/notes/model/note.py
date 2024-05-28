@@ -315,6 +315,7 @@ class Attachment:
         :param url: the url of the attachment (location for images, address for links).
         :param b64_data: the Base64 encoded data of an image.
         :param uuid: the UUID for this attachment.
+
         """
         self.file_type: int = file_type
         self.file_name: str = file_name
