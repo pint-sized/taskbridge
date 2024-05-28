@@ -7,3 +7,7 @@ taskbridge
 .idea
 .DS_Store
 docs
+.coverage
+.coveralls.yml
+.env
+tests/
