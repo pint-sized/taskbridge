@@ -193,6 +193,13 @@ Clicking on the icon allows you to bring up the TaskBridge window, or Quit TaskB
 
 > **Remember**: TaskBridge cannot carry out your scheduled sync when it is not running!
 
+# CLI Usage
+
+A command-line interface is available for TaskBridge. This can be useful if you want to run the sync as a scheduled task via 
+cron or launchd, or if you want to integrate functionality in your own, non-Python scripts or apps. 
+
+To run the CLI, use 
+
 # Looking Under the Hood
 
 If you're technical, you can take a peek under the hood to see what TaskBridge is currently doing. From the **Sync** tab, 
