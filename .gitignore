@@ -129,6 +129,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.venv64/
 
 # Spyder project settings
 .spyderproject
@@ -240,3 +241,6 @@ tests/conf.json
 
 # Custom CLI config
 taskbridge/cli/*.json
+
+# DMG Canvas
+tb_dmg_canvas.dmgcanvas/

@@ -38,18 +38,18 @@ dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
 name = "backports-tarfile"
-version = "1.1.1"
+version = "1.2.0"
 description = "Backport of CPython tarfile module"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "backports.tarfile-1.1.1-py3-none-any.whl", hash = "sha256:73e0179647803d3726d82e76089d01d8549ceca9bace469953fcb4d97cf2d417"},
-    {file = "backports_tarfile-1.1.1.tar.gz", hash = "sha256:9c2ef9696cb73374f7164e17fc761389393ca76777036f5aad42e8b93fcd8009"},
+    {file = "backports.tarfile-1.2.0-py3-none-any.whl", hash = "sha256:77e284d754527b01fb1e6fa8a1afe577858ebe4e9dad8919e34c862cb399bc34"},
+    {file = "backports_tarfile-1.2.0.tar.gz", hash = "sha256:d75e02c268746e1b8144c278978b6e98e85de6ad16f8e4b0844a154557eca991"},
 ]
 
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9.3)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["jaraco.test", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)"]
+testing = ["jaraco.test", "pytest (!=8.0.*)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)"]
 
 [[package]]
 name = "beautifulsoup4"
@@ -975,6 +975,17 @@ files = [
 ]
 
 [[package]]
+name = "pefile"
+version = "2023.2.7"
+description = "Python PE parsing module"
+optional = false
+python-versions = ">=3.6.0"
+files = [
+    {file = "pefile-2023.2.7-py3-none-any.whl", hash = "sha256:da185cd2af68c08a6cd4481f7325ed600a88f6a813bad9dea07ab3ef73d8d8d6"},
+    {file = "pefile-2023.2.7.tar.gz", hash = "sha256:82e6114004b3d6911c77c3953e3838654b04511b8b66e8583db70c65998017dc"},
+]
+
+[[package]]
 name = "pluggy"
 version = "1.5.0"
 description = "plugin and hook calling mechanisms for python"
@@ -1052,6 +1063,55 @@ files = [
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pyinstaller"
+version = "6.7.0"
+description = "PyInstaller bundles a Python application and all its dependencies into a single package."
+optional = false
+python-versions = "<3.13,>=3.8"
+files = [
+    {file = "pyinstaller-6.7.0-py3-none-macosx_10_13_universal2.whl", hash = "sha256:6decedba07031d1318528cb76d8400ae1572f7b08197f771ceca9e454e0060bf"},
+    {file = "pyinstaller-6.7.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:0756b3d4d3283ae2a5bda56abe479b80801ecafecdb3a96cd928542c2c75d016"},
+    {file = "pyinstaller-6.7.0-py3-none-manylinux2014_i686.whl", hash = "sha256:df1b66500a7def997790bdadc23c142a2f96585ccd440beac63b72a4f3e41684"},
+    {file = "pyinstaller-6.7.0-py3-none-manylinux2014_ppc64le.whl", hash = "sha256:fa552214a8cbb5bfe4621c46a73c3cce12f299a520aa5ac397dc18718278f03a"},
+    {file = "pyinstaller-6.7.0-py3-none-manylinux2014_s390x.whl", hash = "sha256:5263ecbfd34a2297f0e5d41ecfcf7a6fb1ebbf60dbe0dc7c2d64f4a55871a99d"},
+    {file = "pyinstaller-6.7.0-py3-none-manylinux2014_x86_64.whl", hash = "sha256:4ff8ce04f1e5ab3a65d4a1ee6036cba648d0cdae6a7a33c6f0ca4ace46cdd43c"},
+    {file = "pyinstaller-6.7.0-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:95efc2de7722213f376c5bac9620f390899f9a3c9eed70bd65adf29e2a085d5f"},
+    {file = "pyinstaller-6.7.0-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:1b6dd6a50a7315214d345875cd08f8aa71025e7ba6bfa0f95c09285585e8d372"},
+    {file = "pyinstaller-6.7.0-py3-none-win32.whl", hash = "sha256:73b94ce02b208c34eaabd032dd1522a3c03c0b3118a31bf7e4eafe7a9f4af2da"},
+    {file = "pyinstaller-6.7.0-py3-none-win_amd64.whl", hash = "sha256:a3f85935b40f89e717f1e67377d3bfc953060e5795828ecf5357e2c1f7aa52bf"},
+    {file = "pyinstaller-6.7.0-py3-none-win_arm64.whl", hash = "sha256:53038419ca09eea59de02dfb52453dd327983b0957821be610fb04cfd84676d0"},
+    {file = "pyinstaller-6.7.0.tar.gz", hash = "sha256:8f09179c5f3d1b4b8453ac61adfe394dd416f9fc33abd7553f77d4897bc3a582"},
+]
+
+[package.dependencies]
+altgraph = "*"
+macholib = {version = ">=1.8", markers = "sys_platform == \"darwin\""}
+packaging = ">=22.0"
+pefile = {version = ">=2022.5.30", markers = "sys_platform == \"win32\""}
+pyinstaller-hooks-contrib = ">=2024.6"
+pywin32-ctypes = {version = ">=0.2.1", markers = "sys_platform == \"win32\""}
+setuptools = ">=42.0.0"
+
+[package.extras]
+completion = ["argcomplete"]
+hook-testing = ["execnet (>=1.5.0)", "psutil", "pytest (>=2.7.3)"]
+
+[[package]]
+name = "pyinstaller-hooks-contrib"
+version = "2024.6"
+description = "Community maintained hooks for PyInstaller"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyinstaller_hooks_contrib-2024.6-py2.py3-none-any.whl", hash = "sha256:6cc88dad75261d9e1a7e0c6385139f35dcdbb16640c911a27f6078fe924a38cf"},
+    {file = "pyinstaller_hooks_contrib-2024.6.tar.gz", hash = "sha256:3c188b3a79f5cd46d96520df3934642556a1b6ce8988ec5bbce820ada424bc2b"},
+]
+
+[package.dependencies]
+packaging = ">=22.0"
+setuptools = ">=42.0.0"
 
 [[package]]
 name = "pyqt6"
@@ -1653,5 +1713,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "f977b70b1faaf2e03f773b9a04d4a5301d84091cc260a20a20bb63fec9b0ecab"
+python-versions = ">=3.10,<3.13"
+content-hash = "78c1a4d7eaec36a72b9300c0723a02f723bc02de7a62771cf6cfdded4adf1638"

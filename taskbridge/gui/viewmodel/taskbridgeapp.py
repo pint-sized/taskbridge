@@ -82,9 +82,12 @@ class TaskBridgeApp(QMainWindow):
     #: If True, there are unsaved changes.
     PENDING_CHANGES: bool = False
 
-    def __init__(self):
+    def __init__(self, assets_path: str):
         """
         Initialise the window and load settings.
+
+        :param assets_path: Path to the GUI assets folder
+
         """
 
         super().__init__()
@@ -93,8 +96,9 @@ class TaskBridgeApp(QMainWindow):
         self.autosync_worker = None
         self.sync_worker = None
         self.tray_icon = None
+        self.assets_path: str = assets_path
         TaskBridgeApp.bootstrap_settings()
-        QtCore.QDir.addSearchPath('assets', 'taskbridge/gui/assets')
+        QtCore.QDir.addSearchPath('assets', assets_path)
         self.note_boxes: List = []
         self.reminder_boxes: List = []
         self.ui: MainWindow = MainWindow()
@@ -189,8 +193,7 @@ class TaskBridgeApp(QMainWindow):
         dialog.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         dialog.exec()
 
-    @staticmethod
-    def get_table_icon(image: str) -> str:
+    def get_table_icon(self, image: str) -> str:
         """
         Gets an icon for inline-display in table. Returns correct icon depending on whether dark mode is set.
 
@@ -199,7 +202,7 @@ class TaskBridgeApp(QMainWindow):
         :return: path to the correct image.
         """
         colour = 'white' if darkdetect.isDark() else 'black'
-        image_path = 'taskbridge/gui/assets/table/{0}_{1}.png'.format(image, colour)
+        image_path = self.assets_path + '/table/{0}_{1}.png'.format(image, colour)
         return image_path
 
     def save_settings(self, what: str | None = None, silent: bool = True) -> None:
@@ -440,13 +443,13 @@ class TaskBridgeApp(QMainWindow):
         self.ui.tbl_notes.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.tbl_notes.setHorizontalHeaderItem(0, QTableWidgetItem('Folder'))
         self.ui.tbl_notes.setHorizontalHeaderItem(1, QTableWidgetItem('Location'))
-        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('local_to_remote')))
+        icon = QIcon(QtGui.QPixmap(self.get_table_icon('local_to_remote')))
         self.ui.tbl_notes.setHorizontalHeaderItem(2, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
         self.ui.tbl_notes.horizontalHeaderItem(2).setToolTip('Sync local notes to remote')
-        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('remote_to_local')))
+        icon = QIcon(QtGui.QPixmap(self.get_table_icon('remote_to_local')))
         self.ui.tbl_notes.setHorizontalHeaderItem(3, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
         self.ui.tbl_notes.horizontalHeaderItem(3).setToolTip('Sync remote notes to local')
-        icon = QIcon(QtGui.QPixmap(TaskBridgeApp.get_table_icon('bidirectional')))
+        icon = QIcon(QtGui.QPixmap(self.get_table_icon('bidirectional')))
         self.ui.tbl_notes.setHorizontalHeaderItem(4, QTableWidgetItem(icon, None, QTableWidgetItem.ItemType.UserType))
         self.ui.tbl_notes.horizontalHeaderItem(4).setToolTip('Bi-directional sync')
         self.ui.tbl_notes.setIconSize(QSize(56, 56))
@@ -518,15 +521,15 @@ class TaskBridgeApp(QMainWindow):
             if folder.local_folder is not None and folder.remote_folder is None:
                 name = folder.local_folder.name
                 location = 'Local'
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('local'))
+                location_icon = QIcon(self.get_table_icon('local'))
             elif folder.local_folder is None and folder.remote_folder is not None:
                 name = folder.remote_folder.name
                 location = 'Remote'
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('remote'))
+                location_icon = QIcon(self.get_table_icon('remote'))
             elif folder.local_folder is not None and folder.remote_folder is not None:
                 name = folder.local_folder.name
                 location = 'Local & Remote'
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('local_and_remote'))
+                location_icon = QIcon(self.get_table_icon('local_and_remote'))
             else:
                 self.display_log("Warning: One of your notes folders could not be found locally or remotely.")
                 continue
@@ -671,13 +674,13 @@ class TaskBridgeApp(QMainWindow):
         for container in container_list:
             if container.local_list is not None and container.remote_calendar is None:
                 name = container.local_list.name
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('local'))
+                location_icon = QIcon(self.get_table_icon('local'))
             elif container.local_list is None and container.remote_calendar is not None:
                 name = container.remote_calendar.name
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('remote'))
+                location_icon = QIcon(self.get_table_icon('remote'))
             elif container.local_list is not None and container.remote_calendar is not None:
                 name = container.local_list.name
-                location_icon = QIcon(TaskBridgeApp.get_table_icon('local_and_remote'))
+                location_icon = QIcon(self.get_table_icon('local_and_remote'))
             else:
                 self.display_log("Warning: One of your reminder containers could not be found locally or remotely.")
                 continue
@@ -855,8 +858,8 @@ class TaskBridgeApp(QMainWindow):
             return
 
         self.ui.btn_sync.setEnabled(False)
-        icon_path = "taskbridge/gui/assets/tray/bridge_animated_black.gif" if darkdetect.isDark() else \
-            "taskbridge/gui/assets/tray/bridge_animated_white.gif"
+        icon_path = self.assets_path + "/tray/bridge_animated_black.gif" if darkdetect.isDark() else \
+            self.assets_path + "/tray/bridge_animated_white.gif"
         self.tray_icon.set_animated_icon(icon_path)
         self.ui.lbl_sync_status.setText("Synchronising...")
         self.sync_worker = threadedtasks.Sync(sync_reminders, sync_notes, self.sync_complete, prune_reminders)
@@ -1006,7 +1009,8 @@ class TaskBridgeApp(QMainWindow):
         Triggered when a sync is completed.
         Sets next UI state.
         """
-        icon_path = "gui/assets/tray/bridge_black.png" if darkdetect.isDark() else "gui/assets/tray/bridge_white.png"
+        icon_path = self.assets_path + "/tray/bridge_black.png" if darkdetect.isDark() \
+            else self.assets_path + "/tray/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
         if TaskBridgeApp.SETTINGS['autosync'] == '1':

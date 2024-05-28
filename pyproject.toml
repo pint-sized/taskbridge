@@ -21,7 +21,7 @@ homepage = "https://taskbridge.app/"
 repository = "https://github.com/pint-sized/taskbridge"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 PyQt6 = "^6.6.1"
 darkdetect = "^0.8.0"
 keyring = "^25.2.1"
@@ -48,14 +48,15 @@ python-decouple = "^3.8"
 coveralls = "^3.3.1"
 pyyaml = "^6.0.1"
 
+[tool.poetry.group.dist]
+optional = true
+
+[tool.poetry.group.dist.dependencies]
+pyinstaller = "^6.7.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tools.py2app.bundle.main]
-name = "TaskBridge"
-script = "taskbridge/gui/app.py"
-build-type = "standalone"
 
 [tool.poetry.scripts]
 tbcli = 'taskbridge.cli.tbcli:main'
