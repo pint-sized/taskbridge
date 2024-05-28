@@ -86,7 +86,7 @@ class TaskBridgeCli:
         if len(associations['bi_directional']) == 0 and len(associations['local_to_remote']) == 0 and len(
                 associations['remote_to_local']) == 0:
             logging.critical("No folders set for synchronisation." +
-                             "Use --notes-bi-directional, --notes-local-to-remote, --notes-remote-to-local to specify or" +
+                             "Use --notes-bi-directional, --notes-local-to-remote, --notes-remote-to-local to specify or " +
                              "add an associations object in configuration file.")
             sys.exit(13)
         return True
@@ -279,7 +279,7 @@ class TaskBridgeCli:
         """
 
         # Load settings from file
-        if self.args.config:
+        if 'config' in self.args:
             # Load settings from custom configuration file
             if os.path.exists(self.args.config):
                 conf_file = self.args.config
@@ -377,7 +377,7 @@ class TaskBridgeCli:
         return logging.getLogger()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         prog="TaskBridge CLI",
         description="Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - and keep them in sync!",
@@ -467,3 +467,8 @@ if __name__ == "__main__":
         help="specify the logging level.")
 
     tb_cli = TaskBridgeCli(parser.parse_args())
+
+
+if __name__ == "__main__":
+    main()
+
