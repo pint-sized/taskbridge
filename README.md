@@ -12,7 +12,7 @@ multiple devices.
 > TaskBridge is in no way affiliated-with or endorsed by Apple, Inc.
 
 
-![screenflow_sync.gif](docs/screenflow_sync.gif)  ![screenflow_notes.gif](docs/screenflow_notes.gif)  ![screenflow_reminders.gif](docs/screenflow_reminders.gif)
+![screenflow_sync.gif](https://github.com/pint-sized/taskbridge/raw/main/docs/screenflow_sync.gif)  ![screenflow_notes.gif](https://github.com/pint-sized/taskbridge/raw/main/docs/screenflow_notes.gif)  ![screenflow_reminders.gif](https://github.com/pint-sized/taskbridge/raw/main/docs/screenflow_reminders.gif)
 
 ## Current Sync Support
 
@@ -110,36 +110,46 @@ Generate App file (production):
 
 ## FAQ
 
-What are the System Requirements?
-: TaskBridge must run on macOS, and you must be logged into iCloud. There's no other way of getting access to your notes and 
+**What are the System Requirements?**
+
+TaskBridge must run on macOS, and you must be logged into iCloud. There's no other way of getting access to your notes and 
 reminders otherwise.
 
-How does it work?
-: TaskBridge uses various AppleScript scripts to fetch your notes and reminders from the Apple apps. Notes are converted 
+**How does it work?**
+
+TaskBridge uses various AppleScript scripts to fetch your notes and reminders from the Apple apps. Notes are converted 
 from HTML to Markdown, and added to your NextCloud Notes folder (or any other folder of your choice). In the case of NextCloud, 
 it's then up to the [NextCloud Desktop](https://nextcloud.com/install/) app to sync these. Reminders are synchronised to NextCloud 
 Tasks, or other CalDAV servers, via CalDAV.
 
-Does everything work?
-: No. Please see the limitations. The biggest limitation is that certain elements in Apple Notes (such as checkable TODO 
+**Does everything work?**
+
+No. Please see the limitations. The biggest limitation is that certain elements in Apple Notes (such as checkable TODO 
 items and attachments other than links or images) are undocumented and unavailable (presumably) via AppleScript.
 
-Do I have to keep my Mac switched on if I use scheduled reminders?
-: Yes.
+**Do I have to keep my Mac switched on if I use scheduled reminders?**
 
-Why does TaskBridge prompt me to prune completed reminders?
-: For some reason, the Apple Reminders app is extremely slow to respond when there are many stored reminders. For most people, 
+Yes.
+
+**Why does TaskBridge prompt me to prune completed reminders?**
+
+For some reason, the Apple Reminders app is extremely slow to respond when there are many stored reminders. For most people, 
 the majority of their reminders are in the Completed section. Clearing this out greatly improves performance. Even with just 20-or-so 
 completed reminders, Reminder synchronisation takes **considerably** longer.
 
-Can I use TaskBridge without a GUI?
-: Yes. A PyPi package is available. Also, see the `taskbridge/notes` and `taskbridge/reminders` folders in the repository.
+**Can I use TaskBridge without a GUI?**
 
-Why don't you use the NextCloud Notes API?
-: The NextCloud Notes API is lacking some core features, such as support for adding attachments to Notes.
+Yes. A CLI is available for scripted/automated use. See `taskbridge/cli`.
+ A [PyPi package](https://pypi.org/project/TaskBridge/) is also available. Also, see the `taskbridge/notes` 
+and `taskbridge/reminders` folders in the repository.
 
-Why don't you use CloudKit?
-: The information available via CloudKit is limited. Moreover, Apple's EULA specifically forbids accessing CloudKit via an 
+**Why don't you use the NextCloud Notes API?**
+
+The NextCloud Notes API is lacking some core features, such as support for adding attachments to Notes.
+
+**Why don't you use CloudKit?**
+
+The information available via CloudKit is limited. Moreover, Apple's EULA specifically forbids accessing CloudKit via an 
 application on script.
 
 
