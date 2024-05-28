@@ -237,3 +237,6 @@ fabric.properties
 
 # Local Test
 tests/conf.json
+
+# Custom CLI config
+taskbridge/cli/*.json

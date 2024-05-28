@@ -738,7 +738,7 @@ class NoteFolder:
         return True, 'Notes stored in tb_notes'
 
     @staticmethod
-    def delete_local_notes(folder: NoteFolder, result: dict):
+    def delete_local_notes(folder: NoteFolder, result: dict) -> tuple[bool, str]:
         """
         Delete notes from local which were deleted remotely.
 
