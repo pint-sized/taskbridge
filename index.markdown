@@ -29,7 +29,13 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 
 # Installation
 
-TODO: Do this.
+If you've downloaded TaskBridge from the Mac App Store, there's nothing to do here, and you can move on to the next section!
+
+If you've downloaded a TaskBridge DMG file, simply double-click it to open it:
+
+![TaskBridge main screen](images/11_dmg.png)
+
+Drag the TaskBridge icon to the Applications folder. You'll then be able to launch the app as usual.
 
 After launching TaskBridge, you will be presented with the main screen:
 

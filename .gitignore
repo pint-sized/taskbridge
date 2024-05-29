@@ -11,3 +11,8 @@ docs
 .coveralls.yml
 .env
 tests/
+build/
+dist/
+tb_dmg_canvas.dmgcanvas/
+TaskBridge.spec
+TaskBridge_x64.spec
