@@ -1013,9 +1013,17 @@ class TaskBridgeApp(QMainWindow):
             else self.assets_path + "/tray/bridge_white.png"
         self.tray_icon.setIcon(QtGui.QIcon(icon_path))
         self.ui.btn_sync.setEnabled(True)
+
         if TaskBridgeApp.SETTINGS['autosync'] == '1':
+            delta = 0
+            interval = TaskBridgeApp.SETTINGS['autosync_interval']
+            unit = TaskBridgeApp.SETTINGS['autosync_unit']
+            if unit == 'Minutes':
+                delta = datetime.timedelta(minutes=interval)
+            if unit == 'Hours':
+                delta = datetime.timedelta(hours=interval)
             current_time = datetime.datetime.now()
-            next_sync = current_time + datetime.timedelta(seconds=TaskBridgeApp.SETTINGS['autosync_interval'])
+            next_sync = current_time + delta
             self.ui.lbl_sync_status.setText('Synchronisation completed at {0}. Next Sync at {1}.'.format(
                 current_time.strftime('%H:%M:%S'),
                 next_sync.strftime('%H:%M:%S')
