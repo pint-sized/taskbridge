@@ -93,7 +93,7 @@
    <item>
     <widget class="QLabel" name="lbl_version">
      <property name="text">
-      <string>Version 0.1.2-beta</string>
+      <string>Version 0.1.2-beta.1</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
