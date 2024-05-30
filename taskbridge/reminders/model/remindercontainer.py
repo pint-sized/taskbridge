@@ -838,7 +838,8 @@ class ReminderContainer:
             # Get the associated remote reminder, if any
             remote_reminder = next((r for r in self.remote_reminders
                                     if r.uuid == local_reminder.uuid or r.name == local_reminder.name), None)
-            if remote_reminder is None or local_reminder.modified_date > remote_reminder.modified_date:
+            if (remote_reminder is None or
+                    local_reminder.modified_date.replace(tzinfo=None) > remote_reminder.modified_date.replace(tzinfo=None)):
                 key = 'remote_added' if remote_reminder is None else 'remote_updated'
                 remote_reminder = copy.deepcopy(local_reminder)
                 if helpers.confirm("Upsert remote reminder {}".format(remote_reminder.name)):
@@ -846,8 +847,8 @@ class ReminderContainer:
                     if not success or fail == "fail_upsert_remote":
                         return False, data
                     result[key].append(remote_reminder.name)
-            elif (local_reminder.modified_date < remote_reminder.modified_date) or fail in ["local_older", "fail_upsert_local",
-                                                                                            "fail_update_uuid"]:
+            elif ((local_reminder.modified_date.replace(tzinfo=None) < remote_reminder.modified_date.replace(tzinfo=None)) or
+                  fail in ["local_older", "fail_upsert_local", "fail_update_uuid"]):
                 key = 'local_updated'
                 if fail in ["local_older", "fail_upsert_local", "fail_update_uuid"]:
                     remote_reminder.upsert_remote(self)
