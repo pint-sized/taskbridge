@@ -6,6 +6,7 @@ Many of the synchronisation methods are here.
 from __future__ import annotations
 
 import copy
+import datetime
 import glob
 import os
 import shutil
@@ -78,6 +79,7 @@ class NoteFolder:
             -data (:py:class:`str` | :py:class:`int`) - error message on failure, or number of notes loaded on success.
 
         """
+        self.local_notes.clear()
         get_notes_script = notescript.get_notes_script
         return_code, stdout, stderr = helpers.run_applescript(get_notes_script, self.local_folder.name)
 
@@ -112,6 +114,8 @@ class NoteFolder:
             -data (:py:class:`str` | :py:class:`int`) - error message on failure, or number of notes loaded on success.
 
         """
+        self.remote_notes.clear()
+
         for root, dirs, files in os.walk(self.remote_folder.path):
             for remote_file in files:
                 f_name, f_ext = os.path.splitext(remote_file)
@@ -153,6 +157,8 @@ class NoteFolder:
     def sync_remote_note_to_local(self, local: Note, remote: Note, result: dict) -> tuple[bool, str]:
         """
         Sync remote notes to local. This performs an update or an insert.
+        Since the Apple Notes modified date is read only, we have to update the modified date of the remote note as well,
+        otherwise the remote note will be overwritten on the next sync.
 
         :param local: the local note.
         :param remote: the remote note.
@@ -173,6 +179,11 @@ class NoteFolder:
                 if not i_success:
                     return False, i_data
                 result[key].append(local.name)
+
+                # Update modification date of remote note
+                remote.modified_date = datetime.datetime.now()
+                remote.upsert_remote(self.remote_folder.path)
+
                 return True, i_data
         return True, 'Sync skipped since local note has been modified.'
 
