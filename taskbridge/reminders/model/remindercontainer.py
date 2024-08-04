@@ -919,7 +919,8 @@ class ReminderContainer:
         """
 
         if not self.sync:
-            return True, 'Container {} is set to NO SYNC so skipped'.format(self.local_list.name)
+            return True, 'Container {} is set to NO SYNC so skipped'.format(
+                self.local_list.name if self.local_list else self.remote_calendar.name)
 
         result = {
             'remote_added': [],
