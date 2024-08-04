@@ -213,7 +213,7 @@ class ReminderContainer:
                     local_list.create()
                 except AttributeError as e:
                     return False, e.__str__()
-            ReminderContainer(local_list, remote_calendar, should_sync)
+                ReminderContainer(local_list, remote_calendar, should_sync)
         return True, "Remote lists associated with local lists"
 
     @staticmethod

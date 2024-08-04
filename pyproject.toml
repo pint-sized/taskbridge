@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "TaskBridge"
-version = "0.1.2-beta.2"
+version = "0.1.3-beta"
 description = "Export your Apple Reminders & Notes to NextCloud, a local folder, or CalDav - and keep them in sync!"
 keywords = ["sync", "note sync", "reminder sync", "cloud notes", "cloud reminders"]
 authors = ["Pint-Sized Software <hello@pintsized.dev>"]
@@ -24,11 +24,11 @@ repository = "https://github.com/pint-sized/taskbridge"
 python = ">=3.10,<3.13"
 PyQt6 = "^6.6.1"
 darkdetect = "^0.8.0"
-keyring = "^25.2.1"
+keyring = "^25.3.0"
 schedule = "^1.2.1"
 caldav = "^1.3.9"
-markdown2 = "^2.4.13"
-markdownify = "^0.12.1"
+markdown2 = "^2.5.0"
+markdownify = "^0.13.1"
 
 [tool.poetry.group.dev.dependencies]
 py2app = "^0.28.7"
