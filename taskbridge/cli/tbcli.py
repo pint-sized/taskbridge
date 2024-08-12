@@ -474,9 +474,8 @@ def main():
         default='info',
         help="specify the logging level.")
 
-    tb_cli = TaskBridgeCli(parser.parse_args())
+    TaskBridgeCli(parser.parse_args())
 
 
 if __name__ == "__main__":
     main()
-
